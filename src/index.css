@@ -1,0 +1,28 @@
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+
+html{
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+}
+
+body {
+    height: 100%;
+    width: 100%;
+    margin: auto;
+    display: flex;
+}
+
+.logo-img {
+    filter: invert(0);
+}
+
+.invert-to-white {
+    filter: invert(1);
+}
+
+/* * {
+    border: 1px solid black;
+} */
