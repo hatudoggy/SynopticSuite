@@ -15,11 +15,11 @@ body {
     display: flex;
 }
 
-.logo-img {
+.invert-to-white {
     filter: invert(0);
 }
 
-.invert-to-white {
+.invert-to-white-second {
     filter: invert(1);
 }
 
