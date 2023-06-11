@@ -1,6 +1,7 @@
-import { useState } from 'react'
 import './App.css'
-import Sidebar from './components/Sidebar/Sidebar'
+import Sidebar from './components/Sidebar'
+import Main from './components/Main'
+
 
 function App() {
 
@@ -8,6 +9,7 @@ function App() {
   return (
     <>
       <Sidebar/>
+      <Main/> 
     </>
   )
 }
