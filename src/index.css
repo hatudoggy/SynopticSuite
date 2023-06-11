@@ -2,26 +2,26 @@
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
 
-html{
+#root{
     height: 100vh;
     width: 100vw;
-    display: flex;
 }
 
 body {
     height: 100%;
     width: 100%;
-    margin: auto;
+    margin: 0;
+    padding: 0;
     display: flex;
 }
 
 .invert-to-white {
-    filter: invert(0);
-}
-
-.invert-to-white-second {
     filter: invert(1);
 }
+
+/* .invert-to-white-second {
+    filter: invert(1);
+} */
 
 /* * {
     border: 1px solid black;
