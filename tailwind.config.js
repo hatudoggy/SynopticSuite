@@ -25,6 +25,7 @@ export default {
         neutral: colors.gray,
         'primary': "#3C3E41",
         'primary-logo': '#447BCD',
+        'hover-color' : '#909090',
       },
     },
   },
