@@ -9,7 +9,7 @@ import Navigation from "./Navigation";
 function Sidebar() {
   return (
     <div className="flex h-full max-h-full w-16 flex-col sm:w-72">
-      <div className="flex h-12 items-center justify-center bg-primary-logo text-center text-xs font-semibold text-white sm:pb-1.5 sm:text-3xl">
+      <div className="flex h-12 flex-none items-center justify-center bg-primary-logo text-center text-xs font-semibold text-white sm:pb-1.5 sm:text-3xl">
         Synoptic Suite
       </div>
       <div className="flex flex-1 flex-col items-center gap-5 bg-primary sm:px-12 py-7 md:gap-7 lg:gap-10">
