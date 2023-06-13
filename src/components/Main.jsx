@@ -9,7 +9,7 @@ function Main() {
 
   return (
     <div className='w-full flex flex-1 flex-col'>
-      <div className='h-12 shadow-lg flex items-center pl-6 pr-12 justify-between sticky top-0 bg-white'>
+      <div className='h-12 shadow-lg flex items-center pl-6 pr-12 justify-between sticky top-0 bg-white z-0'>
         <div className='flex items-center gap-2'>
           <img src={search} alt="search" className="sm:w-6 w-6 m-auto sm:m-0" />
           <input className='outline-none' type="text" placeholder='Search'/>
