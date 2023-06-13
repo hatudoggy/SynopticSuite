@@ -2,22 +2,39 @@
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
 
-#root{
+/* #root{
     height: 100vh;
     width: 100vw;
     display: flex;
-}
+} */
 
-body {
-    height: 100%;
-    width: 100%;
+/* body {
     margin: 0;
     padding: 0;
-    display: flex;
-}
+} */
 
 .invert-to-white {
     filter: invert(1);
+}
+
+::-webkit-scrollbar {
+    width: 10px;
+}
+  
+  /* Track */
+::-webkit-scrollbar-track {
+    border-radius: 10px;
+}
+   
+  /* Handle */
+::-webkit-scrollbar-thumb {
+    background: rgb(131, 131, 131); 
+    border-radius: 10px;
+}
+  
+  /* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+    background: rgb(68, 68, 68, 0.5); 
 }
 
 /* .invert-to-white-second {

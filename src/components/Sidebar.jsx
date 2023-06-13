@@ -4,92 +4,111 @@ import clock from "../assets/clock.svg";
 import planner from "../assets/planner.svg";
 import analytics from "../assets/analytics.svg";
 import addButton from "../assets/add-button.svg";
-import Navigation from "./Navigation";
+import { useNavigate } from "react-router-dom";
+import "./Sidebar.css"
+import logo from "../assets/SuiteLogo.png"
+import { useState } from "react";
 
 function Sidebar() {
+
+  const linkList = ["www.google.com", "www.youtube.com", "www.github.com", ]
+
   return (
-    <div className="flex h-full max-h-full w-16 flex-col sm:w-72">
-      <div className="flex h-12 flex-none items-center justify-center bg-primary-logo text-center text-xs font-semibold text-white sm:pb-1.5 sm:text-3xl">
-        Synoptic Suite
+    <div className="hidden sm:flex h-screen w-36 flex-row sticky top-0 left-0">
+      <div className="flex flex-col items-center gap-8 py-6 h-full w-5/12 bg-slate-300">
+        <NewLinks/>
+        <div className="noScroll flex flex-col gap-4 my-2 h-auto overflow-y-auto">
+            {linkList.map((e, key)=>{return <Link link={e} key={key}/>})}
+
+        </div>
       </div>
-      <div className="flex flex-1 flex-col items-center gap-5 bg-primary sm:px-12 py-7 md:gap-7 lg:gap-10">
-        <div className="flex flex-col items-center sm:items-start gap-7 sm:gap-3 md:gap-4 lg:gap-6 sm:w-full w-5/6">
-            <Navigation
-              // Don't modify this unless you want to adjust
-              // the margin, padding, or the gap between the flex items
-              classOfWrapper={"sm:gap-7"}
-              image={calendar}
-              nameOfNav={"Calendar"}
-              classOfNav={"hidden sm:block"}
-              link={"/"}
-            />
-            <Navigation
-              classOfWrapper={"sm:gap-6"}
-              image={resources}
-              nameOfNav={"Resources"}
-              classOfNav={"hidden sm:block"}
-              link={"resources"}
-            />
-            <Navigation
-              classOfWrapper={"sm:gap-7"}
-              image={clock}
-              nameOfNav={"Schedule"}
-              classOfNav={"hidden sm:block"}
-              link={"schedule"}
-            />
-            <Navigation
-              classOfWrapper={"sm:gap-7"}
-              image={planner}
-              nameOfNav={"Planner"}
-              classOfNav={"hidden sm:block"}
-              link={"planner"}
-            />
-            <Navigation
-              classOfWrapper={"sm:gap-7"}
-              image={analytics}
-              nameOfNav={"Analytics"}
-              classOfNav={"hidden sm:block"}
-              link={"analytics"}
-            />
+      <div className="flex flex-col items-center gap-8  py-6 h-full w-7/12 bg-slate-500">
+        <div className=""><img src={logo} className="w-12" /></div>
+
+        <div className="flex flex-col gap-4 ">
+          <Icon image={calendar} text={"Calendar"} link={"/"}/>
+          <Icon image={resources} text={"Resources"} link={"resources"}/>
+          <Icon image={clock} text={"Schedule"} link={"schedule"}/>
+          <Icon image={planner} text={"Planner"} link={"planner"}/>
+          <Icon image={analytics} text={"Analytics"} link={"analytics"}/>
         </div>
-        <div className="flex flex-auto flex-col gap-2 md:gap-4 lg:gap-6">
-          <div className="ml-2 hidden flex-row items-center border-t-2 font-sans text-lg text-white opacity-70 sm:flex sm:w-40 sm:gap-8"></div>
-          <Navigation
-            classOfWrapper={"sm:gap-3 px-3 hidden"}
-            image={addButton}
-            nameOfNav={"Add new link"}
-            classOfNav={"hidden sm:block text-base font-medium"}
-          />
-          <div className="flex flex-row items-center font-sans text-lg text-white sm:gap-6">
-            <ul className="flex list-disc flex-col gap-3 pl-10 font-semibold underline underline-offset-4">
-              <NewLinks
-                bulletColor={"marker:text-green-500"}
-                linkName={"STI Education Services Group"}
-              />
-              <NewLinks
-                bulletColor={"marker:text-blue-500"}
-                linkName={"One STI Student Portal"}
-              />
-            </ul>
-          </div>
-          <div className="ml-2 hidden flex-row items-center border-b-2 font-sans text-lg text-white opacity-70 sm:flex sm:w-40 sm:gap-8"></div>
-        </div>
+
       </div>
     </div>
   );
 }
 
-function NewLinks({ linkName, bulletColor }) {
-  return (
-    <li
-      className={
-        "sm:list-item hidden hover:cursor-pointer " +
-        (bulletColor ? bulletColor : "")
-      }
+function Icon({image, text, link}){
+  const navigate = useNavigate()
+  return(
+    <div 
+      className="group relative flex justify-center items-center transition-all
+      w-14 h-14 bg-gray-700 rounded-3xl
+      hover:bg-gray-800 hover:cursor-pointer hover:rounded-2xl shadow-md"
+      onClick={()=>{navigate(link)}}
     >
-      {linkName}
-    </li>
+      <img src={image} alt="calendar" className="w-10" />
+      <ToolTip text={text}/>
+    </div>
+  )
+}
+
+function ToolTip({text}){
+
+  return(
+    <span className="absolute z-20 w-auto min-w-max invisible group-hover:visible group-hover:block opacity-0 group-hover:opacity-100 transition
+    bg-gray-800 text-white p-1 rounded left-16 scale-50 group-hover:scale-100 origin-left shadow-md">
+      {text}
+    </span>
+
+  )
+}
+
+function Link({link}){
+  const linkRef = "https://s2.googleusercontent.com/s2/favicons?domain="+link+"&sz=256"
+  return(
+    <a href={link}>
+      <div className={"group relative flex-none flex justify-center items-center transition-all rounded-lg bg-center bg-no-repeat bg-cover "
+      +"w-10 h-10 hover:bg-slate-300 hover:opacity-80 shadow-md"
+      } 
+        style={{backgroundImage:"url("+linkRef+")"}}
+      >
+      </div>
+    </a>
+  )
+}
+
+
+function NewLinks() {
+  const [modalState, setModalState] = useState(false);
+
+  return (
+    <div>
+      <LinkModal state={modalState}/>
+      <div 
+      className="group relative flex-none flex justify-center items-center transition-all
+      w-12 h-12 bg-slate-500 rounded-2xl
+      hover:bg-gray-700 hover:cursor-pointer hover:rounded-xl shadow-md"
+      onClick={()=>{setModalState(!modalState);console.log(modalState)}}
+      >
+        <img src={addButton} alt="calendar" className="w-10" />
+        <ToolTip text={"Add New Link"} />
+      </div>
+
+    </div>
   );
+}
+
+function LinkModal({state}){
+
+  return(
+    <div className={state ? "hidden opacity-0" : "block opacity-100" +" flex flex-col gap-3 absolute translate-x-16 transition-all bg-gray-300 rounded-md p-4 z-30 shadow-lg"}>
+      Enter website url:
+      <input className="px-2 py-1" type="text" />
+      <button className="bg-slate-400 w-1/2 m-auto rounded-md"
+      onClick={()=>{}}>Submit</button>
+    </div>
+  )
 }
 
 export default Sidebar;

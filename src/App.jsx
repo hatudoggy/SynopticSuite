@@ -7,10 +7,10 @@ function App() {
 
 
   return (
-    <>
+    <div className='flex'>
       <Sidebar/>
       <Main/> 
-    </>
+    </div>
   )
 }
 

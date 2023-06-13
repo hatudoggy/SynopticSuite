@@ -15,7 +15,7 @@ function Main() {
           <input className='outline-none' type="text" placeholder='Search'/>
         </div>
         <div className='flex items-center gap-2'>
-          <div className='w-9 h-9 rounded-full bg-stone-400 shadow-lg'></div>
+          <div className='flex-none w-9 h-9 rounded-full bg-stone-400 shadow-lg'></div>
           Hello, there
         </div>
       </div>
