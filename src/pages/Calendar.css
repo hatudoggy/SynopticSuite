@@ -1,0 +1,75 @@
+
+
+.rbc-timeslot-group {
+    min-height: 60px;
+}
+
+
+.rbc-day-slot .rbc-time-slot{
+    border-top: none;
+}
+
+/* .rbc-toolbar button:active:hover, .rbc-toolbar button:active:focus, .rbc-toolbar button.rbc-active:hover, .rbc-toolbar button.rbc-active:focus {
+    color: white;
+    background-color: rgb(68 123 205 );
+} */
+
+.rbc-toolbar button:active:focus, .rbc-toolbar button.rbc-active:focus{
+    color: white;
+    background-color: rgb(89, 143, 223);
+}
+
+.rbc-toolbar button:active, .rbc-toolbar button.rbc-active {
+    color: white;
+    box-shadow: none;
+    background-color: rgb(89, 143, 223);
+}
+
+.rbc-btn-group button{
+    border:none;
+    background-color: #f5f5f6fb;
+    /* margin-right: 5px; */
+}
+
+.rbc-off-range-bg {
+    background: #f7f7f7;
+}
+
+.rbc-today {
+    background-color: #e4eaee8f;
+    
+}
+
+/* First Button Group (Today, Back, Next)*/
+.rbc-btn-group:first-of-type{
+    display: flex;
+
+}
+.rbc-btn-group:first-of-type button:nth-child(1){
+    border-radius: 0;
+}
+
+
+.rbc-btn-group:first-of-type button:nth-child(2){
+    order:-1;
+    text-indent: -9999px;
+    line-height: 0; 
+    border-radius: 4px 0 0 4px;
+}
+.rbc-btn-group:first-of-type button:nth-child(2):after{
+    content:"<";
+    text-indent: 0;
+    display: block;
+    line-height: initial;
+}
+
+.rbc-btn-group:first-of-type button:nth-child(3){
+    text-indent: -9999px;
+    line-height: 0; 
+}
+.rbc-btn-group:first-of-type button:nth-child(3):after{
+    content:">";
+    text-indent: 0;
+    display: block;
+    line-height: initial;
+}
