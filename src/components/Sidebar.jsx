@@ -80,7 +80,7 @@ function Link({link}){
 
 
 function NewLinks() {
-  const [modalState, setModalState] = useState(false);
+  const [modalState, setModalState] = useState(true);
 
   return (
     <div>
