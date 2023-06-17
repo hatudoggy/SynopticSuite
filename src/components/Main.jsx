@@ -1,6 +1,6 @@
 import '../App.css'
 import { Routes, Route } from "react-router-dom";
-import Calendar from "../pages/Calendar"
+import Calendar from "../pages/CalendarPage"
 import Planner from '../pages/Planner';
 import search from "../assets/search.svg";
 
