@@ -13,7 +13,7 @@ function Sidebar() {
   const linkList = ["www.google.com", "www.youtube.com", "www.github.com"];
 
   return (
-    <div className="sticky left-0 top-0 hidden h-screen w-36 flex-row sm:flex">
+    <div className="sticky left-0 top-0 self-start hidden h-screen w-36 flex-row sm:flex">
       <div className="flex h-full w-5/12 flex-col items-center gap-8 bg-slate-300 py-6">
         <NewLinks />
         <div className="noScroll my-2 flex h-auto flex-col gap-4 overflow-y-auto">

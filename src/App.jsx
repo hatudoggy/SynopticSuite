@@ -7,7 +7,7 @@ function App() {
 
 
   return (
-    <div className='flex flex-row-reverse'>
+    <div className='flex flex-row-reverse overflow-auto'>
       <Main/> 
       <Sidebar/>
       
