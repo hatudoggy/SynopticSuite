@@ -1,5 +1,4 @@
 export default function PlannerCard({
-  index,
   subject,
   description,
   pin,
@@ -9,7 +8,6 @@ export default function PlannerCard({
 }) {
   return (
     <div
-      key={index}
       className="relative flex flex-row rounded-xl bg-slate-100 p-5 shadow-md sm:min-w-[375px]"
     >
       <div className="flex items-center rounded-md bg-violet-400 p-5 font-bold text-white">

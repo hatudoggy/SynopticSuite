@@ -61,10 +61,13 @@ function Planner() {
         <Modal
           handleOutsideClick={handleOutsideClick}
           handleFormSubmit={handleFormSubmit}
+          handleClose={() => setIsModalOpen(!isModalOpen)}
           setSubject={setSubject}
+          subject={subject}
           setDescription={setDescription}
+          description={description}
           header={"Create Plan"}
-          firstInput={"Subject"}
+          firstInput={"Title"}
           secondInput={"Description"}
         />
       ) : null}
@@ -104,7 +107,7 @@ function Planner() {
             {pinned.length > 0 ? (
               pinned.map((item, index) => (
                 <PlannerCard
-                  index={index}
+                  key={item.id}
                   subject={item.subject}
                   description={item.description}
                   pin={unpin}
@@ -114,7 +117,7 @@ function Planner() {
                 />
               ))
             ) : (
-              <div className="mx-2 flex justify-center rounded-xl bg-slate-100 sm:w-fit">
+              <div className="mx-2 flex justify-center rounded-xl bg-slate-100">
                 <div className="py-10 font-semibold sm:px-32 sm:py-10">
                   No Pinned Items
                 </div>
@@ -132,7 +135,7 @@ function Planner() {
             {plans
               ? plans.map((plan, index) => (
                   <PlannerCard
-                    index={index}
+                    key={plan.id}
                     subject={plan.subject}
                     description={plan.description}
                     pin={pin}
