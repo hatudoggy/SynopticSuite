@@ -23,9 +23,11 @@ function Sidebar() {
         </div>
       </div>
       <div className="flex h-full w-7/12 flex-col  items-center gap-8 bg-slate-500 py-6">
-        <div className="">
-          <img src={logo} className="w-12" />
-        </div>
+        <a href="/">
+          <div className="">
+            <img src={logo} className="w-12" />
+          </div>
+        </a>
 
         <div className="flex flex-col gap-4 ">
           <Icon image={calendar} text={"Calendar"} link={"/"} />
