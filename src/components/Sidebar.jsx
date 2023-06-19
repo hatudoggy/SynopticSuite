@@ -10,12 +10,24 @@ import logo from "../assets/SuiteLogo.png";
 import { useState } from "react";
 
 function Sidebar() {
-  const linkList = ["www.google.com", "www.youtube.com", "www.github.com"];
+  const [linkList, setLinkList] = useState([
+    "https://www.google.com",
+    "https://www.instagram.com",
+    "https://www.github.com",
+    "https://elms.sti.edu"
+  ]);
+
+  const addLink = (link) => {
+    if (!link.startsWith("https://")) {
+      link = "https://" + link;
+    }
+    setLinkList([...linkList, link]);
+  };
 
   return (
     <div className="sticky left-0 top-0 hidden h-screen w-36 flex-row self-start sm:flex">
       <div className="flex h-full w-5/12 flex-col items-center gap-8 bg-slate-300 py-6">
-        <NewLinks />
+        <NewLinks addLink={addLink} />
         <div className="noScroll my-2 flex h-auto flex-col gap-4 overflow-y-auto">
           {linkList.map((e, key) => {
             return <Link link={e} key={key} />;
@@ -79,25 +91,33 @@ function Link({ link }) {
           "group relative flex flex-none items-center justify-center rounded-lg bg-cover bg-center bg-no-repeat transition-all " +
           "h-10 w-10 shadow-md hover:bg-slate-300 hover:opacity-80"
         }
-        style={{ backgroundImage: "url(" + linkRef + ")" }}
-      ></div>
+        style={{ backgroundImage: "url(" + linkRef + ")" }}>
+        </div>
     </a>
   );
 }
 
-function NewLinks() {
+function NewLinks( {addLink} ) {
   const [modalState, setModalState] = useState(true);
+  const [linkInput, setLinkInput] = useState("");
 
+  const handleInputChange = (event) => {
+    setLinkInput(event.target.value);
+  };
+
+  const handleSubmit = () => {
+    addLink(linkInput);
+    setLinkInput("");
+  };
+  
   return (
     <div>
-      <LinkModal state={modalState} />
-      <div
-        className="group relative flex h-12 w-12 flex-none items-center
+      <LinkModal state={modalState} linkInput={linkInput} handleInputChange={handleInputChange} handleSubmit={handleSubmit} />
+      <div className="group relative flex h-12 w-12 flex-none items-center
       justify-center rounded-2xl bg-slate-500 shadow-md
       transition-all hover:cursor-pointer hover:rounded-xl hover:bg-gray-700"
         onClick={() => {
           setModalState(!modalState);
-          console.log(modalState);
         }}
       >
         <img src={addButton} alt="calendar" className="w-10" />
@@ -107,7 +127,7 @@ function NewLinks() {
   );
 }
 
-function LinkModal({ state }) {
+function LinkModal({state, linkInput, handleInputChange, handleSubmit}) {
   return (
     <div
       className={
@@ -117,12 +137,9 @@ function LinkModal({ state }) {
             " absolute z-30 flex translate-x-16 flex-col gap-3 rounded-md bg-gray-300 p-4 shadow-lg transition-all"
       }
     >
-      Enter website url:
-      <input className="px-2 py-1" type="text" />
-      <button
-        className="m-auto w-1/2 rounded-md bg-slate-400"
-        onClick={() => {}}
-      >
+      Website url:
+      <input className="px-2 py-1" type="text" value={linkInput} onChange={handleInputChange} />
+      <button className="m-auto w-1/2 rounded-md bg-slate-400" onClick={handleSubmit}>
         Submit
       </button>
     </div>
