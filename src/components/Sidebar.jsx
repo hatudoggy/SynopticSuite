@@ -135,7 +135,7 @@ function LinkModal({state, linkInput, handleInputChange, handleSubmit}) {
             " absolute z-30 flex translate-x-16 flex-col gap-3 rounded-md bg-gray-300 p-4 shadow-lg transition-all"
       }
     >
-      Enter website url:
+      Website url:
       <input className="px-2 py-1" type="text" value={linkInput} onChange={handleInputChange} />
       <button className="m-auto w-1/2 rounded-md bg-slate-400" onClick={handleSubmit}>
         Submit
