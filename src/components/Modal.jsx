@@ -21,8 +21,9 @@ export default function Modal({
 
   /* 
   Performs cleanup of state variables
-  when modal is closed 
+  when modal is closed asdasdd
   */
+
   useEffect(() => {
     return () => {
       setIsFocusedDescription(false);
