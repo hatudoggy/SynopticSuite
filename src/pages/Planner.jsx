@@ -72,7 +72,7 @@ function Planner() {
         />
       ) : null}
       <div
-        className="text-md absolute bottom-10 right-10 z-10 flex items-center justify-center gap-2 rounded-2xl bg-blue-500 px-5 py-5 font-semibold text-white shadow-lg shadow-slate-400/100"
+        className="text-md absolute bottom-10 right-10 z-10 flex items-center justify-center gap-2 rounded-2xl bg-blue-500 px-5 py-5 font-semibold text-white shadow-lg shadow-slate-400/100 hover:cursor-pointer"
         onClick={() => setIsModalOpen(!isModalOpen)}
       >
         <img src={addButton} alt="add" className="w-6 sm:w-8" />
