@@ -17,6 +17,15 @@ function Planner() {
   const [description, setDescription] = useState("");
   const [plans, setPlans] = useState([]);
   const [planId, setPlanId] = useState(0);
+  const [color, setColor] = useState();
+
+  const adaptingText = (bgColor, lightColor, darkColor) => {
+    var color = bgColor.charAt(0) === "#" ? bgColor.substring(1, 7) : bgColor;
+    var r = parseInt(color.substring(0, 2), 16); // hexToR
+    var g = parseInt(color.substring(2, 4), 16); // hexToG
+    var b = parseInt(color.substring(4, 6), 16); // hexToB
+    return r * 0.299 + g * 0.587 + b * 0.114 > 186 ? darkColor : lightColor;
+  };
 
   const handleOutsideClick = (event) => {
     if (event.target === event.currentTarget) {
@@ -30,6 +39,9 @@ function Planner() {
     const compiledData = {
       subject: subject,
       description: description,
+      dateCreated: new Date(Date.now()).toString(),
+      color: color.hex,
+      textColor: adaptingText(color.hex, "#F9F9F3", "#28282B"),
       isPinned: false,
       id: planId,
     };
@@ -41,14 +53,17 @@ function Planner() {
 
   function handlePin(id) {
     const filteredPin = plans.filter((plan) => plan.id === id);
-
+    filteredPin[0].isPinned = true;
     if (pinned.find((item) => item.id === id)) return;
-
     //To avoid the Array(n) in the console
     setPinned([...pinned, ...filteredPin]);
   }
 
   function handleUnpin(id) {
+    //Convert back isPinned to false
+    const filteredPin = plans.filter((plan) => plan.id === id);
+    filteredPin[0].isPinned = false;
+
     setPinned([...pinned.filter((plan) => plan.id !== id)]);
   }
 
@@ -69,6 +84,8 @@ function Planner() {
           header={"Create Plan"}
           firstInput={"Title"}
           secondInput={"Description"}
+          color={color}
+          setColor={setColor}
         />
       ) : null}
       <div
@@ -110,8 +127,13 @@ function Planner() {
                   key={item.id}
                   subject={item.subject}
                   description={item.description}
-                  pin={unpin}
-                  handlePin={handleUnpin}
+                  color={item.color}
+                  textColor={item.textColor}
+                  pin={pin}
+                  unpin={unpin}
+                  isPinned={item.isPinned}
+                  handlePin={handlePin}
+                  handleUnpin={handleUnpin}
                   settings={settings}
                   id={item.id}
                 />
@@ -133,17 +155,26 @@ function Planner() {
           <div className="mx-2 flex flex-col gap-3 sm:flex-wrap lg:flex-row">
             {/* Card */}
             {plans
-              ? plans.map((plan, index) => (
-                  <PlannerCard
-                    key={plan.id}
-                    subject={plan.subject}
-                    description={plan.description}
-                    pin={pin}
-                    handlePin={handlePin}
-                    settings={settings}
-                    id={plan.id}
-                  />
-                ))
+              ? plans
+                  .sort(
+                    (a, b) => new Date(b.dateCreated) - new Date(a.dateCreated)
+                  )
+                  .map((plan, index) => (
+                    <PlannerCard
+                      key={plan.id}
+                      subject={plan.subject}
+                      description={plan.description}
+                      color={plan.color}
+                      textColor={plan.textColor}
+                      pin={pin}
+                      unpin={unpin}
+                      isPinned={plan.isPinned}
+                      handlePin={handlePin}
+                      handleUnpin={handleUnpin}
+                      settings={settings}
+                      id={plan.id}
+                    />
+                  ))
               : null}
           </div>
         </div>

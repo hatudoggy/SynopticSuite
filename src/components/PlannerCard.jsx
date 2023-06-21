@@ -1,16 +1,25 @@
 export default function PlannerCard({
   subject,
   description,
+  color,
+  textColor,
   pin,
+  unpin,
+  isPinned,
   handlePin,
+  handleUnpin,
   settings,
   id,
 }) {
   return (
-    <div
-      className="relative flex flex-row rounded-xl bg-slate-100 p-5 shadow-md sm:min-w-[375px]"
-    >
-      <div className="flex items-center rounded-md bg-violet-400 p-5 font-bold text-white">
+    <div className="relative flex flex-row rounded-xl bg-slate-100 p-5 shadow-md sm:min-w-[375px]">
+      <div
+        className="flex items-center rounded-md p-5 font-bold"
+        style={{
+          backgroundColor: color ? color : "",
+          color: textColor ? textColor : "",
+        }}
+      >
         MP
       </div>
       <div className="mx-5 truncate">
@@ -21,11 +30,21 @@ export default function PlannerCard({
       </div>
       <div className="lg:mx-10"></div>
       <div className="absolute right-4 top-2 flex flex-col-reverse gap-2 sm:flex-row">
-        <img
+        {isPinned ? (
+          <img
+          src={unpin}
+          className="w-5 hover:cursor-pointer"
+          onClick={() => handleUnpin(id)}
+        />
+        ) 
+        : 
+        (
+          <img
           src={pin}
           className="w-5 hover:cursor-pointer"
           onClick={() => handlePin(id)}
         />
+        )}
         <img src={settings} className="w-5 hover:cursor-pointer" />
       </div>
     </div>
