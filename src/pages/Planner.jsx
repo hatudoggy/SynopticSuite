@@ -136,6 +136,7 @@ function Planner() {
                   handleUnpin={handleUnpin}
                   settings={settings}
                   id={item.id}
+                  link={`/planner/plans/pinned/${item.id}`}
                 />
               ))
             ) : (
@@ -173,6 +174,7 @@ function Planner() {
                       handleUnpin={handleUnpin}
                       settings={settings}
                       id={plan.id}
+                      link={`/planner/plans/${plan.id}`}
                     />
                   ))
               : null}
