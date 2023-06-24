@@ -3,30 +3,55 @@ import { Routes, Route } from "react-router-dom";
 import Calendar from "../pages/Calendar";
 import Planner from "../pages/Planner";
 import search from "../assets/search.svg";
+import menu from "../assets/menu.svg";
 
-function Main() {
+function Main({setOpen}) {
   return (
-    <div className="flex h-screen w-full flex-1 flex-col">
-      <div className="sticky top-0 z-[2] flex h-12 flex-none items-center justify-between bg-white pl-6 pr-12 shadow-lg">
-        <div className="flex items-center gap-2">
-          <img src={search} alt="search" className="m-auto w-6 sm:m-0 sm:w-6" />
-          <input className="outline-none" type="text" placeholder="Search" />
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="h-9 w-9 flex-none rounded-full bg-stone-400 shadow-lg"></div>
-          Hello, there
-        </div>
+    <div className="flex h-screen w-full flex-none sm:flex-1 flex-col">
+      <div className="sticky top-0 z-0 flex h-12 flex-none items-center sm:justify-between bg-white pl-2 sm:pl-6 pr-12 shadow-lg">
+        <Menu setSideOpen={setOpen}/>
+        <SearchBar/>
+        <Profile/>
       </div>
       <div className="grow">
         <Routes
         // Page routing
         >
           <Route path="/" element={<Calendar />}></Route>
-          <Route path="planner/plans" element={<Planner />}></Route>
+          <Route path="planner" element={<Planner />}></Route>
         </Routes>
       </div>
     </div>
   );
+}
+
+function Menu({setSideOpen}){
+
+  return(
+    <button className="sm:hidden ml-2 flex-none" onClick={()=>{setSideOpen(true)}}>
+      <img src={menu} alt="search" className="w-6" />
+    </button>
+  )
+}
+
+function SearchBar(){
+
+  return(
+    <div className="flex items-center gap-2 px-5 sm:px-0">
+      <img src={search} alt="search" className="m-auto w-6 sm:m-0 sm:w-6 opacity-40" />
+      <input className="outline-none" type="text" placeholder="Search" />
+    </div>
+  )
+}
+
+function Profile(){
+
+  return(
+    <div className="hidden items-center gap-2 sm:flex">
+      <div className="h-9 w-9 flex-none rounded-full bg-stone-400 shadow-lg "></div>
+      Hello, there
+    </div>
+  )
 }
 
 export default Main;
