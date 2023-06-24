@@ -3,6 +3,7 @@ import { Routes, Route } from "react-router-dom";
 import Calendar from "../pages/Calendar";
 import Planner from "../pages/Planner";
 import search from "../assets/search.svg";
+import ClickedPlan from "./ClickedPlan";
 import menu from "../assets/menu.svg";
 
 function Main({setOpen}) {
@@ -17,8 +18,10 @@ function Main({setOpen}) {
         <Routes
         // Page routing
         >
-          <Route path="/" element={<Calendar />}></Route>
-          <Route path="planner" element={<Planner />}></Route>
+          <Route path="/" element={<Calendar />}/>
+          <Route path="planner" element={<Planner />}/>
+          <Route path={`planner/plans/:id`} element={<ClickedPlan/>}/>
+          <Route path={`planner/plans/pinned/:id`} element={<ClickedPlan/>}/>
         </Routes>
       </div>
     </div>
