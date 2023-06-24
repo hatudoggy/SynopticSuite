@@ -9,6 +9,13 @@ import useWindowDimensions from "../components/useWindowDimensions";
 import PlannerCard from "../components/PlannerCard";
 import Modal from "../components/Modal";
 import { useNavigate } from "react-router-dom";
+import { firestore } from "../config/firebase"
+import { addDoc, collection, getDocs } from "firebase/firestore";
+import { useCollectionData } from "react-firebase-hooks/firestore";
+
+const dataSnap = await getDocs(collection(firestore, "Plans"));
+
+dataSnap.forEach ((doc) => console.log(doc.data()));
 
 function Planner() {
   /******************************************/
@@ -24,7 +31,7 @@ function Planner() {
   //Collection of data
   const [pinned, setPinned] = useState([]);
   const [plans, setPlans] = useState(() => {
-    const storedPlans = JSON.parse(localStorage.getItem("plans"));
+    const storedPlans = dataSnap.docs.map((doc) => doc.data());
     return storedPlans ? [...storedPlans] : [];
   });
 
