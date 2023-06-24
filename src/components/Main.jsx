@@ -20,8 +20,8 @@ function Main({setOpen}) {
         >
           <Route path="/" element={<Calendar />}/>
           <Route path="planner" element={<Planner />}/>
-          <Route path={`planner/plans/:id`} element={<ClickedPlan/>}/>
-          <Route path={`planner/plans/pinned/:id`} element={<ClickedPlan/>}/>
+          <Route path={`planner/:id`} element={<ClickedPlan/>}/>
+          <Route path={`planner/pinned/:id`} element={<ClickedPlan/>}/>
         </Routes>
       </div>
     </div>

@@ -9,6 +9,21 @@ import useWindowDimensions from "../components/useWindowDimensions";
 import PlannerCard from "../components/PlannerCard";
 import Modal from "../components/Modal";
 import { useNavigate } from "react-router-dom";
+import { firestore } from "../config/firebase";
+import {
+  doc,
+  addDoc,
+  setDoc,
+  updateDoc,
+  deleteDoc,
+  collection,
+  query,
+  onSnapshot,
+  where,
+  orderBy,
+  serverTimestamp,
+} from "firebase/firestore";
+import { useCollectionData } from "react-firebase-hooks/firestore";
 
 function Planner() {
   /******************************************/
@@ -22,11 +37,7 @@ function Planner() {
   const { height, width } = useWindowDimensions();
 
   //Collection of data
-  const [pinned, setPinned] = useState([]);
-  const [plans, setPlans] = useState(() => {
-    const storedPlans = JSON.parse(localStorage.getItem("plans"));
-    return storedPlans ? [...storedPlans] : [];
-  });
+  const [plans, setPlans] = useState([]);
 
   //Checks for conditional items
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -36,11 +47,8 @@ function Planner() {
   //Form data
   const [subject, setSubject] = useState("");
   const [description, setDescription] = useState("");
-  const [planId, setPlanId] = useState(plans.length);
+  const [planId, setPlanId] = useState(0);
   const [color, setColor] = useState();
-
-  //Local Storage
-  const [items, setItems] = useState();
 
   /******************************************/
   /* End of Instantiating State Variables   */
@@ -50,15 +58,22 @@ function Planner() {
   /*          Start of Use Effects          */
   /******************************************/
 
+  //This useEffect fetches the data from the database and stores it in the state variable "plans"
   useEffect(() => {
-    localStorage.setItem("plans", JSON.stringify(plans));
-    console.log(plans);
-  }, [plans, pinned]);
+    const dataSnap = query(
+      collection(firestore, "Plans"),
+      orderBy("dateEdited", "desc") //No choice but to sort by planId
+    );
 
-  useEffect(() => {
-    const storedPlans = JSON.parse(localStorage.getItem("plans"));
-    setPlans(storedPlans);
-    console.log(storedPlans);
+    //This function sets all the necessary data from the database to all the state variables
+    const unsubscribe = onSnapshot(dataSnap, (querySnapshot) => {
+      const plans = [];
+      querySnapshot.forEach((doc) => {
+        plans.push(doc.data());
+      });
+      setPlans(plans);
+      setPlanId(plans.length);
+    });
   }, []);
 
   /******************************************/
@@ -79,39 +94,65 @@ function Planner() {
     }
   };
 
-  const handleFormSubmit = (event) => {
+  const handleFormSubmit = async (event) => {
     event.preventDefault();
 
+    //Generate and attach the document ID to a variable for later use
+    const docRef = doc(collection(firestore, "Plans"));
+
+    //Document structure
     const compiledData = {
       subject: subject,
       description: description,
-      dateCreated: new Date(Date.now()).toString(),
+      dateCreated: serverTimestamp(), //new Date(Date.now()).toString()
+      dateEdited: serverTimestamp(),
       color: color.hex,
       textColor: adaptingText(color.hex, "#F9F9F3", "#28282B"),
       isPinned: false,
-      id: planId,
+      planId: docRef.id,
     };
 
+    //Create document in the database with the generated ID
+    await setDoc(docRef, compiledData);
+
+    //Set data to state. This makes it easier to update data in the future
     setPlans([...plans, compiledData]);
     setPlanId(planId + 1);
     setIsModalOpen(!isModalOpen);
   };
 
-  function handlePin(id) {
-    const filteredPin = plans.filter((plan) => plan.id === id);
-    filteredPin[0].isPinned = true;
-    console.log(plans);
-    if (pinned.find((item) => item.id === id)) return;
-    //To avoid the Array(n) in the console
-    setPinned([...pinned, ...filteredPin]);
+  async function handlePin(id) {
+    //Search for the plan with the same ID as the one clicked
+    const filteredPin = plans.filter((plan) => plan.planId === id);
+
+    //To avoid unnecessary reads
+    if (filteredPin[0].isPinned === false) {
+      await updateDoc(doc(firestore, "Plans", id), {
+        dateEdited: serverTimestamp(), //Update time to modify the order of the plans when pinned
+        isPinned: true,
+      });
+    }
   }
 
-  function handleUnpin(id) {
-    //Convert back isPinned to false
-    const filteredPin = plans.filter((plan) => plan.id === id);
-    filteredPin[0].isPinned = false;
+  async function handleUnpin(id) {
+    //Search for the plan with the same ID as the one clicked
+    const filteredPin = plans.filter((plan) => plan.planId === id);
 
-    setPinned([...pinned.filter((plan) => plan.id !== id)]);
+    //To avoid unnecessary reads
+    if (filteredPin[0].isPinned === true) {
+      await updateDoc(doc(firestore, "Plans", id), {
+        dateEdited: serverTimestamp(), //Update time to modify the order of the plans when pinned
+        isPinned: false,
+      });
+    }
+  }
+
+  async function handleDelete(id){
+    //Search for the plan with the same ID as the one clicked
+    const filteredPin = plans.filter((plan) => plan.planId === id);
+
+    //Delete the document
+    await deleteDoc(doc(firestore, "Plans", id));
   }
 
   return (
@@ -149,7 +190,7 @@ function Planner() {
         </div>
       </div>
       <div className="flex h-full w-full flex-col gap-5">
-        <div className="flex flex-row items-center gap-5">
+        {/* <div className="flex flex-row items-center gap-5 ">
           <div
             className="shadow-black-500/40 rounded-3xl bg-gray-700 px-4 py-2 text-lg font-semibold text-white shadow-lg shadow-slate-400/100 hover:cursor-pointer"
             onClick={() => navigate("/planner/plans")}
@@ -159,10 +200,11 @@ function Planner() {
           <div className="rounded-3xl bg-slate-200 px-4 py-2 text-lg font-semibold text-gray-600 hover:cursor-pointer hover:bg-gray-700 hover:text-white hover:shadow-xl hover:shadow-slate-400/100">
             Notes
           </div>
-        </div>
+        </div> */}
         <div className="flex w-full flex-col gap-5">
-          <div>
+          <div className="flex flex-row pr-2">
             <div className="px-2 text-lg font-semibold">Pinned</div>
+            <img src={returnButton} alt="" className="invert-to-white w-8 ml-auto hover:cursor-pointer rotate-180" onClick={() => navigate("/")}/>
           </div>
           <div
             className={
@@ -173,10 +215,11 @@ function Planner() {
             {/* Checks for pinned items */}
             {plans.find((plan) => plan.isPinned === true) ? (
               plans
+                .sort((a, b) => new Date(b.dateEdited) - new Date(a.dateEdited))
                 .filter((plan) => plan.isPinned === true)
                 .map((item, index) => (
                   <PlannerCard
-                    key={item.id}
+                    key={index}
                     subject={item.subject}
                     description={item.description}
                     color={item.color}
@@ -186,9 +229,10 @@ function Planner() {
                     isPinned={item.isPinned}
                     handlePin={handlePin}
                     handleUnpin={handleUnpin}
+                    handleDelete={handleDelete}
                     settings={settings}
-                    id={item.id}
-                    link={`/planner/plans/pinned/${item.id}`}
+                    id={item.planId}
+                    link={`/planner/pinned/${item.planId}`}
                   />
                 ))
             ) : (
@@ -231,16 +275,18 @@ function Planner() {
               ? isRecent /* Checks if recent is active or clicked */
                 ? plans
                     .sort(
-                      (a, b) =>
-                        new Date(b.dateCreated) - new Date(a.dateCreated)
+                      (a, b) => new Date(b.dateEdited) - new Date(a.dateEdited)
                     )
                     .slice(
                       0,
                       3
                     ) /* Part that determines the number of cards present */
+                    .filter(
+                      (item) => item.isPinned !== true
+                    ) /* Removed pinned items in the list */
                     .map((plan, index) => (
                       <PlannerCard
-                        key={plan.id}
+                        key={index}
                         subject={plan.subject}
                         description={plan.description}
                         color={plan.color}
@@ -250,19 +296,22 @@ function Planner() {
                         isPinned={plan.isPinned}
                         handlePin={handlePin}
                         handleUnpin={handleUnpin}
+                        handleDelete={handleDelete}
                         settings={settings}
-                        id={plan.id}
-                        link={`/planner/plans/${plan.id}`}
+                        id={plan.planId}
+                        link={`/planner/${plan.planId}`}
                       />
                     ))
                 : plans /* Checks if all is active or clicked */
                     .sort(
-                      (a, b) =>
-                        new Date(b.dateCreated) - new Date(a.dateCreated)
+                      (a, b) => new Date(b.dateEdited) - new Date(a.dateEdited)
                     )
+                    .filter(
+                      (item) => item.isPinned !== true
+                    ) /* Removes pinned items in the list */
                     .map((plan, index) => (
                       <PlannerCard
-                        key={plan.id}
+                        key={index}
                         subject={plan.subject}
                         description={plan.description}
                         color={plan.color}
@@ -272,9 +321,10 @@ function Planner() {
                         isPinned={plan.isPinned}
                         handlePin={handlePin}
                         handleUnpin={handleUnpin}
+                        handleDelete={handleDelete}
                         settings={settings}
-                        id={plan.id}
-                        link={`/planner/plans/${plan.id}`}
+                        id={plan.planId}
+                        link={`/planner/${plan.planId}`}
                       />
                     ))
               : null}{" "}
