@@ -8,24 +8,43 @@ function CalendarWidget() {
   let [currMonth, setCurrMonth] = useState(format(today, 'MMM-yyyy'))
   let fDayCurr = parse(currMonth, 'MMM-yyyy', new Date())
 
-
+  
   let days = eachDayOfInterval({
-    start: startOfWeek(startOfMonth(fDayCurr)) ,
+    start: startOfWeek(startOfMonth(fDayCurr)),
     end: endOfWeek(endOfMonth(fDayCurr)),
   })
 
+  let days2 = eachDayOfInterval({
+    start: startOfWeek(startOfMonth(fDayCurr)),
+    end: endOfWeek(add(endOfMonth(fDayCurr), {weeks: 1})),
+  })
+  
+  // let days = eachDayOfInterval({
+  //   start: startOfWeek(startOfMonth(fDayCurr)),
+  //   end: add(endOfWeek(endOfMonth(fDayCurr)), {weeks: 1}),
+  // })
+
+  // let days = eachDayOfInterval({
+  //   start: startOfWeek(fDayCurr, {weekStartsOn: 1}),
+  //   end: endOfWeek(endOfMonth(fDayCurr), {weekStartsOn: 1}),
+  // })
+
   let events = [
     { startDate: new Date(2023, 5, 12), endDate: new Date(2023, 5, 15), title: "hatdog"},
-    { startDate: new Date(2023, 5, 13), endDate: new Date(2023, 5, 14), title: "hatdog"},
+    { startDate: new Date(2023, 5, 13), endDate: new Date(2023, 5, 14), title: "hatdog2"},
+    { startDate: new Date(2023, 5, 13), endDate: new Date(2023, 5, 15), title: "3rdhatdog"},
+    
     
   ]
 
 
   return (
-    <div className='flex flex-col w-3/4 m-auto shadow-xl rounded-lg' style={{height: '35rem'}}>
+    <div className='flex flex-col w-3/4 m-auto shadow-xl rounded-lg' 
+        style={{height: '40rem'}}
+    >
       <Navigation fDayCurr={fDayCurr} setCurrMonth={setCurrMonth}/>
       <Header/>
-      <Months day={days} today={fDayCurr} events={events}/>
+      <Months day={days} day2={days2} today={fDayCurr} events={events}/>
     </div>
   )
 }
@@ -82,15 +101,50 @@ function Header(){
   )
 }
 
-function Months({day, today, events}){
+function Months({day, day2, today, events}){
+
 
   return(
-    <div className='grid grid-cols-7 auto-rows-fr flex-auto'>
-      {day.map((day, dayIx) => {
+    <div className='grid grid-cols-7 grid-rows-6 flex-1 auto-rows-fr overflow-hidden'
+        // style={{maxHeight:'calc(6*(100px)', gridTemplateRows:'repeat(6,1fr)'}}
+    >
+      {day.length > 35 ?
+      day.map((day, dayIx) => {
         return(
-        <div
-          key={day.toString()}
-          className='flex flex-col gap-1 py-1'
+          <DateCont day={day} today={today} events={events} key={day.toString()}/>
+        )
+      }):day2.map((day, dayIx) => {
+          return(
+            <DateCont day={day} today={today} events={events} key={day.toString()}/>
+          )
+        })
+
+      }
+    </div>
+    
+  )
+}
+
+function DateCont({day, today, events}){
+
+  //const [eventCount, setEventCount] = useState(0);
+  //const [eventList, setEventList] = useState([]);
+  const [hoveredEvent, setHoveredEvent] = useState(null);
+
+  function handleHoverGroup(group){
+    setHoveredEvent(group);
+  }
+
+  function handleLeaveGroup(){
+    setHoveredEvent(null);
+  }
+
+  let eventCount = 0;
+  let eventList = [];
+
+  return(
+    <div
+          className='flex flex-col py-1'
         >
           <button
             type='button'
@@ -106,24 +160,47 @@ function Months({day, today, events}){
               {format(day, 'd')}
             </time>
           </button>
-          {events.map((e, i)=>{
-            
-            return(isWithinInterval(day, {start: e.startDate, end: e.endDate})? <Event key={i} events={e} pos={isSameDay(day, e.startDate)?'start': isSameDay(day, e.endDate)? 'end':'mid'}/> : '')
-          })}
-        </div>)
-      })}
+          <div className='flex flex-col flex-1 justify-between'>
+            <div className='flex flex-col gap-[3px]'>
+              {events.map((e, i)=>{
+                if(isWithinInterval(day, {start: e.startDate, end: e.endDate})){
+                  if (i < 2){
+                  return(
+                  <Event pos={isSameDay(day, e.startDate)?'start': isSameDay(day, e.endDate)? 'end':'mid'}
+                    key={i} events={e} hover={hoveredEvent} setHover={setHoveredEvent}
+                    />
+                  )
+                  } else {
+                    eventCount = eventCount + 1;
+                    eventList = [...eventList, e];
+                  }
+                }
+
+              })}
+            </div>
+            {eventCount > 0 ?
+              <button className='text-xs'>
+                {eventCount} more
+              </button>
+            :''}
+          </div>
     </div>
-    
   )
 }
 
-function Event({events, pos}){
+function Event({events, pos, hover, setHover}){
 
   return(
-    <div className={(pos=='start'?'rounded-l-lg': pos=='end'? 'rounded-r-lg':'') + ' bg-green-400 px-3 text-white'}>
+    <div className={(pos=='start'?'rounded-l-lg': pos=='end'? 'rounded-r-lg':'') + 
+      ' bg-green-400 px-3 text-white text-xs '+(events.title===hover?'opacity-50':'opacity-100')}
+      onMouseEnter={()=>{setHover(events.title)}}
+      onMouseLeave={()=>{setHover(null)}}
+    >
       {pos=='start'? events.title: 'ㅤ'}
     </div>
   )
 }
+
+
 
 export default CalendarWidget
