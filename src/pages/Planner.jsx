@@ -62,7 +62,7 @@ function Planner() {
   useEffect(() => {
     const dataSnap = query(
       collection(firestore, "Plans"),
-      orderBy("dateEdited", "desc") //No choice but to sort by planId
+      orderBy("dateEdited", "desc")
     );
 
     //This function sets all the necessary data from the database to all the state variables
@@ -112,13 +112,14 @@ function Planner() {
       planId: docRef.id,
     };
 
-    //Create document in the database with the generated ID
-    await setDoc(docRef, compiledData);
-
     //Set data to state. This makes it easier to update data in the future
+    //Put this here to make modal close faster
     setPlans([...plans, compiledData]);
     setPlanId(planId + 1);
     setIsModalOpen(!isModalOpen);
+
+    //Create document in the database with the generated ID
+    await setDoc(docRef, compiledData);
   };
 
   async function handlePin(id) {
@@ -147,7 +148,7 @@ function Planner() {
     }
   }
 
-  async function handleDelete(id){
+  async function handleDelete(id) {
     //Search for the plan with the same ID as the one clicked
     const filteredPin = plans.filter((plan) => plan.planId === id);
 
@@ -204,7 +205,12 @@ function Planner() {
         <div className="flex w-full flex-col gap-5">
           <div className="flex flex-row pr-2">
             <div className="px-2 text-lg font-semibold">Pinned</div>
-            <img src={returnButton} alt="" className="invert-to-white w-8 ml-auto hover:cursor-pointer rotate-180" onClick={() => navigate("/")}/>
+            <img
+              src={returnButton}
+              alt=""
+              className="invert-to-white ml-auto w-8 rotate-180 hover:cursor-pointer"
+              onClick={() => navigate("/")}
+            />
           </div>
           <div
             className={
