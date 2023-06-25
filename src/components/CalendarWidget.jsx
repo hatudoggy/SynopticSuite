@@ -1,7 +1,7 @@
 import '../App.css'
 import format from 'date-fns/format';
 import {add, eachDayOfInterval, endOfMonth, endOfWeek, isSameMonth, isToday, parse, startOfMonth, startOfToday, startOfWeek, isSameDay, isWithinInterval} from 'date-fns'
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 function CalendarWidget() {
   let today = startOfToday();
@@ -102,7 +102,8 @@ function Header(){
 }
 
 function Months({day, day2, today, events}){
-
+  const [hoveredEvent, setHoveredEvent] = useState(null);
+  const [focusEvent, setFocusEvent] = useState(null);
 
   return(
     <div className='grid grid-cols-7 grid-rows-6 flex-1 auto-rows-fr overflow-hidden'
@@ -111,11 +112,13 @@ function Months({day, day2, today, events}){
       {day.length > 35 ?
       day.map((day, dayIx) => {
         return(
-          <DateCont day={day} today={today} events={events} key={day.toString()}/>
+          <DateCont day={day} today={today} events={events} hover={hoveredEvent} setHover={setHoveredEvent} focus={focusEvent} setFocus={setFocusEvent} key={day.toString()}/>
         )
       }):day2.map((day, dayIx) => {
           return(
-            <DateCont day={day} today={today} events={events} key={day.toString()}/>
+            <>
+            <DateCont dayIx={dayIx} day={day} today={today} events={events} hover={hoveredEvent} setHover={setHoveredEvent} focus={focusEvent} setFocus={setFocusEvent} key={day.toString()}/>
+            </>
           )
         })
 
@@ -125,19 +128,10 @@ function Months({day, day2, today, events}){
   )
 }
 
-function DateCont({day, today, events}){
+function DateCont({dayIx, day, today, events, hover, setHover, focus, setFocus}){
 
   //const [eventCount, setEventCount] = useState(0);
   //const [eventList, setEventList] = useState([]);
-  const [hoveredEvent, setHoveredEvent] = useState(null);
-
-  function handleHoverGroup(group){
-    setHoveredEvent(group);
-  }
-
-  function handleLeaveGroup(){
-    setHoveredEvent(null);
-  }
 
   let eventCount = 0;
   let eventList = [];
@@ -167,7 +161,7 @@ function DateCont({day, today, events}){
                   if (i < 2){
                   return(
                   <Event pos={isSameDay(day, e.startDate)?'start': isSameDay(day, e.endDate)? 'end':'mid'}
-                    key={i} events={e} hover={hoveredEvent} setHover={setHoveredEvent}
+                    key={i} events={e} hover={hover} setHover={setHover} focus={focus} setFocus={setFocus}
                     />
                   )
                   } else {
@@ -179,25 +173,29 @@ function DateCont({day, today, events}){
               })}
             </div>
             {eventCount > 0 ?
-              <button className='text-xs'>
+              <button className='text-xs opacity-50'>
                 {eventCount} more
               </button>
             :''}
           </div>
+          
+          
     </div>
   )
 }
 
-function Event({events, pos, hover, setHover}){
+function Event({events, pos, hover, setHover, focus, setFocus}){
 
   return(
-    <div className={(pos=='start'?'rounded-l-lg': pos=='end'? 'rounded-r-lg':'') + 
-      ' bg-green-400 px-3 text-white text-xs '+(events.title===hover?'opacity-50':'opacity-100')}
+    <button className={(pos=='start'?'rounded-l-lg': pos=='end'? 'rounded-r-lg':'') + 
+      ' bg-green-400 px-3 text-white text-xs ' + (hover == events.title?'opacity-50 ':'opacity-100 ')+ (focus == events.title?'shadow-lg':'shadow-none')}
       onMouseEnter={()=>{setHover(events.title)}}
       onMouseLeave={()=>{setHover(null)}}
+      onFocus={()=>{setFocus(events.title)}}
+      onBlur={()=>{setFocus(null)}}
     >
       {pos=='start'? events.title: 'ㅤ'}
-    </div>
+    </button>
   )
 }
 
