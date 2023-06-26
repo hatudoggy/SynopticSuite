@@ -22,6 +22,10 @@
   scrollbar-width: none; /* Firefox */
 }
 
+#removedRadio input[type="radio"]{
+  display: none;
+}
+
 .react-datepicker-popper {
   z-index: 9999 !important;
 }
