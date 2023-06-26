@@ -12,7 +12,7 @@ function App() {
 
 
   return (
-    <div className='flex flex-row-reverse justify-end overflow-hidden sm:overflow-clip remove-scroll'>
+    <div className='flex flex-row-reverse justify-end overflow-scroll remove-scroll'>
       <Main setOpen={setSideOpen}/> 
       <Sidebar/>
       <MobileSidebar open={sideOpen} setOpen={setSideOpen}/>
