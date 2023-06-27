@@ -283,13 +283,13 @@ function Planner() {
                     .sort(
                       (a, b) => new Date(b.dateEdited) - new Date(a.dateEdited)
                     )
+                    .filter(
+                      (item) => item.isPinned !== true
+                    ) /* Removed pinned items in the list */
                     .slice(
                       0,
                       3
                     ) /* Part that determines the number of cards present */
-                    .filter(
-                      (item) => item.isPinned !== true
-                    ) /* Removed pinned items in the list */
                     .map((plan, index) => (
                       <PlannerCard
                         key={index}
