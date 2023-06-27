@@ -5,7 +5,7 @@ import pin from "../assets/pinned.svg";
 import unpin from "../assets/unpin.svg";
 import settings from "../assets/dots-settings.svg";
 import addButton from "../assets/add-button-no-circle.svg";
-import useWindowDimensions from "../components/useWindowDimensions";
+import useWindowDimensions from "../components/hooks/useWindowDimensions";
 import PlannerCard from "../components/PlannerCard";
 import Modal from "../components/Modal";
 import { useNavigate } from "react-router-dom";
