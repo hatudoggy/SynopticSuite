@@ -21,7 +21,10 @@ export default function PlannerCard({
 
   return (
     <div
-      className={"relative flex flex-row rounded-xl bg-slate-100 p-5 shadow-md sm:max-w-[375px] sm:min-w-[375px] " + (link ? "hover:cursor-pointer" : "")}
+      className={
+        "relative flex flex-row rounded-xl bg-slate-100 p-5 shadow-md sm:min-w-[375px] lg:max-w-[375px] " +
+        (link ? "hover:cursor-pointer" : "")
+      }
       onClick={link ? () => navigate(link) : null}
     >
       <div
