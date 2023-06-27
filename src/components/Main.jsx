@@ -9,7 +9,7 @@ import menu from "../assets/menu.svg";
 function Main({setOpen}) {
   return (
     <div className="flex h-screen w-full flex-none sm:flex-1 flex-col">
-      <div className="sticky top-0 z-0 flex h-12 flex-none items-center sm:justify-between bg-white pl-2 sm:pl-6 pr-12 shadow-lg">
+      <div className="sticky top-0 z-10 flex h-12 flex-none items-center sm:justify-between bg-white pl-2 sm:pl-6 pr-12 shadow-lg">
         <Menu setSideOpen={setOpen}/>
         <SearchBar/>
         <Profile/>
