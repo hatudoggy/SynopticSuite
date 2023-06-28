@@ -20,16 +20,20 @@ export default function TodoModal({
   handleOutsideClick,
   handleFormSubmit,
   handleClose,
-  setSubject,
-  subject,
-  setDescription,
-  description,
+  setItem,
+  item,
+  setNote,
+  note,
   header,
   dateEdited,
   firstInput,
   secondInput,
-  color,
-  setColor,
+  priority,
+  setPriority,
+  progress,
+  setProgress,
+  itemType,
+  setItemType,
   startDate,
   setStartDate,
   endDate,
@@ -39,7 +43,6 @@ export default function TodoModal({
   const [isFocusedDescription, setIsFocusedDescription] = useState(false);
   const { height, width } = useWindowDimensions();
   const [lastChanged, setLastChanged] = useState();
-  const [selectedEntry, setSelectedEntry] = useState();
   const [showWarningForDate, setShowWarningForDate] = useState(false);
   const [animate, enableAnimations] = useAutoAnimate();
 
@@ -70,9 +73,8 @@ export default function TodoModal({
     return () => {
       setIsFocusedDescription(false);
       setIsFocusedSubject(false);
-      setDescription("");
-      setSubject("");
-      setColor("");
+      setNote("");
+      setItem("");
     };
   }, []);
 
@@ -90,11 +92,9 @@ export default function TodoModal({
       event.target.value === "event" ||
       event.target.value === "reminder"
     ) {
-      setSelectedEntry(event.target.value);
+      setItemType(event.target.value);
     }
   };
-
-  console.log(selectedEntry);
 
   //CreatableSelect Configs
   const creatableSelectStyle = {
@@ -228,7 +228,7 @@ export default function TodoModal({
                 htmlFor="firstInput"
                 className={
                   "absolute left-4 top-2 z-10 font-semibold transition-all hover:cursor-text " +
-                  (isFocusedSubject || subject
+                  (isFocusedSubject || item
                     ? "-translate-x-2 -translate-y-[1.2rem] bg-white text-sm text-gray-900"
                     : "text-gray-400")
                 }
@@ -238,7 +238,7 @@ export default function TodoModal({
               <input
                 type="text"
                 id="firstInput"
-                onChange={(e) => setSubject(e.target.value)}
+                onChange={(e) => setItem(e.target.value)}
                 // my-2 mt-6
                 className="rounded-[4px] border-2 border-solid border-gray-500 px-3 py-2 font-medium text-gray-800 hover:border-gray-500 hover:border-opacity-50 focus:outline-none"
                 required
@@ -252,7 +252,7 @@ export default function TodoModal({
                 htmlFor="secondInput"
                 className={
                   "absolute left-4 top-2 z-10 font-semibold text-gray-400 transition-all hover:cursor-text " +
-                  (isFocusedDescription || description
+                  (isFocusedDescription || note
                     ? "-translate-x-2 -translate-y-[1.2rem] bg-white text-sm text-gray-900"
                     : "text-gray-400")
                 }
@@ -262,7 +262,7 @@ export default function TodoModal({
               <input
                 type="text"
                 id="secondInput"
-                onChange={(e) => setDescription(e.target.value)}
+                onChange={(e) => setNote(e.target.value)}
                 //my-2
                 className="rounded-[4px] border-2 border-solid border-gray-500 px-3 py-2 font-medium text-gray-800 hover:border-gray-500 hover:border-opacity-50 focus:outline-none"
                 required
@@ -278,6 +278,7 @@ export default function TodoModal({
               noOptionsMessage={() => null}
               isSearchable={false}
               isValidNewOption={() => false}
+              onChange={(e) => setPriority(e.value)}
             />
             <CreatableSelect
               options={ProgressOptions}
@@ -288,6 +289,7 @@ export default function TodoModal({
               //components={{ Option: IconOption, SingleValue: IconSelected}}
               isSearchable={false}
               isValidNewOption={() => false}
+              onChange={(e) => setProgress(e.value)}
             />
             <div className="flex gap-2">
               <div className="flex">
@@ -334,7 +336,7 @@ export default function TodoModal({
                 className={
                   "flex-1 grow rounded-md py-1 text-center font-semibold text-gray-400 hover:bg-blue-300 hover:text-white active:bg-blue-600 " +
                   (width > 340 ? " " : "text-sm ") +
-                  (selectedEntry === "task" //To make it easy to change background color on select
+                  (itemType === "task" //To make it easy to change background color on select
                     ? " bg-blue-500 text-white hover:bg-blue-500"
                     : "")
                 }
@@ -351,7 +353,7 @@ export default function TodoModal({
                 className={
                   "flex-1 grow rounded-md py-1 text-center font-semibold text-gray-400 hover:bg-blue-300 hover:text-white active:bg-blue-600 active:text-white " +
                   (width > 340 ? "" : "text-sm ") +
-                  (selectedEntry === "event" //To make it easy to change background color on select
+                  (itemType === "event" //To make it easy to change background color on select
                     ? "bg-blue-500 text-white hover:bg-blue-500"
                     : "")
                 }
@@ -368,7 +370,7 @@ export default function TodoModal({
                 className={
                   "flex-1 grow rounded-md py-1 text-center font-semibold text-gray-400 hover:bg-blue-300 hover:text-white active:bg-blue-600 " +
                   (width > 340 ? "" : "text-sm ") +
-                  (selectedEntry === "reminder" //To make it easy to change background color on select
+                  (itemType === "reminder" //To make it easy to change background color on select
                     ? "bg-blue-500 text-white hover:bg-blue-500"
                     : "")
                 }
@@ -387,9 +389,8 @@ export default function TodoModal({
             type="submit"
             form="createPlan"
             disabled={
-              !(subject && description) ||
-              (subject && description) === "" ||
-              !color
+              !(item && note) ||
+              (item && note) === "" 
             }
             className="mt-5 w-fit rounded-xl border-solid border-gray-900 bg-blue-500 px-4 py-2 text-white disabled:cursor-not-allowed disabled:bg-blue-300"
           >

@@ -4,6 +4,8 @@ import { useNavigate } from "react-router-dom";
 import {
   query,
   doc,
+  addDoc,
+  setDoc,
   collection,
   updateDoc,
   deleteDoc,
@@ -36,10 +38,11 @@ export default function ClickedPlan() {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   //Form data
-  const [subject, setSubject] = useState("");
-  const [description, setDescription] = useState("");
-  const [planId, setPlanId] = useState(0);
-  const [color, setColor] = useState();
+  const [item, setItem] = useState("");
+  const [note, setNote] = useState("");
+  const [priority, setPriority] = useState();
+  const [progress, setProgress] = useState();
+  const [itemType, setItemType] = useState();
   const [startDate, setStartDate] = useState();
   const [endDate, setEndDate] = useState();
 
@@ -98,24 +101,29 @@ export default function ClickedPlan() {
   const handleFormSubmit = async (event) => {
     event.preventDefault();
 
+    // Get the id of the plan via the URL
+    const url = window.location.href;
+    const parts = url.split("/");
+    const id = parts[parts.length - 1];
+
     //Generate and attach the document ID to a variable for later use
-    const docRef = doc(collection(firestore, "Plans"));
+    const docRef = doc(collection(doc(collection(firestore, "Plans"), id), itemType));
 
     //Document structure
     const compiledData = {
-      subject: subject,
-      description: description,
+      itemName: item,
+      note: note,
       dateCreated: serverTimestamp(), //new Date(Date.now()).toString()
       dateEdited: serverTimestamp(),
-      color: color.hex,
-      textColor: adaptingText(color.hex, "#F9F9F3", "#28282B"),
-      isPinned: false,
-      planId: docRef.id,
+      priority: priority,
+      progress: progress,
+      startDate: startDate,
+      endDate: endDate,
+      itemId: docRef.id,
     };
 
     //Set data to state. This makes it easier to update data in the future
     //Put this here to make modal close faster
-    setPlanId(planId + 1);
     setIsModalOpen(!isModalOpen);
 
     //Create document in the database with the generated ID
@@ -154,16 +162,20 @@ export default function ClickedPlan() {
           handleOutsideClick={handleOutsideClick}
           handleFormSubmit={handleFormSubmit}
           handleClose={() => setIsModalOpen(!isModalOpen)}
-          setSubject={setSubject}
-          subject={subject}
-          setDescription={setDescription}
-          description={description}
+          setItem={setItem}
+          item={item}
+          setNote={setNote}
+          note={note}
           header={plan?.subject}
           dateEdited={plan?.dateEdited?.toDate()?.toLocaleString()} //Passes the date
           firstInput={"Item Name"}
           secondInput={"Note"}
-          color={color}
-          setColor={setColor}
+          priority={priority}
+          setPriority={setPriority}
+          progress={progress}
+          setProgress={setProgress}
+          itemType={itemType}
+          setItemType={setItemType}
           startDate={startDate}
           setStartDate={setStartDate}
           endDate={endDate}
@@ -191,9 +203,11 @@ export default function ClickedPlan() {
           settings={settings}
           id={plan?.planId}
         />
-        <div className="flex flex-row sm:min-w-[375px]">
-          <div className="text-xl font-semibold">To Do</div>
-          <img src={settings} className="ml-auto w-6 hover:cursor-pointer" />
+        <div className="flex flex-row sm:min-w-[375px] lg:max-w-[375px] justify-between">
+          <div className="text-xl font-semibold underline underline-offset-4">All</div>
+          <div className="text-xl font-semibold">Tasks</div>
+          <div className="text-xl font-semibold">Events</div>
+          <div className="text-xl font-semibold">Reminders</div>
         </div>
         <div className="flex flex-col gap-3 sm:min-w-[375px]">
           <div
