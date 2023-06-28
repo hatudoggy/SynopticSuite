@@ -46,8 +46,7 @@ function LinkCont(){
     "https://www.google.com",
     "https://www.instagram.com",
     "https://www.github.com",
-    "https://elms.sti.edu",
-    "www.elms.sti.edu"
+    "https://elms.sti.edu"
   ]);
 
   const addLink = (link) => {
@@ -102,7 +101,7 @@ function Link({ link }) {
     "https://s2.googleusercontent.com/s2/favicons?domain=" + link + "&sz=64";
   //const linkRef = link+"/favicon.ico?sz=64";
   return (
-    <a href={link}>
+    <a href={link} target="_blank" rel="noopener noreferrer">
       <div
         className={
           "group relative flex flex-none items-center justify-center rounded-lg bg-cover bg-center bg-no-repeat transition-all " +
@@ -134,8 +133,6 @@ function NewLinks( {addLink} ) {
     setModalState(true);
   })
 
-
-  
   return (
     <div>
       <LinkModal modalRef={domRef} state={modalState} linkInput={linkInput} handleInputChange={handleInputChange} handleSubmit={handleSubmit} />
