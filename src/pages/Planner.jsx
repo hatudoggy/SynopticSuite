@@ -5,10 +5,11 @@ import pin from "../assets/pinned.svg";
 import unpin from "../assets/unpin.svg";
 import settings from "../assets/dots-settings.svg";
 import addButton from "../assets/add-button-no-circle.svg";
-import useWindowDimensions from "../components/useWindowDimensions";
+import useWindowDimensions from "../components/hooks/useWindowDimensions";
 import PlannerCard from "../components/PlannerCard";
 import Modal from "../components/Modal";
 import { useNavigate } from "react-router-dom";
+import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { firestore } from "../config/firebase";
 import {
   doc,
@@ -24,6 +25,8 @@ import {
   serverTimestamp,
 } from "firebase/firestore";
 import { useCollectionData } from "react-firebase-hooks/firestore";
+import { Skeleton } from "@mui/material";
+import PlannerCardLoad from "../components/loaders/PlannerCardLoad";
 
 function Planner() {
   /******************************************/
@@ -49,6 +52,9 @@ function Planner() {
   const [description, setDescription] = useState("");
   const [planId, setPlanId] = useState(0);
   const [color, setColor] = useState();
+  const [loading, setLoading] = useState(true);
+
+  const [animate, enableAnimations] = useAutoAnimate(true);
 
   /******************************************/
   /* End of Instantiating State Variables   */
@@ -73,6 +79,10 @@ function Planner() {
       });
       setPlans(plans);
       setPlanId(plans.length);
+      // To give time for data to be processed
+      setTimeout(() => {
+        setLoading(false);
+      }, 500);
     });
   }, []);
 
@@ -213,40 +223,48 @@ function Planner() {
             />
           </div>
           <div
-            className={
-              "flex flex-col gap-3 sm:flex-wrap lg:flex-row " +
-              (plans.find((plan) => plan.isPinned === true) ? "mx-2" : "")
-            }
+            ref={animate}
+            className="mx-2 flex flex-col gap-3 sm:flex-wrap lg:flex-row"
           >
             {/* Checks for pinned items */}
-            {plans.find((plan) => plan.isPinned === true) ? (
-              plans
-                .sort((a, b) => new Date(b.dateEdited) - new Date(a.dateEdited))
-                .filter((plan) => plan.isPinned === true)
-                .map((item, index) => (
-                  <PlannerCard
-                    key={index}
-                    subject={item.subject}
-                    description={item.description}
-                    color={item.color}
-                    textColor={item.textColor}
-                    pin={pin}
-                    unpin={unpin}
-                    isPinned={item.isPinned}
-                    handlePin={handlePin}
-                    handleUnpin={handleUnpin}
-                    handleDelete={handleDelete}
-                    settings={settings}
-                    id={item.planId}
-                    link={`/planner/pinned/${item.planId}`}
-                  />
-                ))
-            ) : (
-              <div className="mx-2 flex justify-center rounded-xl bg-slate-100">
-                <div className="py-10 font-semibold sm:px-32 sm:py-10">
-                  No Pinned Items
+            {!loading ? (
+              plans.find((plan) => plan.isPinned === true) ? (
+                plans
+                  .sort(
+                    (a, b) => new Date(b.dateEdited) - new Date(a.dateEdited)
+                  )
+                  .filter((plan) => plan.isPinned === true)
+                  .map((item, index) => (
+                    <PlannerCard
+                      key={index}
+                      subject={item.subject}
+                      description={item.description}
+                      color={item.color}
+                      textColor={item.textColor}
+                      pin={pin}
+                      unpin={unpin}
+                      isPinned={item.isPinned}
+                      handlePin={handlePin}
+                      handleUnpin={handleUnpin}
+                      handleDelete={handleDelete}
+                      settings={settings}
+                      id={item.planId}
+                      link={`/planner/pinned/${item.planId}`}
+                    />
+                  ))
+              ) : (
+                <div className="mx-2 flex justify-center rounded-xl bg-slate-100">
+                  <div className="py-10 font-semibold sm:px-32 sm:py-10">
+                    No Pinned Items
+                  </div>
                 </div>
-              </div>
+              )
+            ) : (
+              <>
+                <PlannerCardLoad />
+                <PlannerCardLoad />
+                <PlannerCardLoad />
+              </>
             )}
           </div>
           <div className="flex flex-row gap-12">
@@ -275,21 +293,25 @@ function Planner() {
               All
             </div>
           </div>
-          <div className="mx-2 flex flex-col gap-3 sm:flex-wrap lg:flex-row">
+          <div
+            ref={animate}
+            className="mx-2 flex flex-col gap-3 sm:flex-wrap lg:flex-row"
+          >
             {/* Card */}
-            {plans /* Checks if plans exists */
-              ? isRecent /* Checks if recent is active or clicked */
-                ? plans
+            {!loading ? (
+              plans /* Checks if plans exists */ ? (
+                isRecent /* Checks if recent is active or clicked */ ? (
+                  plans
                     .sort(
                       (a, b) => new Date(b.dateEdited) - new Date(a.dateEdited)
                     )
+                    .filter(
+                      (item) => item.isPinned !== true
+                    ) /* Removed pinned items in the list */
                     .slice(
                       0,
                       3
                     ) /* Part that determines the number of cards present */
-                    .filter(
-                      (item) => item.isPinned !== true
-                    ) /* Removed pinned items in the list */
                     .map((plan, index) => (
                       <PlannerCard
                         key={index}
@@ -308,7 +330,8 @@ function Planner() {
                         link={`/planner/${plan.planId}`}
                       />
                     ))
-                : plans /* Checks if all is active or clicked */
+                ) : (
+                  plans /* Checks if all is active or clicked */
                     .sort(
                       (a, b) => new Date(b.dateEdited) - new Date(a.dateEdited)
                     )
@@ -333,7 +356,15 @@ function Planner() {
                         link={`/planner/${plan.planId}`}
                       />
                     ))
-              : null}{" "}
+                )
+              ) : null
+            ) : (
+              <>
+                <PlannerCardLoad />
+                <PlannerCardLoad />
+                <PlannerCardLoad />
+              </>
+            )}
             {/* Returns if plan is empty */}
           </div>
         </div>
