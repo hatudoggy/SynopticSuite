@@ -40,6 +40,8 @@ export default function ClickedPlan() {
   const [description, setDescription] = useState("");
   const [planId, setPlanId] = useState(0);
   const [color, setColor] = useState();
+  const [startDate, setStartDate] = useState();
+  const [endDate, setEndDate] = useState();
 
   /******************************************/
   /* End of Instantiating State Variables   */
@@ -158,10 +160,14 @@ export default function ClickedPlan() {
           description={description}
           header={plan?.subject}
           dateEdited={plan?.dateEdited?.toDate()?.toLocaleString()} //Passes the date
-          firstInput={"Title"}
-          secondInput={"Description"}
+          firstInput={"Item Name"}
+          secondInput={"Note"}
           color={color}
           setColor={setColor}
+          startDate={startDate}
+          setStartDate={setStartDate}
+          endDate={endDate}
+          setEndDate={setEndDate}
         />
       ) : null}
       <img
@@ -170,7 +176,7 @@ export default function ClickedPlan() {
         className="invert-to-white w-8 hover:cursor-pointer"
         onClick={() => navigate(-1)}
       />
-      <div className="flex h-full flex-col gap-7 py-6 sm:w-1/4">
+      <div className="mx-2 flex h-full flex-col gap-7 py-6">
         <PlannerCard
           subject={plan?.subject}
           description={plan?.description}
@@ -191,7 +197,7 @@ export default function ClickedPlan() {
         </div>
         <div className="flex flex-col gap-3 sm:min-w-[375px]">
           <div
-            className="flex items-center gap-1 rounded-md bg-white px-7 py-2 font-semibold hover:cursor-pointer"
+            className="flex items-center gap-1 rounded-md bg-white px-7 py-2 font-semibold hover:-translate-y-1 hover:cursor-pointer hover:bg-gray-400 hover:transition-all sm:min-w-[375px] lg:max-w-[375px]"
             onClick={() => setIsModalOpen(!isModalOpen)}
           >
             <img src={addButton} className="invert-to-white w-5" />
