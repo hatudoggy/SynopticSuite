@@ -50,7 +50,6 @@ function Planner() {
   //Form data
   const [subject, setSubject] = useState("");
   const [description, setDescription] = useState("");
-  const [planId, setPlanId] = useState(0);
   const [color, setColor] = useState();
   const [loading, setLoading] = useState(true);
 
@@ -78,7 +77,6 @@ function Planner() {
         plans.push(doc.data());
       });
       setPlans(plans);
-      setPlanId(plans.length);
       // To give time for data to be processed
       setTimeout(() => {
         setLoading(false);
@@ -125,7 +123,6 @@ function Planner() {
     //Set data to state. This makes it easier to update data in the future
     //Put this here to make modal close faster
     setPlans([...plans, compiledData]);
-    setPlanId(planId + 1);
     setIsModalOpen(!isModalOpen);
 
     //Create document in the database with the generated ID
