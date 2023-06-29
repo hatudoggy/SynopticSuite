@@ -1,30 +1,27 @@
+import React, { useState, useRef, useEffect } from "react";
 import calendar from "../assets/calendar.svg";
 import resources from "../assets/resources.svg";
 import clock from "../assets/clock.svg";
 import planner from "../assets/planner.svg";
-import notes from "../assets/notes.svg"
+import notes from "../assets/notes.svg";
 import analytics from "../assets/analytics.svg";
 import addButton from "../assets/add-button.svg";
 import logo from "../assets/SuiteLogo.png";
 import { useNavigate } from "react-router-dom";
 import "./Sidebar.css";
-import { useState, useRef } from "react";
 import useClickClose from "./hooks/useClickClose";
 
 function Sidebar() {
-
-
   return (
     <div className="sticky left-0 top-0 hidden h-screen w-36 flex-row self-start sm:flex">
-      
       <div className="flex h-full w-5/12 flex-col items-center gap-8 bg-slate-300 py-6">
-        <LinkCont/>
+        <LinkCont />
       </div>
-      
+
       <div className="flex h-full w-7/12 flex-col  items-center gap-8 bg-slate-500 py-6">
         <a href="/">
           <div className="">
-            <img src={logo} className="w-12" />
+            <img src={logo} className="w-12" alt="Logo" />
           </div>
         </a>
 
@@ -41,7 +38,7 @@ function Sidebar() {
   );
 }
 
-function LinkCont(){
+function LinkCont() {
   const [linkList, setLinkList] = useState([
     "https://www.google.com",
     "https://www.instagram.com",
@@ -49,24 +46,47 @@ function LinkCont(){
     "https://elms.sti.edu"
   ]);
 
+  const [activeLink, setActiveLink] = useState(null); // Track the active link
+
   const addLink = (link) => {
-    if (!link.startsWith("https://")) {
-      link = "https://" + link;
+    if (!link.startsWith("https://") && !link.startsWith("http://")) {
+      if (link.startsWith("www.")) {
+        link = "https://" + link;
+      } else {
+        link = "https://www." + link;
+      }
     }
     setLinkList([...linkList, link]);
   };
+  
 
-  return(
-      <>
+  const deleteLink = (link) => {
+    setLinkList(linkList.filter((l) => l !== link));
+    if (activeLink === link) {
+      setActiveLink(null);
+    }
+  };
+
+  return (
+    <>
       <NewLinks addLink={addLink} />
       <div className="noScroll my-2 flex h-auto flex-col gap-4 overflow-y-auto">
         {linkList.map((e, key) => {
-          return <Link link={e} key={key} />;
+          return (
+            <Link
+              link={e}
+              key={key}
+              onDelete={() => deleteLink(e)}
+              setActiveLink={setActiveLink}
+              activeLink={activeLink}
+            />
+          );
         })}
       </div>
-      </>
-  )
+    </>
+  );
 }
+
 
 function Icon({ image, text, link }) {
   const navigate = useNavigate();
@@ -79,7 +99,7 @@ function Icon({ image, text, link }) {
         navigate(link);
       }}
     >
-      <img src={image} alt="calendar" className="w-10" />
+      <img src={image} alt={text} className="w-10" />
       <ToolTip text={text} />
     </div>
   );
@@ -96,25 +116,94 @@ function ToolTip({ text }) {
   );
 }
 
-function Link({ link }) {
-  const linkRef =
-    "https://s2.googleusercontent.com/s2/favicons?domain=" + link + "&sz=64";
-  //const linkRef = link+"/favicon.ico?sz=64";
+function Link({ link, onDelete, setActiveLink, activeLink }) {
+  const isValidLink = link.startsWith("http://") || link.startsWith("https://");
+  const linkRef = isValidLink
+    ? `https://s2.googleusercontent.com/s2/favicons?domain=${link}&sz=64`
+    : null;
+
+  const handleContextMenu = (event) => {
+    event.preventDefault();
+    if (activeLink !== link) {
+      setActiveLink(link);
+    }
+    setModalVisible(true);
+    setModalPosition({ x: event.clientX, y: event.clientY });
+  };
+
+  const handleEdit = () => {
+    // Implement the edit functionality here
+    // You can open another modal or use an inline editing approach
+  };
+
+  const handleDelete = () => {
+    if (activeLink === link) {
+      setActiveLink(null);
+      setModalVisible(false); // Close the context menu after deleting the link
+    }
+    onDelete();
+  };
+
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalPosition, setModalPosition] = useState({ x: 0, y: 0 });
+
+  const modalRef = useRef();
+
+  useEffect(() => {
+    const handleClickOutsideModal = (event) => {
+      if (modalRef.current && !modalRef.current.contains(event.target)) {
+        setModalVisible(false);
+      }
+    };
+
+    document.addEventListener("click", handleClickOutsideModal);
+
+    return () => {
+      document.removeEventListener("click", handleClickOutsideModal);
+    };
+  }, []);
+
   return (
-    <a href={link} target="_blank" rel="noopener noreferrer">
-      <div
-        className={
-          "group relative flex flex-none items-center justify-center rounded-lg bg-cover bg-center bg-no-repeat transition-all " +
-          "h-10 w-10 shadow-md hover:bg-slate-300 hover:opacity-80"
-        }
-        style={{ backgroundImage: "url(" + linkRef + ")" }}>
+    <>
+      <a href={link} target="_blank" rel="noopener noreferrer">
+        <div
+          className={
+            "group relative flex flex-none items-center justify-center rounded-lg bg-cover bg-center bg-no-repeat transition-all " +
+            "h-10 w-10 shadow-md hover:bg-slate-300 hover:opacity-80"
+          }
+          style={{ backgroundImage: linkRef ? `url(${linkRef})` : "" }}
+          onContextMenu={(event) => handleContextMenu(event)} // Pass the event to handleContextMenu
+        ></div>
+      </a>
+
+      {modalVisible && activeLink === link && (
+        <div
+          ref={modalRef}
+          className="absolute z-30 flex translate-x-14 flex-row rounded-md bg-gray-300 p-2 shadow-lg transition-all"
+          style={{
+            top: modalPosition.y,
+          }}
+        >
+          <button
+            onClick={handleEdit}
+            className="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 m-1 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
+          >
+            Edit
+          </button>
+          <button
+            onClick={handleDelete}
+            className="focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 m-1 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900"
+          >
+            Delete
+          </button>
         </div>
-    </a>
+      )}
+    </>
   );
 }
 
-function NewLinks( {addLink} ) {
-  const [modalState, setModalState] = useState(true);
+function NewLinks({ addLink }) {
+  const [modalVisible, setModalVisible] = useState(false);
   const [linkInput, setLinkInput] = useState("");
 
   const handleInputChange = (event) => {
@@ -124,52 +213,52 @@ function NewLinks( {addLink} ) {
   const handleSubmit = () => {
     addLink(linkInput);
     setLinkInput("");
+    setModalVisible(false);
   };
 
-  let domRef = useRef();
-  let btnRef = useRef();
+  const modalRef = useRef();
+  const buttonRef = useRef();
 
-  useClickClose(domRef, btnRef, () => {
-    setModalState(true);
-  })
+  useClickClose(modalRef, buttonRef, () => {
+    setModalVisible(false);
+  });
 
   return (
     <div>
-      <LinkModal modalRef={domRef} state={modalState} linkInput={linkInput} handleInputChange={handleInputChange} handleSubmit={handleSubmit} />
-      <div ref={btnRef} className="group relative flex h-12 w-12 flex-none items-center
+      <div
+        ref={buttonRef}
+        className="group relative flex h-12 w-12 flex-none items-center
       justify-center rounded-2xl bg-slate-500 shadow-md
       transition-all hover:cursor-pointer hover:rounded-xl hover:bg-gray-700"
         onClick={() => {
-          setModalState(!modalState);
+          setModalVisible(!modalVisible);
         }}
       >
-        <img src={addButton} alt="calendar" className="w-10" />
+        <img src={addButton} alt="Add" className="w-10" />
         <ToolTip text={"Add New Link"} />
       </div>
+
+      {modalVisible && (
+        <div
+          ref={modalRef}
+          className="absolute z-30 flex translate-x-16 flex-col gap-3 rounded-md bg-gray-300 p-4 shadow-lg transition-all"
+        >
+          <input
+            className="px-2 py-1"
+            type="text"
+            value={linkInput}
+            onChange={handleInputChange}
+            placeholder="Enter URL"
+          />
+          <button className="m-auto w-1/2 rounded-md bg-slate-400" onClick={handleSubmit}>
+            Submit
+          </button>
+        </div>
+      )}
+      
     </div>
   );
 }
 
-function LinkModal({modalRef, state, linkInput, handleInputChange, handleSubmit}) {
-
-  return (
-    <div
-      ref={modalRef}
-      className={
-        state
-          ? "hidden opacity-0"
-          : "block opacity-100" +
-            " absolute z-30 flex translate-x-16 flex-col gap-3 rounded-md bg-gray-300 p-4 shadow-lg transition-all"
-      }
-    >
-      Website url:
-      <input className="px-2 py-1" type="text" value={linkInput} onChange={handleInputChange} />
-      <button className="m-auto w-1/2 rounded-md bg-slate-400" onClick={handleSubmit}>
-        Submit
-      </button>
-    </div>
-  );
-}
-
-export {Icon, LinkCont};
+export { Icon, LinkCont };
 export default Sidebar;
