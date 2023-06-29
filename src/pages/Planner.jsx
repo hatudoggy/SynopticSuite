@@ -82,7 +82,12 @@ function Planner() {
         setLoading(false);
       }, 500);
     });
+
+    //To avoid double ups, clean up listeners
+    return () => unsubscribe();
   }, []);
+
+  console.log(plans);
 
   /******************************************/
   /*          End of Use Effects            */
