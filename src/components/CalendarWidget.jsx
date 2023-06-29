@@ -29,6 +29,8 @@ function CalendarWidget() {
   let events = [
     { startDate: new Date(2023, 5, 13), endDate: new Date(2023, 5, 13), title: "hatdog"},
     { startDate: new Date(2023, 5, 12), endDate: new Date(2023, 5, 16), title: "hatdog2"},
+    { startDate: new Date(2023, 5, 12), endDate: new Date(2023, 5, 16), title: "hatdog3"},
+    { startDate: new Date(2023, 5, 14), endDate: new Date(2023, 5, 15), title: "hatdog3"},
     
     
   ]
@@ -180,7 +182,7 @@ function DateCont({dayIx, day, today, events, hover, setHover, focus, setFocus})
             </div>
             {eventCount > 0 ?
 
-              <button className='group/more cursor-default'>
+              <button className='group cursor-default'>
                 <span className='text-xs opacity-50 cursor-pointer'>{eventCount} more</span>
                 <MoreEvent day={day} eventList={eventList}/>
               </button>
@@ -248,16 +250,18 @@ function Event({index, events, pos, hover, setHover, focus, setFocus}){
       onBlur={()=>{setFocus(null)}}
     >
       {pos=='start'||pos=='same'? events.title: 'ㅤ'}
-      <EventPopup focus={focus} events={events}/>
+      <EventPopup events={events}/>
     </button>
   )
 }
 
-function EventPopup({focus, events}){
+function EventPopup({events}){
 
   return(
-    <div className='absolute top-7 bg-white text-black w-56 p-4 text-start 
-        shadow-[0_24px_38px_3px_rgba(0,0,0,0.14),0_9px_46px_8px_rgba(0,0,0,0.12),0_11px_15px_-7px_rgba(0,0,0,0.2)] hidden group-focus:block'
+    <div className='absolute top-7 bg-white text-black w-56 p-6 text-start z-20 rounded border-l-8 border-green-300
+        shadow-[0_24px_38px_3px_rgba(0,0,0,0.14),0_9px_46px_8px_rgba(0,0,0,0.12),0_11px_15px_-7px_rgba(0,0,0,0.2)] 
+        invisible opacity-0 translate-y-5 group-focus:visible group-focus:opacity-100  group-focus:transform-none'
+        style={{transition:'visibility 0.1s linear, opacity 0.2s ease-in, transform 0.2s ease-in-out'}}
     >
       <p className='text-lg'>{events.title}</p>
       <p className=' text-sm opacity-60'>{format(events.startDate, 'MMM d')} - {format(events.endDate, 'MMM d')}</p>
@@ -268,18 +272,22 @@ function EventPopup({focus, events}){
 function MoreEvent({day, eventList}){
 
   return(
-    <div className='absolute bg-white w-96 p-4 text-start z-20
-        shadow-[0_24px_38px_3px_rgba(0,0,0,0.14),0_9px_46px_8px_rgba(0,0,0,0.12),0_11px_15px_-7px_rgba(0,0,0,0.2)] invisible group-focus/more:visible'>
+    <div className='absolute bg-white w-96 p-4 text-start z-20 
+        shadow-[0_24px_38px_3px_rgba(0,0,0,0.14),0_9px_46px_8px_rgba(0,0,0,0.12),0_11px_15px_-7px_rgba(0,0,0,0.2)]
+        invisible opacity-0 translate-y-5 group-focus:visible group-focus:opacity-100  group-focus:transform-none'
+        style={{transition:'visibility 0.1s linear, opacity 0.2s ease-in, transform 0.2s ease-in-out'}}
+    >
       <div className='text-sm opacity-60'>
         <span className='text-green-600'>{format(day, 'iiii')}</span> {format(day, 'MMM d')}
       </div>
-      <div className='p-4'>
+      <div className='flex flex-col gap-3 p-4'>
         {eventList.map((e)=>{
           //console.log(e)
           return(
             <div className='flex flex-col'>
               <p className='text-lg'>{e.title}</p>
               <p className=' text-sm opacity-60'>{format(e.startDate, 'MMM d')} - {format(e.endDate, 'MMM d')}</p>
+              
             </div>
           )
         
