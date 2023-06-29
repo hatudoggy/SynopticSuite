@@ -22,6 +22,15 @@ import PlannerCard from "./PlannerCard";
 import settings from "../assets/dots-settings.svg";
 import addButton from "../assets/add-button-no-circle.svg";
 import TodoModal from "./TodoModal";
+import { set } from "date-fns";
+import { BsCheckCircle } from "react-icons/bs";
+import { AiOutlineCheckCircle } from "react-icons/ai";
+import { BiLoader, BiSolidBellRing } from "react-icons/bi";
+import { BsThreeDots } from "react-icons/bs";
+import { PiEqualsBold } from "react-icons/pi";
+import { RxDoubleArrowUp, RxDoubleArrowDown } from "react-icons/rx";
+import { HiPlus } from "react-icons/hi";
+import ItemModal from "./ItemModal";
 
 export default function ClickedPlan() {
   /******************************************/
@@ -30,12 +39,18 @@ export default function ClickedPlan() {
 
   //Navigation/Routing
   const navigate = useNavigate();
+  const [clickedItem, setClickedItem] = useState();
 
   //Collection of Data
   const [plan, setPlan] = useState();
+  const [scCombination, setScCombination] = useState([]); //Subcollection Combination
+  const [events, setEvents] = useState([]);
+  const [tasks, setTasks] = useState([]);
+  const [reminders, setReminders] = useState([]);
 
   //Checks
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isItemOpen, setIsItemOpen] = useState(false);
 
   //Form data
   const [item, setItem] = useState("");
@@ -74,7 +89,60 @@ export default function ClickedPlan() {
       setPlan(plan);
       console.log(plan);
     });
+
+    // Get the subcollections
+    const reminders = query(
+      collection(doc(collection(firestore, "Plans"), id), "reminder"),
+      orderBy("dateEdited", "desc")
+    );
+
+    const remindersOnSnapshot = onSnapshot(reminders, (querySnapshot) => {
+      const items = [];
+      querySnapshot.forEach((doc) => {
+        items.push(doc.data());
+      });
+      setReminders(items);
+    });
+
+    const events = query(
+      collection(doc(collection(firestore, "Plans"), id), "event"),
+      orderBy("dateEdited", "desc")
+    );
+
+    const eventsOnSnapshot = onSnapshot(events, (querySnapshot) => {
+      const items = [];
+      querySnapshot.forEach((doc) => {
+        items.push(doc.data());
+      });
+      setEvents(items);
+    });
+
+    const tasks = query(
+      collection(doc(collection(firestore, "Plans"), id), "task"),
+      orderBy("dateEdited", "desc")
+    );
+
+    const tasksOnSnapshot = onSnapshot(tasks, (querySnapshot) => {
+      const items = [];
+      querySnapshot.forEach((doc) => {
+        items.push(doc.data());
+      });
+      setTasks(items);
+    });
+
+    //To avoid double ups, clean up listeners
+    return () => {
+      unsubscribe();
+      remindersOnSnapshot();
+      eventsOnSnapshot();
+      tasksOnSnapshot();
+    };
   }, []);
+
+  //This is a better way to compiled data from subcollections
+  useEffect(() => {
+    setScCombination([...reminders, ...events, ...tasks]);
+  }, [reminders, events, tasks]);
 
   /******************************************/
   /*            End of UseEffects           */
@@ -93,8 +161,11 @@ export default function ClickedPlan() {
   };
 
   const handleOutsideClick = (event) => {
-    if (event.target === event.currentTarget) {
+    if (event.target === event.currentTarget && isModalOpen) {
       setIsModalOpen(!isModalOpen);
+    }
+    if (event.target === event.currentTarget && isItemOpen) {
+      setIsItemOpen(!isItemOpen);
     }
   };
 
@@ -107,7 +178,9 @@ export default function ClickedPlan() {
     const id = parts[parts.length - 1];
 
     //Generate and attach the document ID to a variable for later use
-    const docRef = doc(collection(doc(collection(firestore, "Plans"), id), itemType));
+    const docRef = doc(
+      collection(doc(collection(firestore, "Plans"), id), itemType)
+    );
 
     //Document structure
     const compiledData = {
@@ -120,6 +193,7 @@ export default function ClickedPlan() {
       startDate: startDate,
       endDate: endDate,
       itemId: docRef.id,
+      itemType: itemType,
     };
 
     //Set data to state. This makes it easier to update data in the future
@@ -157,6 +231,7 @@ export default function ClickedPlan() {
 
   return (
     <div className="flex h-full w-full flex-col bg-slate-300 px-10 py-10 sm:px-14 sm:py-14">
+      {/* MODALS */}
       {isModalOpen ? (
         <TodoModal
           handleOutsideClick={handleOutsideClick}
@@ -168,6 +243,32 @@ export default function ClickedPlan() {
           note={note}
           header={plan?.subject}
           dateEdited={plan?.dateEdited?.toDate()?.toLocaleString()} //Passes the date
+          firstInput={"Item Name"}
+          secondInput={"Note"}
+          priority={priority}
+          setPriority={setPriority}
+          progress={progress}
+          setProgress={setProgress}
+          itemType={itemType}
+          setItemType={setItemType}
+          startDate={startDate}
+          setStartDate={setStartDate}
+          endDate={endDate}
+          setEndDate={setEndDate}
+        />
+      ) : null}
+      {isItemOpen ? (
+        <ItemModal
+          itemData={clickedItem}
+          handleOutsideClick={handleOutsideClick}
+          handleFormSubmit={handleFormSubmit}
+          handleClose={() => setIsItemOpen(!isItemOpen)}
+          setItem={setItem}
+          item={item}
+          setNote={setNote}
+          note={note}
+          header={plan?.subject}
+          dateEdited={clickedItem?.dateEdited?.toDate()?.toLocaleString()} //Passes the date
           firstInput={"Item Name"}
           secondInput={"Note"}
           priority={priority}
@@ -203,20 +304,77 @@ export default function ClickedPlan() {
           settings={settings}
           id={plan?.planId}
         />
-        <div className="flex flex-row sm:min-w-[375px] lg:max-w-[375px] justify-between">
-          <div className="text-xl font-semibold underline underline-offset-4">All</div>
+        <div className="flex flex-row justify-between sm:min-w-[375px] lg:max-w-[375px]">
+          <div className="text-xl font-semibold underline underline-offset-4">
+            All
+          </div>
           <div className="text-xl font-semibold">Tasks</div>
           <div className="text-xl font-semibold">Events</div>
           <div className="text-xl font-semibold">Reminders</div>
         </div>
-        <div className="flex flex-col gap-3 sm:min-w-[375px]">
-          <div
-            className="flex items-center gap-1 rounded-md bg-white px-7 py-2 font-semibold hover:-translate-y-1 hover:cursor-pointer hover:bg-gray-400 hover:transition-all sm:min-w-[375px] lg:max-w-[375px]"
-            onClick={() => setIsModalOpen(!isModalOpen)}
-          >
-            <img src={addButton} className="invert-to-white w-5" />
-            <div>Add Task</div>
+        <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-3 sm:min-w-[375px]">
+            <div
+              className="flex items-center gap-1 rounded-md bg-blue-500 px-7 py-5 font-semibold text-white shadow hover:-translate-y-1 hover:cursor-pointer hover:bg-blue-300 hover:text-gray-800 hover:transition-all sm:min-w-[375px] lg:max-w-[375px]"
+              onClick={() => setIsModalOpen(!isModalOpen)}
+            >
+              <HiPlus />
+              <div>Add Task</div>
+            </div>
           </div>
+
+          {scCombination
+            ? scCombination.map((item, index) => (
+                <div
+                  key={index}
+                  className="relative flex flex-col hover:cursor-pointer"
+                  onClick={() => {
+                    setIsItemOpen(!isItemOpen);
+                    setClickedItem(item);
+                  }}
+                >
+                  <div className="absolute right-3 top-2 z-10">
+                    <BsThreeDots className="text-black hover:cursor-pointer" />
+                  </div>
+                  <div className="relative flex flex-row rounded-xl bg-slate-100 p-5 shadow-md sm:min-w-[375px] lg:max-w-[375px]">
+                    <div className="flex flex-col">
+                      <div className="flex items-center gap-2 font-semibold">
+                        {/* Progress Icons */}
+                        {item.progress === "completed" && (
+                          <BsCheckCircle className="text-green-700" />
+                        )}
+                        {item.progress === "in-progress" && (
+                          <BiLoader className="text-blue-700" />
+                        )}
+                        {item.progress === "not-started" && (
+                          <BsThreeDots className="text-red-700" />
+                        )}
+
+                        {/* Priority Icons */}
+                        {item.priority === "urgent" && (
+                          <BiSolidBellRing className="text-red-700" />
+                        )}
+                        {item.priority === "important" && (
+                          <RxDoubleArrowUp className="text-red-700" />
+                        )}
+                        {item.priority === "medium" && (
+                          <PiEqualsBold className="text-orange-400" />
+                        )}
+                        {item.priority === "low" && (
+                          <RxDoubleArrowDown className="text-green-700" />
+                        )}
+
+                        {/* Name */}
+                        {item.itemName}
+                      </div>
+                      <div className="flex font-semibold">
+                        {item.endDate.toDate()?.toDateString()}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))
+            : null}
         </div>
       </div>
     </div>

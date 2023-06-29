@@ -16,7 +16,8 @@ import { BiLoader, BiSolidBellRing } from "react-icons/bi";
 import { BsThreeDots } from "react-icons/bs";
 import { PiEqualsBold } from "react-icons/pi";
 
-export default function TodoModal({
+export default function ItemModal({
+  itemData,
   handleOutsideClick,
   handleFormSubmit,
   handleClose,
@@ -41,6 +42,7 @@ export default function TodoModal({
 }) {
   const [isFocusedSubject, setIsFocusedSubject] = useState(false);
   const [isFocusedDescription, setIsFocusedDescription] = useState(false);
+  const [isNew, setIsNew] = useState(false);
   const { height, width } = useWindowDimensions();
   const [lastChanged, setLastChanged] = useState();
   const [showWarningForDate, setShowWarningForDate] = useState(false);
@@ -60,6 +62,7 @@ export default function TodoModal({
       const hoursDifference = Math.floor(timeDifference / (1000 * 60 * 60));
 
       if (minutesDifference < 60) {
+        setIsNew(true);
         minutesDifference > 1
           ? setLastChanged(minutesDifference + " mins ago")
           : setLastChanged(minutesDifference + " min ago");
@@ -129,30 +132,42 @@ export default function TodoModal({
   };
 
   const PriorityOptions = [
-    { value: "urgent", label: (
-      <div className="flex items-center gap-2">
-        <BiSolidBellRing className="text-red-800" />
-        Urgent
-      </div>
-    ), },
-    { value: "important", label: (
-      <div className="flex items-center gap-2">
-        <RxDoubleArrowUp className="text-red-800" />
-        Important
-      </div>
-    ), },
-    { value: "medium", label: (
-      <div className="flex items-center gap-2">
-        <PiEqualsBold className="text-orange-400" />
-        Medium
-      </div>
-    ), },
-    { value: "low", label: (
-      <div className="flex items-center gap-2">
-        <RxDoubleArrowDown className="text-green-800" />
-        Low
-      </div>
-    ), },
+    {
+      value: "urgent",
+      label: (
+        <div className="flex items-center gap-2">
+          <BiSolidBellRing className="text-red-800" />
+          Urgent
+        </div>
+      ),
+    },
+    {
+      value: "important",
+      label: (
+        <div className="flex items-center gap-2">
+          <RxDoubleArrowUp className="text-red-800" />
+          Important
+        </div>
+      ),
+    },
+    {
+      value: "medium",
+      label: (
+        <div className="flex items-center gap-2">
+          <PiEqualsBold className="text-orange-400" />
+          Medium
+        </div>
+      ),
+    },
+    {
+      value: "low",
+      label: (
+        <div className="flex items-center gap-2">
+          <RxDoubleArrowDown className="text-green-800" />
+          Low
+        </div>
+      ),
+    },
   ];
 
   const ProgressOptions = [
@@ -197,79 +212,32 @@ export default function TodoModal({
         }
       >
         <div className="text-md relative font-medium text-blue-500">
-          {header} <span className="text-black">&#x2022; New</span>
+          {header}{" "}
+          <span className="text-black">
+            &#x2022;{" "}
+            {itemData.itemType.charAt(0).toUpperCase() +
+              itemData.itemType.slice(1)}
+          </span>
           <div
             className="absolute right-0 top-[0.7rem] cursor-pointer"
             onClick={handleClose}
           >
             <img src={closeButton} alt="close button" className="w-6" />
           </div>
+          <div className="flex items-center gap-2 text-center text-black">
+            <AiOutlineCheckCircle />
+            {itemData.itemName}
+          </div>
           <div className="text-sm font-semibold text-gray-600">
             Last edited {lastChanged} by you
           </div>
         </div>
-        {/* <div className="flex items-center">
-          <img src={checkmark} className="h-6 w-6" />
-          <input
-            type="text"
-            className="mx-1 w-6/12 px-2 font-semibold focus:outline-gray-700 sm:w-8/12"
-            placeholder="New Item"
-            required
-          />
-        </div> */}
         <div className="flex flex-col items-center">
           <form
             className="flex w-full flex-col gap-3"
             id="createPlan"
             onSubmit={(event) => handleFormSubmit(event)}
           >
-            <div className="relative flex flex-col">
-              <label
-                htmlFor="firstInput"
-                className={
-                  "absolute left-4 top-2 z-10 font-semibold transition-all hover:cursor-text " +
-                  (isFocusedSubject || item
-                    ? "-translate-x-2 -translate-y-[1.2rem] bg-white text-sm text-gray-900"
-                    : "text-gray-400")
-                }
-              >
-                {firstInput}
-              </label>
-              <input
-                type="text"
-                id="firstInput"
-                onChange={(e) => setItem(e.target.value)}
-                // my-2 mt-6
-                className="rounded-[4px] border-2 border-solid border-gray-500 px-3 py-2 font-medium text-gray-800 hover:border-gray-500 hover:border-opacity-50 focus:outline-none"
-                required
-                onFocus={() => setIsFocusedSubject(!isFocusedSubject)}
-                onBlur={() => setIsFocusedSubject(!isFocusedSubject)}
-              />
-            </div>
-            <div className="relative flex flex-col">
-              {/* mb-4 */}
-              <label
-                htmlFor="secondInput"
-                className={
-                  "absolute left-4 top-2 z-10 font-semibold text-gray-400 transition-all hover:cursor-text " +
-                  (isFocusedDescription || note
-                    ? "-translate-x-2 -translate-y-[1.2rem] bg-white text-sm text-gray-900"
-                    : "text-gray-400")
-                }
-              >
-                {secondInput}
-              </label>
-              <input
-                type="text"
-                id="secondInput"
-                onChange={(e) => setNote(e.target.value)}
-                //my-2
-                className="rounded-[4px] border-2 border-solid border-gray-500 px-3 py-2 font-medium text-gray-800 hover:border-gray-500 hover:border-opacity-50 focus:outline-none"
-                required
-                onFocus={() => setIsFocusedDescription(!isFocusedDescription)}
-                onBlur={() => setIsFocusedDescription(!isFocusedDescription)}
-              />
-            </div>
             <CreatableSelect
               options={PriorityOptions}
               styles={creatableSelectStyle}
@@ -283,7 +251,7 @@ export default function TodoModal({
             <CreatableSelect
               options={ProgressOptions}
               styles={creatableSelectStyle}
-              placeholder="Progress"
+              placeholder={ProgressOptions.find(option => option.value === "in-progress")?.label || ""}
               className="font-medium text-gray-700"
               noOptionsMessage={() => null}
               //components={{ Option: IconOption, SingleValue: IconSelected}}
@@ -294,7 +262,7 @@ export default function TodoModal({
             <div className="flex gap-2">
               <div className="flex">
                 <DatePicker
-                  onFocus={e => e.target.blur()}
+                  onFocus={(e) => e.target.blur()}
                   placeholderText="Start Date"
                   selected={startDate}
                   dateFormat={width < 350 ? "MM/dd/yy" : "MMM d, yyyy"}
@@ -305,7 +273,7 @@ export default function TodoModal({
               </div>
               <div className="flex">
                 <DatePicker
-                  onFocus={e => e.target.blur()}
+                  onFocus={(e) => e.target.blur()}
                   placeholderText="End Date"
                   selected={endDate}
                   dateFormat={width < 350 ? "MM/dd/yy" : "MMM d, yyyy"}
@@ -388,10 +356,7 @@ export default function TodoModal({
           <button
             type="submit"
             form="createPlan"
-            disabled={
-              !(item && note) ||
-              (item && note) === "" 
-            }
+            disabled={!(item && note) || (item && note) === ""}
             className="mt-5 w-fit rounded-xl border-solid border-gray-900 bg-blue-500 px-4 py-2 text-white disabled:cursor-not-allowed disabled:bg-blue-300"
           >
             Create
