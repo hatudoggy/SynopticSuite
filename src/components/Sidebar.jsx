@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import calendar from "../assets/calendar.svg";
 import resources from "../assets/resources.svg";
 import clock from "../assets/clock.svg";
@@ -46,15 +46,25 @@ function LinkCont() {
     "https://elms.sti.edu"
   ]);
 
+  const [activeLink, setActiveLink] = useState(null); // Track the active link
+
   const addLink = (link) => {
-    if (!link.startsWith("https://")) {
-      link = "https://" + link;
+    if (!link.startsWith("https://") && !link.startsWith("http://")) {
+      if (link.startsWith("www.")) {
+        link = "https://" + link;
+      } else {
+        link = "https://www." + link;
+      }
     }
     setLinkList([...linkList, link]);
   };
+  
 
   const deleteLink = (link) => {
     setLinkList(linkList.filter((l) => l !== link));
+    if (activeLink === link) {
+      setActiveLink(null);
+    }
   };
 
   return (
@@ -63,13 +73,20 @@ function LinkCont() {
       <div className="noScroll my-2 flex h-auto flex-col gap-4 overflow-y-auto">
         {linkList.map((e, key) => {
           return (
-            <Link link={e} key={key} onDelete={() => deleteLink(e)} />
+            <Link
+              link={e}
+              key={key}
+              onDelete={() => deleteLink(e)}
+              setActiveLink={setActiveLink}
+              activeLink={activeLink}
+            />
           );
         })}
       </div>
     </>
   );
 }
+
 
 function Icon({ image, text, link }) {
   const navigate = useNavigate();
@@ -99,12 +116,17 @@ function ToolTip({ text }) {
   );
 }
 
-function Link({ link, onDelete }) {
-  const linkRef =
-    "https://s2.googleusercontent.com/s2/favicons?domain=" + link + "&sz=64";
+function Link({ link, onDelete, setActiveLink, activeLink }) {
+  const isValidLink = link.startsWith("http://") || link.startsWith("https://");
+  const linkRef = isValidLink
+    ? `https://s2.googleusercontent.com/s2/favicons?domain=${link}&sz=64`
+    : null;
 
   const handleContextMenu = (event) => {
     event.preventDefault();
+    if (activeLink !== link) {
+      setActiveLink(link);
+    }
     setModalVisible(true);
     setModalPosition({ x: event.clientX, y: event.clientY });
   };
@@ -115,6 +137,10 @@ function Link({ link, onDelete }) {
   };
 
   const handleDelete = () => {
+    if (activeLink === link) {
+      setActiveLink(null);
+      setModalVisible(false); // Close the context menu after deleting the link
+    }
     onDelete();
   };
 
@@ -123,9 +149,19 @@ function Link({ link, onDelete }) {
 
   const modalRef = useRef();
 
-  useClickClose(modalRef, () => {
-    setModalVisible(false);
-  });
+  useEffect(() => {
+    const handleClickOutsideModal = (event) => {
+      if (modalRef.current && !modalRef.current.contains(event.target)) {
+        setModalVisible(false);
+      }
+    };
+
+    document.addEventListener("click", handleClickOutsideModal);
+
+    return () => {
+      document.removeEventListener("click", handleClickOutsideModal);
+    };
+  }, []);
 
   return (
     <>
@@ -135,22 +171,31 @@ function Link({ link, onDelete }) {
             "group relative flex flex-none items-center justify-center rounded-lg bg-cover bg-center bg-no-repeat transition-all " +
             "h-10 w-10 shadow-md hover:bg-slate-300 hover:opacity-80"
           }
-          style={{ backgroundImage: "url(" + linkRef + ")" }}
-          onContextMenu={handleContextMenu}
+          style={{ backgroundImage: linkRef ? `url(${linkRef})` : "" }}
+          onContextMenu={(event) => handleContextMenu(event)} // Pass the event to handleContextMenu
         ></div>
       </a>
 
-      {modalVisible && (
+      {modalVisible && activeLink === link && (
         <div
           ref={modalRef}
-          className="absolute z-30 flex translate-x-16 flex-col gap-3 rounded-md bg-gray-300 p-4 shadow-lg transition-all"
+          className="absolute z-30 flex translate-x-14 flex-row rounded-md bg-gray-300 p-2 shadow-lg transition-all"
           style={{
             top: modalPosition.y,
-            left: modalPosition.x
           }}
         >
-          <button onClick={handleEdit} className="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">Edit</button>
-          <button onClick={handleDelete} className="focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">Delete</button>
+          <button
+            onClick={handleEdit}
+            className="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 m-1 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
+          >
+            Edit
+          </button>
+          <button
+            onClick={handleDelete}
+            className="focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 m-1 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900"
+          >
+            Delete
+          </button>
         </div>
       )}
     </>
