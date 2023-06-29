@@ -13,28 +13,45 @@
     padding: 0;
 } */
 
+.remove-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.remove-scroll {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+#removedRadio input[type="radio"]{
+  display: none;
+}
+
+.react-datepicker-popper {
+  z-index: 9999 !important;
+}
+
 .invert-to-white {
-    filter: invert(1);
+  filter: invert(1);
 }
 
 ::-webkit-scrollbar {
-    width: 10px;
+  width: 10px;
 }
-  
-  /* Track */
+
+/* Track */
 ::-webkit-scrollbar-track {
-    border-radius: 10px;
+  border-radius: 10px;
 }
-   
-  /* Handle */
+
+/* Handle */
 ::-webkit-scrollbar-thumb {
-    background: rgb(131, 131, 131); 
-    border-radius: 10px;
+  background: rgb(131, 131, 131);
+  border-radius: 10px;
 }
-  
-  /* Handle on hover */
+
+/* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
-    background: rgb(68, 68, 68, 0.5); 
+  background: rgb(68, 68, 68, 0.5);
 }
 
 /* .invert-to-white-second {

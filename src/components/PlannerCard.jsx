@@ -1,18 +1,36 @@
+import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+
 export default function PlannerCard({
-  index,
   subject,
   description,
+  color,
+  textColor,
   pin,
+  unpin,
+  isPinned,
   handlePin,
+  handleUnpin,
+  handleDelete,
   settings,
   id,
+  link,
 }) {
+  const navigate = useNavigate();
+  const [isSettingsActive, setIsSettingsActive] = useState(false);
+
   return (
     <div
-      key={index}
-      className="relative flex flex-row rounded-xl bg-slate-100 p-5 shadow-md sm:min-w-[375px]"
+      className={"relative flex flex-row rounded-xl bg-slate-100 p-5 shadow-md sm:min-w-[375px] " + (link ? "hover:cursor-pointer" : "")}
+      onClick={link ? () => navigate(link) : null}
     >
-      <div className="flex items-center rounded-md bg-violet-400 p-5 font-bold text-white">
+      <div
+        className="flex items-center rounded-md p-5 font-bold"
+        style={{
+          backgroundColor: color ? color : "",
+          color: textColor ? textColor : "",
+        }}
+      >
         MP
       </div>
       <div className="mx-5 truncate">
@@ -23,13 +41,60 @@ export default function PlannerCard({
       </div>
       <div className="lg:mx-10"></div>
       <div className="absolute right-4 top-2 flex flex-col-reverse gap-2 sm:flex-row">
-        <img
-          src={pin}
-          className="w-5 hover:cursor-pointer"
-          onClick={() => handlePin(id)}
-        />
-        <img src={settings} className="w-5 hover:cursor-pointer" />
+        {isPinned ? (
+          <img
+            src={unpin}
+            className="w-5 hover:cursor-pointer"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleUnpin(id);
+            }}
+          />
+        ) : (
+          <img
+            src={pin}
+            className="w-5 hover:cursor-pointer"
+            onClick={(e) => {
+              e.stopPropagation();
+              handlePin(id);
+            }}
+          />
+        )}
+        {handleDelete ? (
+          <img
+            src={settings}
+            className="relative w-5 hover:cursor-pointer"
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsSettingsActive(!isSettingsActive);
+            }}
+          />
+        ) : null}
       </div>
+      {isSettingsActive ? (
+        <div
+          className="absolute right-4 top-10 z-10 flex flex-col rounded-md bg-slate-300 text-center text-sm font-medium"
+          id="settings"
+        >
+          <div
+            className="border-b border-black border-opacity-30 px-5 py-[0.35rem] hover:cursor-pointer hover:rounded-t-md hover:bg-slate-500 hover:text-white"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleDelete(id);
+            }}
+          >
+            Delete
+          </div>
+          <div
+            className="py-[0.35rem] pr-[0.1rem] hover:cursor-pointer hover:rounded-b-md hover:bg-slate-500 hover:text-white"
+            onClick={(e) => {
+              e.stopPropagation();
+            }}
+          >
+            Edit
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }
