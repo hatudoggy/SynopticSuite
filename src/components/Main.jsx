@@ -5,6 +5,7 @@ import Planner from "../pages/Planner";
 import search from "../assets/search.svg";
 import ClickedPlan from "./ClickedPlan";
 import menu from "../assets/menu.svg";
+import NotesPage from "../pages/NotesPage";
 
 function Main({setOpen}) {
   return (
@@ -20,6 +21,7 @@ function Main({setOpen}) {
         >
           <Route path="/" element={<Calendar />}/>
           <Route path="planner" element={<Planner />}/>
+          <Route path="notes" element={<NotesPage />}/>
           <Route path={`planner/:id`} element={<ClickedPlan/>}/>
           <Route path={`planner/pinned/:id`} element={<ClickedPlan/>}/>
         </Routes>
