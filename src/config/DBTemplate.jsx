@@ -1,26 +1,39 @@
 import { firestore } from './firebase';
-import { addDoc, collection } from 'firebase/firestore';
-import { useState } from 'react';
-import { useCollectionData } from 'react-firebase-hooks/firestore';
+import { addDoc, collection, onSnapshot, limit, query } from 'firebase/firestore';
+import { useState, useEffect } from 'react';
+import { useCollection } from 'react-firebase-hooks/firestore';
 
-const dataRef = collection(firestore, 'users');
+const dataRef = collection(firestore, 'Links');
 
 function DBTemplate() {
-  
-  const [data] = useCollectionData(dataRef);
-  
+  const [data, setData] = useState();
+  useEffect(()=>{
+    const unsubscribe = onSnapshot(dataRef, (querySnapshot) => {
+      const cities = [];
+      querySnapshot.forEach((doc) => {
+          cities.push(doc.data());
+      });
+      //console.log(cities);
+      setData(cities);
+    });
+  },[] );
 
+
+  //const [datae, load, error] = useCollection(dataRef);
+  //console.log(data)
   return (
     <div >
         <div>{data && data.map( data => <Test collection={data}/>)}</div>
         <WritingTemplate/>
     </div>
+
   )
 }
 
 function Test(props) {
-  const { text } = props.collection;
-  return(<div>{text}</div>)
+  console.log(props.collection)
+  const { link } = props.collection;
+  return(<div>{link}</div>)
 }
 
 function WritingTemplate(){
@@ -32,7 +45,7 @@ function WritingTemplate(){
         //const { uid } = auth.currentUser;
 
         await addDoc( dataRef, {
-            text: formValue,
+            link: formValue,
             //uid
         });
 

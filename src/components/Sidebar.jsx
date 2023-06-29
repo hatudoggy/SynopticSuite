@@ -8,11 +8,16 @@ import addButton from "../assets/add-button.svg";
 import logo from "../assets/SuiteLogo.png";
 import { useNavigate } from "react-router-dom";
 import "./Sidebar.css";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import useClickClose from "./hooks/useClickClose";
+import { firestore } from '../config/firebase';
+import { collection, onSnapshot, addDoc, query, orderBy, serverTimestamp } from 'firebase/firestore';
+
+
+
 
 function Sidebar() {
-
+  
 
   return (
     <div className="sticky left-0 top-0 hidden h-screen w-36 flex-row self-start sm:flex">
@@ -41,26 +46,47 @@ function Sidebar() {
   );
 }
 
-function LinkCont(){
-  const [linkList, setLinkList] = useState([
-    "https://www.google.com",
-    "https://www.instagram.com",
-    "https://www.github.com",
-    "https://elms.sti.edu"
-  ]);
+const linkRef = collection(firestore, 'Links');
 
-  const addLink = (link) => {
+function LinkCont(){
+  // const [linkList, setLinkList] = useState([
+  //   "https://www.google.com",
+  //   "https://www.instagram.com",
+  //   "https://www.github.com",
+  //   "https://elms.sti.edu"
+  // ]);
+ 
+  const [links, setLinks] = useState();
+  useEffect(()=>{
+    const linking = onSnapshot(query(linkRef,orderBy("dateAdded", "desc")), (qsnap) => {
+      const link = [];
+      qsnap.forEach((doc) => {
+          link.push(doc.data());
+      });
+      //console.log(cities);
+      setLinks(link);
+    });
+  },[] );
+
+  const addLink = async(link) => {
     if (!link.startsWith("https://")) {
       link = "https://" + link;
     }
-    setLinkList([...linkList, link]);
+    await addDoc( linkRef, {
+      link: link,
+      uid: 'hakdog',
+      dateAdded: serverTimestamp()
+    });
+
   };
+
+
 
   return(
       <>
       <NewLinks addLink={addLink} />
       <div className="noScroll my-2 flex h-auto flex-col gap-4 overflow-y-auto">
-        {linkList.map((e, key) => {
+        {links && links.map((e, key) => {
           return <Link link={e} key={key} />;
         })}
       </div>
@@ -98,10 +124,10 @@ function ToolTip({ text }) {
 
 function Link({ link }) {
   const linkRef =
-    "https://s2.googleusercontent.com/s2/favicons?domain=" + link + "&sz=64";
+    "https://s2.googleusercontent.com/s2/favicons?domain=" + link.link + "&sz=64";
   //const linkRef = link+"/favicon.ico?sz=64";
   return (
-    <a href={link} target="_blank" rel="noopener noreferrer">
+    <a href={link.link} target="_blank" rel="noopener noreferrer">
       <div
         className={
           "group relative flex flex-none items-center justify-center rounded-lg bg-cover bg-center bg-no-repeat transition-all " +
