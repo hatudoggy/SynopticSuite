@@ -15,7 +15,7 @@ function Sidebar() {
 
 
   return (
-    <div className="sticky left-0 top-0 hidden h-screen w-36 flex-row self-start sm:flex">
+    <div className="sticky left-0 top-0 hidden z-10 h-screen w-36 flex-row self-start sm:flex">
       
       <div className="flex h-full w-5/12 flex-col items-center gap-8 bg-slate-300 py-6">
         <LinkCont/>
