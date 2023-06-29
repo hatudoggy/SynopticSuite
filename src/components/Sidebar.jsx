@@ -20,7 +20,7 @@ function Sidebar() {
   
 
   return (
-    <div className="sticky left-0 top-0 hidden h-screen w-36 flex-row self-start sm:flex">
+    <div className="sticky left-0 top-0 hidden h-screen w-36 z-30 flex-row self-start sm:flex">
       
       <div className="flex h-full w-5/12 flex-col items-center gap-8 bg-slate-300 py-6">
         <LinkCont/>
@@ -114,7 +114,7 @@ function Icon({ image, text, link }) {
 function ToolTip({ text }) {
   return (
     <span
-      className="invisible absolute px-2 left-16 z-20 w-auto min-w-max origin-left scale-50 rounded bg-gray-800
+      className="invisible absolute  px-2 left-16 z-20 w-auto min-w-max origin-left scale-50 rounded bg-gray-800
     p-1 text-white opacity-0 shadow-md transition group-hover:visible group-hover:block group-hover:scale-100 group-hover:opacity-100"
     >
       {text}
