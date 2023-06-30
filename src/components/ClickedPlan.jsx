@@ -20,17 +20,17 @@ import pin from "../assets/pinned.svg";
 import unpin from "../assets/unpin.svg";
 import PlannerCard from "./PlannerCard";
 import settings from "../assets/dots-settings.svg";
-import addButton from "../assets/add-button-no-circle.svg";
 import TodoModal from "./TodoModal";
 import { set } from "date-fns";
 import { BsCheckCircle } from "react-icons/bs";
-import { AiOutlineCheckCircle } from "react-icons/ai";
 import { BiLoader, BiSolidBellRing } from "react-icons/bi";
 import { BsThreeDots } from "react-icons/bs";
 import { PiEqualsBold } from "react-icons/pi";
 import { RxDoubleArrowUp, RxDoubleArrowDown } from "react-icons/rx";
 import { HiPlus } from "react-icons/hi";
-import ItemModal from "./ItemModal";
+import ItemModal from "./itemModal";
+import useWindowDimensions from "./hooks/useWindowDimensions";
+import { IoIosArrowDown } from "react-icons/io";
 
 export default function ClickedPlan() {
   /******************************************/
@@ -51,6 +51,11 @@ export default function ClickedPlan() {
   //Checks
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isItemOpen, setIsItemOpen] = useState(false);
+  const [isReminder, setIsReminder] = useState(false);
+  const [isEvent, setIsEvent] = useState(false);
+  const [isTask, setIsTask] = useState(false);
+  const [isAll, setIsAll] = useState(true);
+  const { width, height} = useWindowDimensions();
 
   //Form data
   const [item, setItem] = useState("");
@@ -152,14 +157,6 @@ export default function ClickedPlan() {
   /*           Start of Functions           */
   /******************************************/
 
-  const adaptingText = (bgColor, lightColor, darkColor) => {
-    var color = bgColor.charAt(0) === "#" ? bgColor.substring(1, 7) : bgColor;
-    var r = parseInt(color.substring(0, 2), 16); // hexToR
-    var g = parseInt(color.substring(2, 4), 16); // hexToG
-    var b = parseInt(color.substring(4, 6), 16); // hexToB
-    return r * 0.299 + g * 0.587 + b * 0.114 > 186 ? darkColor : lightColor;
-  };
-
   const handleOutsideClick = (event) => {
     if (event.target === event.currentTarget && isModalOpen) {
       setIsModalOpen(!isModalOpen);
@@ -227,6 +224,36 @@ export default function ClickedPlan() {
   const handleDelete = async (id) => {
     navigate(-1);
     await deleteDoc(doc(firestore, "Plans", id));
+  };
+
+  const handleSwitchItem = (item) => {
+    if (item === "reminders") {
+      setIsReminder(true);
+      setIsEvent(false);
+      setIsTask(false);
+      setIsAll(false);
+    }
+
+    if (item === "events") {
+      setIsReminder(false);
+      setIsEvent(true);
+      setIsTask(false);
+      setIsAll(false);
+    }
+
+    if (item === "tasks") {
+      setIsReminder(false);
+      setIsEvent(false);
+      setIsTask(true);
+      setIsAll(false);
+    }
+
+    if (item === "all") {
+      setIsReminder(false);
+      setIsEvent(false);
+      setIsTask(false);
+      setIsAll(true);
+    }
   };
 
   return (
@@ -304,13 +331,51 @@ export default function ClickedPlan() {
           settings={settings}
           id={plan?.planId}
         />
-        <div className="flex flex-row justify-between sm:min-w-[375px] lg:max-w-[375px]">
-          <div className="text-xl font-semibold underline underline-offset-4">
+        <div className="flex flex-row justify-between sm:min-w-[375px] lg:max-w-[375px] items-center">
+          <div
+            className={
+              "sm:text-xl font-semibold hover:cursor-pointer " +
+              (isAll ? "underline underline-offset-4" : "")
+            }
+            onClick={() => handleSwitchItem("all")}
+          >
             All
           </div>
-          <div className="text-xl font-semibold">Tasks</div>
-          <div className="text-xl font-semibold">Events</div>
-          <div className="text-xl font-semibold">Reminders</div>
+          {width > 319 ? (
+            <>
+              <div
+                className={
+                  "sm:text-xl font-semibold hover:cursor-pointer " +
+                  (isTask ? "underline underline-offset-4" : "")
+                }
+                onClick={() => handleSwitchItem("tasks")}
+              >
+                Tasks
+              </div>
+              <div
+                className={
+                  "sm:text-xl font-semibold hover:cursor-pointer " +
+                  (isEvent ? "underline underline-offset-4" : "")
+                }
+                onClick={() => handleSwitchItem("events")}
+              >
+                Events
+              </div>
+              <div
+                className={
+                  "sm:text-xl font-semibold hover:cursor-pointer " +
+                  (isReminder ? "underline underline-offset-4" : "")
+                }
+                onClick={() => handleSwitchItem("reminders")}
+              >
+                Reminders
+              </div>
+            </>
+          ) : (
+            <div>
+              <IoIosArrowDown/>
+            </div>
+          )}
         </div>
         <div className="flex flex-col gap-2">
           <div className="flex flex-col gap-3 sm:min-w-[375px]">
@@ -324,57 +389,109 @@ export default function ClickedPlan() {
           </div>
 
           {scCombination
-            ? scCombination.map((item, index) => (
-                <div
-                  key={index}
-                  className="relative flex flex-col hover:cursor-pointer"
-                  onClick={() => {
-                    setIsItemOpen(!isItemOpen);
-                    setClickedItem(item);
-                  }}
-                >
-                  <div className="absolute right-3 top-2 z-10">
-                    <BsThreeDots className="text-black hover:cursor-pointer" />
-                  </div>
-                  <div className="relative flex flex-row rounded-xl bg-slate-100 p-5 shadow-md sm:min-w-[375px] lg:max-w-[375px]">
-                    <div className="flex flex-col">
-                      <div className="flex items-center gap-2 font-semibold">
-                        {/* Progress Icons */}
-                        {item.progress === "completed" && (
-                          <BsCheckCircle className="text-green-700" />
-                        )}
-                        {item.progress === "in-progress" && (
-                          <BiLoader className="text-blue-700" />
-                        )}
-                        {item.progress === "not-started" && (
-                          <BsThreeDots className="text-red-700" />
-                        )}
-
-                        {/* Priority Icons */}
-                        {item.priority === "urgent" && (
-                          <BiSolidBellRing className="text-red-700" />
-                        )}
-                        {item.priority === "important" && (
-                          <RxDoubleArrowUp className="text-red-700" />
-                        )}
-                        {item.priority === "medium" && (
-                          <PiEqualsBold className="text-orange-400" />
-                        )}
-                        {item.priority === "low" && (
-                          <RxDoubleArrowDown className="text-green-700" />
-                        )}
-
-                        {/* Name */}
-                        {item.itemName}
-                      </div>
-                      <div className="flex font-semibold">
-                        {item.endDate.toDate()?.toDateString()}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))
+            ? isAll
+              ? scCombination.map((item, index) => (
+                  <ItemCard
+                    item={item}
+                    index={index}
+                    setIsItemOpen={setIsItemOpen}
+                    setClickedItem={setClickedItem}
+                    isItemOpen={isItemOpen}
+                  />
+                ))
+              : isTask
+              ? scCombination
+                  .filter((item) => item.itemType === "task")
+                  .map((item, index) => (
+                    <ItemCard
+                      item={item}
+                      index={index}
+                      setIsItemOpen={setIsItemOpen}
+                      setClickedItem={setClickedItem}
+                      isItemOpen={isItemOpen}
+                    />
+                  ))
+              : isEvent
+              ? scCombination
+                  .filter((item) => item.itemType === "event")
+                  .map((item, index) => (
+                    <ItemCard
+                      item={item}
+                      index={index}
+                      setIsItemOpen={setIsItemOpen}
+                      setClickedItem={setClickedItem}
+                      isItemOpen={isItemOpen}
+                    />
+                  ))
+              : isReminder
+              ? scCombination
+                  .filter((item) => item.itemType === "reminder")
+                  .map((item, index) => (
+                    <ItemCard
+                      item={item}
+                      index={index}
+                      setIsItemOpen={setIsItemOpen}
+                      setClickedItem={setClickedItem}
+                      isItemOpen={isItemOpen}
+                    />
+                  ))
+              : null
             : null}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ItemCard({ item, index, setIsItemOpen, setClickedItem, isItemOpen }) {
+  return (
+    <div
+      key={index}
+      className="relative flex flex-col hover:cursor-pointer"
+      onClick={() => {
+        setIsItemOpen(!isItemOpen);
+        setClickedItem(item);
+      }}
+    >
+      <div className="relative flex flex-row rounded-xl bg-slate-100 p-5 shadow-md sm:min-w-[375px] lg:max-w-[375px]">
+        <div className="absolute right-3 top-2 z-10">
+          <BsThreeDots className="text-black hover:cursor-pointer" />
+        </div>
+        <div className="flex flex-col truncate">
+          <div className="flex items-center gap-2 font-semibold">
+            <div className="flex gap-2">
+              {/* Progress Icons */}
+              {item.progress === "completed" && (
+                <BsCheckCircle className="text-green-700" />
+              )}
+              {item.progress === "in-progress" && (
+                <BiLoader className="text-blue-700" />
+              )}
+              {item.progress === "not-started" && (
+                <BsThreeDots className="text-red-700" />
+              )}
+
+              {/* Priority Icons */}
+              {item.priority === "urgent" && (
+                <BiSolidBellRing className="text-red-700" />
+              )}
+              {item.priority === "important" && (
+                <RxDoubleArrowUp className="text-red-700" />
+              )}
+              {item.priority === "medium" && (
+                <PiEqualsBold className="text-orange-400" />
+              )}
+              {item.priority === "low" && (
+                <RxDoubleArrowDown className="text-green-700" />
+              )}
+            </div>
+
+            {/* Name */}
+            <div className="truncate">{item.itemName}</div>
+          </div>
+          <div className="flex font-semibold">
+            {item.endDate.toDate()?.toDateString()}
+          </div>
         </div>
       </div>
     </div>
