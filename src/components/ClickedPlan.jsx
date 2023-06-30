@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import returnButton from "../assets/returnButton.svg";
 import { useNavigate } from "react-router-dom";
 import {
@@ -12,6 +12,7 @@ import {
   orderBy,
   onSnapshot,
   where,
+  limit,
   serverTimestamp,
   Timestamp,
 } from "firebase/firestore";
@@ -31,11 +32,17 @@ import { HiPlus } from "react-icons/hi";
 import ItemModal from "./itemModal";
 import useWindowDimensions from "./hooks/useWindowDimensions";
 import { IoIosArrowDown } from "react-icons/io";
+import { AiOutlineReload } from "react-icons/ai";
+import Stack from "@mui/material/Stack";
+import CircularProgress from "@mui/material/CircularProgress";
 
 export default function ClickedPlan() {
   /******************************************/
   /* Start of Instantiating State Variables */
   /******************************************/
+
+  //useRef
+  const scrollTo = useRef(null);
 
   //Navigation/Routing
   const navigate = useNavigate();
@@ -43,10 +50,8 @@ export default function ClickedPlan() {
 
   //Collection of Data
   const [plan, setPlan] = useState();
-  const [scCombination, setScCombination] = useState([]); //Subcollection Combination
-  const [events, setEvents] = useState([]);
-  const [tasks, setTasks] = useState([]);
-  const [reminders, setReminders] = useState([]);
+  const [itemList, setItemList] = useState([]); //Subcollection Combination
+  const [loadMore, setLoadMore] = useState(5);
 
   //Checks
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -56,6 +61,7 @@ export default function ClickedPlan() {
   const [isTask, setIsTask] = useState(false);
   const [isAll, setIsAll] = useState(true);
   const { width, height } = useWindowDimensions();
+  const [isLoading, setIsLoading] = useState(false);
 
   //Form data
   const [item, setItem] = useState("");
@@ -95,59 +101,26 @@ export default function ClickedPlan() {
       console.log(plan);
     });
 
-    // Get the subcollections
-    const reminders = query(
-      collection(doc(collection(firestore, "Plans"), id), "reminder"),
-      orderBy("dateEdited", "desc")
+    // Get the subcollection
+    const itemList = query(
+      collection(doc(collection(firestore, "Plans"), id), "itemList"),
+      orderBy("dateEdited", "desc"),
+      limit(loadMore)
     );
 
-    const remindersOnSnapshot = onSnapshot(reminders, (querySnapshot) => {
+    const itemListOnSnapshot = onSnapshot(itemList, (querySnapshot) => {
       const items = [];
       querySnapshot.forEach((doc) => {
         items.push(doc.data());
       });
-      setReminders(items);
+      setItemList(items);
     });
 
-    const events = query(
-      collection(doc(collection(firestore, "Plans"), id), "event"),
-      orderBy("dateEdited", "desc")
-    );
-
-    const eventsOnSnapshot = onSnapshot(events, (querySnapshot) => {
-      const items = [];
-      querySnapshot.forEach((doc) => {
-        items.push(doc.data());
-      });
-      setEvents(items);
-    });
-
-    const tasks = query(
-      collection(doc(collection(firestore, "Plans"), id), "task"),
-      orderBy("dateEdited", "desc")
-    );
-
-    const tasksOnSnapshot = onSnapshot(tasks, (querySnapshot) => {
-      const items = [];
-      querySnapshot.forEach((doc) => {
-        items.push(doc.data());
-      });
-      setTasks(items);
-    });
-
-    //To avoid double ups, clean up listeners
     return () => {
       unsubscribe();
-      remindersOnSnapshot();
-      eventsOnSnapshot();
-      tasksOnSnapshot();
+      itemListOnSnapshot();
     };
-  }, []);
-
-  //This is a better way to compiled data from subcollections
-  useEffect(() => {
-    setScCombination([...reminders, ...events, ...tasks]);
-  }, [reminders, events, tasks]);
+  }, [loadMore]);
 
   /******************************************/
   /*            End of UseEffects           */
@@ -176,7 +149,7 @@ export default function ClickedPlan() {
 
     //Generate and attach the document ID to a variable for later use
     const docRef = doc(
-      collection(doc(collection(firestore, "Plans"), id), itemType)
+      collection(doc(collection(firestore, "Plans"), id), "itemList")
     );
 
     //Document structure
@@ -199,6 +172,13 @@ export default function ClickedPlan() {
 
     //Create document in the database with the generated ID
     await setDoc(docRef, compiledData);
+    setItem("");
+    setNote("");
+    setPriority("");
+    setProgress("");
+    setStartDate("");
+    setEndDate("");
+    setItemType("");
   };
 
   const handlePin = async (id) => {
@@ -224,6 +204,17 @@ export default function ClickedPlan() {
   const handleDelete = async (id) => {
     navigate(-1);
     await deleteDoc(doc(firestore, "Plans", id));
+  };
+
+  const handleLoadMore = () => {
+    setLoadMore(loadMore + 5);
+    setIsLoading(true);
+    setTimeout(() => {
+      scrollTo?.current?.scrollIntoView({ behavior: "smooth" });
+    }, 300);
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 2000);
   };
 
   const handleSwitchItem = (item) => {
@@ -384,13 +375,15 @@ export default function ClickedPlan() {
               onClick={() => setIsModalOpen(!isModalOpen)}
             >
               <HiPlus />
-              <div>Add Task</div>
+              <div>Add Item</div>
             </div>
           </div>
 
-          {scCombination
+          {/* Checks if Tasks, Events, or Reminders is clicked 
+              then displays corresponding data */}
+          {itemList
             ? isAll
-              ? scCombination.map((item, index) => (
+              ? itemList.map((item, index) => (
                   <ItemCard
                     key={index}
                     item={item}
@@ -401,7 +394,7 @@ export default function ClickedPlan() {
                   />
                 ))
               : isTask
-              ? scCombination
+              ? itemList
                   .filter((item) => item.itemType === "task")
                   .map((item, index) => (
                     <ItemCard
@@ -414,7 +407,7 @@ export default function ClickedPlan() {
                     />
                   ))
               : isEvent
-              ? scCombination
+              ? itemList
                   .filter((item) => item.itemType === "event")
                   .map((item, index) => (
                     <ItemCard
@@ -427,7 +420,7 @@ export default function ClickedPlan() {
                     />
                   ))
               : isReminder
-              ? scCombination
+              ? itemList
                   .filter((item) => item.itemType === "reminder")
                   .map((item, index) => (
                     <ItemCard
@@ -441,6 +434,21 @@ export default function ClickedPlan() {
               : null
             : null}
         </div>
+        <div
+          className="flex items-center justify-center sm:max-w-[375px] pr-3 gap-3 font-semibold hover:cursor-pointer"
+          onClick={() => handleLoadMore()}
+          ref={scrollTo}
+        >
+          {isLoading ? (
+            <Stack sx={{ color: "grey.900" }} spacing={2} direction="row">
+              <CircularProgress color="inherit" size={15} />
+            </Stack>
+          ) : (
+            <AiOutlineReload />
+          )}
+
+          <span>Load More</span>
+        </div>
       </div>
     </div>
   );
@@ -450,7 +458,7 @@ function ItemCard({ item, index, setIsItemOpen, setClickedItem, isItemOpen }) {
   return (
     <div key={index} className="relative flex flex-col">
       <div
-        className="relative hover:cursor-pointer flex flex-row rounded-xl bg-slate-100 p-5 shadow-md sm:min-w-[375px] lg:max-w-[375px]"
+        className="relative flex flex-row rounded-xl bg-slate-100 p-5 shadow-md hover:cursor-pointer sm:min-w-[375px] lg:max-w-[375px]"
         onClick={() => {
           setIsItemOpen(!isItemOpen);
           setClickedItem(item);
