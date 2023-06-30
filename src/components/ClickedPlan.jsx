@@ -43,10 +43,7 @@ export default function ClickedPlan() {
 
   //Collection of Data
   const [plan, setPlan] = useState();
-  const [scCombination, setScCombination] = useState([]); //Subcollection Combination
-  const [events, setEvents] = useState([]);
-  const [tasks, setTasks] = useState([]);
-  const [reminders, setReminders] = useState([]);
+  const [itemList, setItemList] = useState([]); //Subcollection Combination
 
   //Checks
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -95,59 +92,25 @@ export default function ClickedPlan() {
       console.log(plan);
     });
 
-    // Get the subcollections
-    const reminders = query(
-      collection(doc(collection(firestore, "Plans"), id), "reminder"),
+    // Get the subcollection
+    const itemList = query(
+      collection(doc(collection(firestore, "Plans"), id), "itemList"),
       orderBy("dateEdited", "desc")
     );
 
-    const remindersOnSnapshot = onSnapshot(reminders, (querySnapshot) => {
+    const itemListOnSnapshot = onSnapshot(itemList, (querySnapshot) => {
       const items = [];
       querySnapshot.forEach((doc) => {
         items.push(doc.data());
       });
-      setReminders(items);
+      setItemList(items);
     });
 
-    const events = query(
-      collection(doc(collection(firestore, "Plans"), id), "event"),
-      orderBy("dateEdited", "desc")
-    );
-
-    const eventsOnSnapshot = onSnapshot(events, (querySnapshot) => {
-      const items = [];
-      querySnapshot.forEach((doc) => {
-        items.push(doc.data());
-      });
-      setEvents(items);
-    });
-
-    const tasks = query(
-      collection(doc(collection(firestore, "Plans"), id), "task"),
-      orderBy("dateEdited", "desc")
-    );
-
-    const tasksOnSnapshot = onSnapshot(tasks, (querySnapshot) => {
-      const items = [];
-      querySnapshot.forEach((doc) => {
-        items.push(doc.data());
-      });
-      setTasks(items);
-    });
-
-    //To avoid double ups, clean up listeners
     return () => {
       unsubscribe();
-      remindersOnSnapshot();
-      eventsOnSnapshot();
-      tasksOnSnapshot();
+      itemListOnSnapshot();
     };
   }, []);
-
-  //This is a better way to compiled data from subcollections
-  useEffect(() => {
-    setScCombination([...reminders, ...events, ...tasks]);
-  }, [reminders, events, tasks]);
 
   /******************************************/
   /*            End of UseEffects           */
@@ -176,7 +139,7 @@ export default function ClickedPlan() {
 
     //Generate and attach the document ID to a variable for later use
     const docRef = doc(
-      collection(doc(collection(firestore, "Plans"), id), itemType)
+      collection(doc(collection(firestore, "Plans"), id), "itemList")
     );
 
     //Document structure
@@ -388,9 +351,9 @@ export default function ClickedPlan() {
             </div>
           </div>
 
-          {scCombination
+          {itemList
             ? isAll
-              ? scCombination.map((item, index) => (
+              ? itemList.map((item, index) => (
                   <ItemCard
                     key={index}
                     item={item}
@@ -401,7 +364,7 @@ export default function ClickedPlan() {
                   />
                 ))
               : isTask
-              ? scCombination
+              ? itemList
                   .filter((item) => item.itemType === "task")
                   .map((item, index) => (
                     <ItemCard
@@ -414,7 +377,7 @@ export default function ClickedPlan() {
                     />
                   ))
               : isEvent
-              ? scCombination
+              ? itemList
                   .filter((item) => item.itemType === "event")
                   .map((item, index) => (
                     <ItemCard
@@ -427,7 +390,7 @@ export default function ClickedPlan() {
                     />
                   ))
               : isReminder
-              ? scCombination
+              ? itemList
                   .filter((item) => item.itemType === "reminder")
                   .map((item, index) => (
                     <ItemCard
@@ -450,7 +413,7 @@ function ItemCard({ item, index, setIsItemOpen, setClickedItem, isItemOpen }) {
   return (
     <div key={index} className="relative flex flex-col">
       <div
-        className="relative hover:cursor-pointer flex flex-row rounded-xl bg-slate-100 p-5 shadow-md sm:min-w-[375px] lg:max-w-[375px]"
+        className="relative flex flex-row rounded-xl bg-slate-100 p-5 shadow-md hover:cursor-pointer sm:min-w-[375px] lg:max-w-[375px]"
         onClick={() => {
           setIsItemOpen(!isItemOpen);
           setClickedItem(item);

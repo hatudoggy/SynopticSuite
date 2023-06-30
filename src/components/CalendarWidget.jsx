@@ -39,10 +39,7 @@ function CalendarWidget() {
 
   const [plans, setPlans] = useState([]);
   const [plansId, setPlansId] = useState([]); //This is the id of the plan
-  const [reminders, setReminders] = useState([]);
-  const [event, setEvent] = useState([]);
-  const [tasks, setTasks] = useState([]);
-  const [combinedItems, setCombinedItems] = useState([]);
+  const [itemList, setItemList] = useState([]);
   const [events, setEvents] = useState([]);
 
   let days = eachDayOfInterval({
@@ -82,51 +79,31 @@ function CalendarWidget() {
       setPlans(plans);
       setPlansId(planId);
 
-      const taskList = [];
-      const reminderList = [];
-      const eventList = [];
+      const items = [];
       const snapshotPromises = planId.map((id) => {
-        const reminders = query(
-          collection(doc(collection(firestore, "Plans"), id), "reminder"),
+        const itemList = query(
+          collection(doc(collection(firestore, "Plans"), id), "itemList"),
           orderBy("dateEdited", "desc")
         );
 
-        const remindersOnSnapshot = onSnapshot(reminders, (querySnapshot) => {
+        const itemListOnSnapshot = onSnapshot(itemList, (querySnapshot) => {
           querySnapshot.forEach((doc) => {
-            reminderList.push(doc.data());
+            items.push(doc.data());
           });
-          setReminders(reminderList);
+          setItemList(items);
+          let eventStructure = [];
+          items.forEach((item) => {
+            eventStructure.push({
+              startDate: new Date(item.startDate.seconds * 1000),
+              endDate: new Date(item.endDate.seconds * 1000),
+              title: item.itemName,
+            });
+          });
+
+          setEvents(eventStructure);
         });
 
-        const events = query(
-          collection(doc(collection(firestore, "Plans"), id), "event"),
-          orderBy("dateEdited", "desc")
-        );
-
-        const eventsOnSnapshot = onSnapshot(events, (querySnapshot) => {
-          querySnapshot.forEach((doc) => {
-            eventList.push(doc.data());
-          });
-          setEvent(eventList);
-        });
-
-        const tasks = query(
-          collection(doc(collection(firestore, "Plans"), id), "task"),
-          orderBy("dateEdited", "desc")
-        );
-
-        const tasksOnSnapshot = onSnapshot(tasks, (querySnapshot) => {
-          querySnapshot.forEach((doc) => {
-            taskList.push(doc.data());
-          });
-          setTasks(taskList);
-        });
-
-        return Promise.all([
-          remindersOnSnapshot,
-          eventsOnSnapshot,
-          tasksOnSnapshot,
-        ]);
+        return Promise.all([itemListOnSnapshot]);
       });
 
       Promise.all(snapshotPromises).catch((error) => {
@@ -139,27 +116,7 @@ function CalendarWidget() {
     };
   }, []);
 
-  console.log(reminders);
-  console.log(event);
-  console.log(tasks);
-  console.log(combinedItems);
-
-  useEffect(() => {
-    setCombinedItems([...reminders, ...event, ...tasks]);
-  }, [reminders, event, tasks]);
-
-  useEffect(() => {
-    let eventStructure = [];
-    combinedItems.forEach((item) => {
-      eventStructure.push({
-        startDate: new Date((item.startDate.seconds) * 1000),
-        endDate: new Date((item.endDate.seconds) * 1000),
-        title: item.itemName,
-      });
-    });
-
-    setEvents(eventStructure);
-  }, [combinedItems]);
+  console.log(itemList);
 
   /******************************************/
   /*          End of Use Effects            */
@@ -325,8 +282,8 @@ function DateCont({
           </p>
         </time>
       </button>
-      <div className="flex flex-1 flex-col justify-between">
-        <div className="grid grid-rows-2 gap-[3px]">
+      <div className="flex flex-1 relative flex-col justify-between">
+        <div className="grid grid-rows-2 gap-[3px] truncate">
           {events.map((e, i) => {
             if (isWithinInterval(day, { start: e.startDate, end: e.endDate })) {
               if (i < 2) {
@@ -419,7 +376,7 @@ function Event({ index, events, pos, hover, setHover, focus, setFocus }) {
           : pos == "end"
           ? "rounded-r-lg"
           : "") +
-        " group relative bg-green-400 px-3 text-left text-xs text-white " +
+        " group bg-green-400 px-3 text-left text-xs text-white " +
         (hover == events.title ? "bg-green-600 " : "") +
         (focus == events.title ? "shadow-lg" : "shadow-none")
       }
@@ -446,7 +403,7 @@ function Event({ index, events, pos, hover, setHover, focus, setFocus }) {
 function EventPopup({ events }) {
   return (
     <div
-      className="invisible absolute top-7 z-20 w-56 translate-y-5 rounded border-l-8 border-green-300 bg-white p-6
+      className="invisible absolute top-10 z-20 w-56 translate-y-5 rounded border-l-8 border-green-300 bg-white p-6
         text-start 
         text-black opacity-0 shadow-[0_24px_38px_3px_rgba(0,0,0,0.14),0_9px_46px_8px_rgba(0,0,0,0.12),0_11px_15px_-7px_rgba(0,0,0,0.2)] group-focus:visible group-focus:transform-none  group-focus:opacity-100"
       style={{
