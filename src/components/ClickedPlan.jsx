@@ -55,7 +55,7 @@ export default function ClickedPlan() {
   const [isEvent, setIsEvent] = useState(false);
   const [isTask, setIsTask] = useState(false);
   const [isAll, setIsAll] = useState(true);
-  const { width, height} = useWindowDimensions();
+  const { width, height } = useWindowDimensions();
 
   //Form data
   const [item, setItem] = useState("");
@@ -331,10 +331,10 @@ export default function ClickedPlan() {
           settings={settings}
           id={plan?.planId}
         />
-        <div className="flex flex-row justify-between sm:min-w-[375px] lg:max-w-[375px] items-center">
+        <div className="flex flex-row items-center justify-between sm:min-w-[375px] lg:max-w-[375px]">
           <div
             className={
-              "sm:text-xl font-semibold hover:cursor-pointer " +
+              "font-semibold hover:cursor-pointer sm:text-xl " +
               (isAll ? "underline underline-offset-4" : "")
             }
             onClick={() => handleSwitchItem("all")}
@@ -345,7 +345,7 @@ export default function ClickedPlan() {
             <>
               <div
                 className={
-                  "sm:text-xl font-semibold hover:cursor-pointer " +
+                  "font-semibold hover:cursor-pointer sm:text-xl " +
                   (isTask ? "underline underline-offset-4" : "")
                 }
                 onClick={() => handleSwitchItem("tasks")}
@@ -354,7 +354,7 @@ export default function ClickedPlan() {
               </div>
               <div
                 className={
-                  "sm:text-xl font-semibold hover:cursor-pointer " +
+                  "font-semibold hover:cursor-pointer sm:text-xl " +
                   (isEvent ? "underline underline-offset-4" : "")
                 }
                 onClick={() => handleSwitchItem("events")}
@@ -363,7 +363,7 @@ export default function ClickedPlan() {
               </div>
               <div
                 className={
-                  "sm:text-xl font-semibold hover:cursor-pointer " +
+                  "font-semibold hover:cursor-pointer sm:text-xl " +
                   (isReminder ? "underline underline-offset-4" : "")
                 }
                 onClick={() => handleSwitchItem("reminders")}
@@ -373,7 +373,7 @@ export default function ClickedPlan() {
             </>
           ) : (
             <div>
-              <IoIosArrowDown/>
+              <IoIosArrowDown />
             </div>
           )}
         </div>
@@ -392,6 +392,7 @@ export default function ClickedPlan() {
             ? isAll
               ? scCombination.map((item, index) => (
                   <ItemCard
+                    key={index}
                     item={item}
                     index={index}
                     setIsItemOpen={setIsItemOpen}
@@ -404,6 +405,7 @@ export default function ClickedPlan() {
                   .filter((item) => item.itemType === "task")
                   .map((item, index) => (
                     <ItemCard
+                      key={index}
                       item={item}
                       index={index}
                       setIsItemOpen={setIsItemOpen}
@@ -416,6 +418,7 @@ export default function ClickedPlan() {
                   .filter((item) => item.itemType === "event")
                   .map((item, index) => (
                     <ItemCard
+                      key={index}
                       item={item}
                       index={index}
                       setIsItemOpen={setIsItemOpen}
