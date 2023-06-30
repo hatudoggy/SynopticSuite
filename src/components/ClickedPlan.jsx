@@ -435,7 +435,7 @@ export default function ClickedPlan() {
             : null}
         </div>
         <div
-          className="flex items-center justify-center sm:max-w-[375px] pr-3 gap-3 font-semibold hover:cursor-pointer"
+          className="flex items-center justify-center lg:max-w-[375px] pr-3 gap-3 font-semibold hover:cursor-pointer"
           onClick={() => handleLoadMore()}
           ref={scrollTo}
         >
