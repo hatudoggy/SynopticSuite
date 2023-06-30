@@ -27,10 +27,10 @@ function CalendarWidget() {
   console.log(today);
 
   let events = [
-    { startDate: new Date(2023, 5, 13), endDate: new Date(2023, 5, 13), title: "hatdog"},
-    { startDate: new Date(2023, 5, 12), endDate: new Date(2023, 5, 16), title: "hatdog2"},
-    { startDate: new Date(2023, 5, 12), endDate: new Date(2023, 5, 16), title: "hatdog3"},
-    { startDate: new Date(2023, 5, 14), endDate: new Date(2023, 5, 15), title: "hatdog3"},
+    { startDate: new Date(2023, 5, 13), endDate: new Date(2023, 5, 13), title: "event"},
+    { startDate: new Date(2023, 5, 12), endDate: new Date(2023, 5, 16), title: "event1"},
+    { startDate: new Date(2023, 5, 12), endDate: new Date(2023, 5, 16), title: "event2"},
+    { startDate: new Date(2023, 5, 14), endDate: new Date(2023, 5, 15), title: "event3"},
     
     
   ]
