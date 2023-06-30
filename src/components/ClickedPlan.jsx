@@ -325,7 +325,7 @@ export default function ClickedPlan() {
         <div className="flex flex-row items-center justify-between sm:min-w-[375px] lg:max-w-[375px]">
           <div
             className={
-              "font-semibold hover:cursor-pointer sm:text-xl " +
+              "font-semibold hover:cursor-pointer sm:text-xl hover:underline hover:underline-offset-4 " +
               (isAll ? "underline underline-offset-4" : "")
             }
             onClick={() => handleSwitchItem("all")}
@@ -336,7 +336,7 @@ export default function ClickedPlan() {
             <>
               <div
                 className={
-                  "font-semibold hover:cursor-pointer sm:text-xl " +
+                  "font-semibold hover:cursor-pointer sm:text-xl hover:underline hover:underline-offset-4 " +
                   (isTask ? "underline underline-offset-4" : "")
                 }
                 onClick={() => handleSwitchItem("tasks")}
@@ -345,7 +345,7 @@ export default function ClickedPlan() {
               </div>
               <div
                 className={
-                  "font-semibold hover:cursor-pointer sm:text-xl " +
+                  "font-semibold hover:cursor-pointer sm:text-xl hover:underline hover:underline-offset-4 " +
                   (isEvent ? "underline underline-offset-4" : "")
                 }
                 onClick={() => handleSwitchItem("events")}
@@ -354,7 +354,7 @@ export default function ClickedPlan() {
               </div>
               <div
                 className={
-                  "font-semibold hover:cursor-pointer sm:text-xl " +
+                  "font-semibold hover:cursor-pointer sm:text-xl hover:underline hover:underline-offset-4 " +
                   (isReminder ? "underline underline-offset-4" : "")
                 }
                 onClick={() => handleSwitchItem("reminders")}
