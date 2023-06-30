@@ -448,15 +448,14 @@ export default function ClickedPlan() {
 
 function ItemCard({ item, index, setIsItemOpen, setClickedItem, isItemOpen }) {
   return (
-    <div
-      key={index}
-      className="relative flex flex-col hover:cursor-pointer"
-      onClick={() => {
-        setIsItemOpen(!isItemOpen);
-        setClickedItem(item);
-      }}
-    >
-      <div className="relative flex flex-row rounded-xl bg-slate-100 p-5 shadow-md sm:min-w-[375px] lg:max-w-[375px]">
+    <div key={index} className="relative flex flex-col">
+      <div
+        className="relative hover:cursor-pointer flex flex-row rounded-xl bg-slate-100 p-5 shadow-md sm:min-w-[375px] lg:max-w-[375px]"
+        onClick={() => {
+          setIsItemOpen(!isItemOpen);
+          setClickedItem(item);
+        }}
+      >
         <div className="absolute right-3 top-2 z-10">
           <BsThreeDots className="text-black hover:cursor-pointer" />
         </div>

@@ -78,9 +78,7 @@ function Planner() {
       });
       setPlans(plans);
       // To give time for data to be processed
-      setTimeout(() => {
-        setLoading(false);
-      }, 250);
+      setLoading(false);
     });
 
     //To avoid double ups, clean up listeners
