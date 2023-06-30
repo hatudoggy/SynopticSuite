@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import returnButton from "../assets/returnButton.svg";
 import { useNavigate } from "react-router-dom";
 import {
@@ -12,6 +12,7 @@ import {
   orderBy,
   onSnapshot,
   where,
+  limit,
   serverTimestamp,
   Timestamp,
 } from "firebase/firestore";
@@ -31,11 +32,17 @@ import { HiPlus } from "react-icons/hi";
 import ItemModal from "./itemModal";
 import useWindowDimensions from "./hooks/useWindowDimensions";
 import { IoIosArrowDown } from "react-icons/io";
+import { AiOutlineReload } from "react-icons/ai";
+import Stack from "@mui/material/Stack";
+import CircularProgress from "@mui/material/CircularProgress";
 
 export default function ClickedPlan() {
   /******************************************/
   /* Start of Instantiating State Variables */
   /******************************************/
+
+  //useRef
+  const scrollTo = useRef(null);
 
   //Navigation/Routing
   const navigate = useNavigate();
@@ -44,6 +51,7 @@ export default function ClickedPlan() {
   //Collection of Data
   const [plan, setPlan] = useState();
   const [itemList, setItemList] = useState([]); //Subcollection Combination
+  const [loadMore, setLoadMore] = useState(5);
 
   //Checks
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -53,6 +61,7 @@ export default function ClickedPlan() {
   const [isTask, setIsTask] = useState(false);
   const [isAll, setIsAll] = useState(true);
   const { width, height } = useWindowDimensions();
+  const [isLoading, setIsLoading] = useState(false);
 
   //Form data
   const [item, setItem] = useState("");
@@ -95,7 +104,8 @@ export default function ClickedPlan() {
     // Get the subcollection
     const itemList = query(
       collection(doc(collection(firestore, "Plans"), id), "itemList"),
-      orderBy("dateEdited", "desc")
+      orderBy("dateEdited", "desc"),
+      limit(loadMore)
     );
 
     const itemListOnSnapshot = onSnapshot(itemList, (querySnapshot) => {
@@ -110,7 +120,7 @@ export default function ClickedPlan() {
       unsubscribe();
       itemListOnSnapshot();
     };
-  }, []);
+  }, [loadMore]);
 
   /******************************************/
   /*            End of UseEffects           */
@@ -162,6 +172,13 @@ export default function ClickedPlan() {
 
     //Create document in the database with the generated ID
     await setDoc(docRef, compiledData);
+    setItem("");
+    setNote("");
+    setPriority("");
+    setProgress("");
+    setStartDate("");
+    setEndDate("");
+    setItemType("");
   };
 
   const handlePin = async (id) => {
@@ -187,6 +204,17 @@ export default function ClickedPlan() {
   const handleDelete = async (id) => {
     navigate(-1);
     await deleteDoc(doc(firestore, "Plans", id));
+  };
+
+  const handleLoadMore = () => {
+    setLoadMore(loadMore + 5);
+    setIsLoading(true);
+    setTimeout(() => {
+      scrollTo?.current?.scrollIntoView({ behavior: "smooth" });
+    }, 300);
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 2000);
   };
 
   const handleSwitchItem = (item) => {
@@ -347,10 +375,12 @@ export default function ClickedPlan() {
               onClick={() => setIsModalOpen(!isModalOpen)}
             >
               <HiPlus />
-              <div>Add Task</div>
+              <div>Add Item</div>
             </div>
           </div>
 
+          {/* Checks if Tasks, Events, or Reminders is clicked 
+              then displays corresponding data */}
           {itemList
             ? isAll
               ? itemList.map((item, index) => (
@@ -403,6 +433,21 @@ export default function ClickedPlan() {
                   ))
               : null
             : null}
+        </div>
+        <div
+          className="flex items-center justify-center sm:max-w-[375px] pr-3 gap-3 font-semibold hover:cursor-pointer"
+          onClick={() => handleLoadMore()}
+          ref={scrollTo}
+        >
+          {isLoading ? (
+            <Stack sx={{ color: "grey.900" }} spacing={2} direction="row">
+              <CircularProgress color="inherit" size={15} />
+            </Stack>
+          ) : (
+            <AiOutlineReload />
+          )}
+
+          <span>Load More</span>
         </div>
       </div>
     </div>
