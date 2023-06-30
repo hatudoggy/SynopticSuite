@@ -2,6 +2,7 @@ import "../App.css";
 import { useState } from "react";
 import {nanoid} from 'nanoid';
 import deleteButton from "../assets/delete-button.svg";
+import {MdDeleteForever} from 'react-icons/md';
 // import plusButton from "../assets/plus-button.svg";
 
 function NotesPage() {
@@ -34,7 +35,7 @@ function NotesPage() {
             id: nanoid(),
             text: text,
             date: date.toLocaleDateString()
-        }
+        };
         const newNotes = [...notes, newNote];
         setNotes(newNotes);
     };
@@ -79,7 +80,10 @@ function Note({id, text, date, handleDeleteNote}) {
             <span>{text}</span>
             <div className="flex flex-row items-center justify-between">
                 <small>{date}</small>
-                <img onclick={()=> handleDeleteNote(id)} src = {deleteButton}/>
+                {/* <button className="hover:cursor-pointer" onclick={() => handleDeleteNote(id)}>
+                <img src = {deleteButton} />
+                </button> */}
+                <MdDeleteForever onClick={() => handleDeleteNote(id)} className="hover:cursor-pointer" size='1.3em'/>
             </div>
         </div>
     );
