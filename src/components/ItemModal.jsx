@@ -73,6 +73,9 @@ export default function ItemModal({
       }
     }
 
+    //Set default values for inputs
+    setItemType(itemData.itemType);
+
     return () => {
       setIsFocusedDescription(false);
       setIsFocusedSubject(false);
@@ -241,7 +244,7 @@ export default function ItemModal({
             <CreatableSelect
               options={PriorityOptions}
               styles={creatableSelectStyle}
-              placeholder="Priority"
+              placeholder={PriorityOptions.find(option => option.value === itemData.priority)?.label || ""}
               className="font-medium text-gray-700"
               noOptionsMessage={() => null}
               isSearchable={false}
@@ -251,7 +254,7 @@ export default function ItemModal({
             <CreatableSelect
               options={ProgressOptions}
               styles={creatableSelectStyle}
-              placeholder={ProgressOptions.find(option => option.value === "in-progress")?.label || ""}
+              placeholder={ProgressOptions.find(option => option.value === itemData.progress)?.label || ""}
               className="font-medium text-gray-700"
               noOptionsMessage={() => null}
               //components={{ Option: IconOption, SingleValue: IconSelected}}
@@ -264,7 +267,7 @@ export default function ItemModal({
                 <DatePicker
                   onFocus={(e) => e.target.blur()}
                   placeholderText="Start Date"
-                  selected={startDate}
+                  selected={new Date((itemData.startDate.seconds) * 1000)}
                   dateFormat={width < 350 ? "MM/dd/yy" : "MMM d, yyyy"}
                   onChange={(date) => setStartDate(date)}
                   className="w-full rounded-[4px] border-2 border-solid border-gray-500 px-3 py-2 font-medium text-gray-800 hover:border-gray-500 hover:border-opacity-50 focus:outline-none"
@@ -275,7 +278,7 @@ export default function ItemModal({
                 <DatePicker
                   onFocus={(e) => e.target.blur()}
                   placeholderText="End Date"
-                  selected={endDate}
+                  selected={new Date((itemData.endDate.seconds) * 1000)}
                   dateFormat={width < 350 ? "MM/dd/yy" : "MMM d, yyyy"}
                   onChange={(date) => setEndDate(date)}
                   className="w-full rounded-[4px] border-2 border-solid border-gray-500 px-3 py-2 font-medium text-gray-800 hover:border-gray-500 hover:border-opacity-50 focus:outline-none"
@@ -356,10 +359,9 @@ export default function ItemModal({
           <button
             type="submit"
             form="createPlan"
-            disabled={!(item && note) || (item && note) === ""}
-            className="mt-5 w-fit rounded-xl border-solid border-gray-900 bg-blue-500 px-4 py-2 text-white disabled:cursor-not-allowed disabled:bg-blue-300"
+            className="mt-5 w-fit rounded-xl border-solid border-gray-900 bg-blue-500 px-6 py-2 text-white disabled:cursor-not-allowed"
           >
-            Create
+            Edit
           </button>
         </div>
       </div>

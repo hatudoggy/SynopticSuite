@@ -389,8 +389,8 @@ export default function TodoModal({
             type="submit"
             form="createPlan"
             disabled={
-              !(item && note) ||
-              (item && note) === "" 
+              !(item && note && priority && progress && itemType && startDate && endDate) ||
+              (item && note && priority && progress && itemType && startDate && endDate) === "" 
             }
             className="mt-5 w-fit rounded-xl border-solid border-gray-900 bg-blue-500 px-4 py-2 text-white disabled:cursor-not-allowed disabled:bg-blue-300"
           >
