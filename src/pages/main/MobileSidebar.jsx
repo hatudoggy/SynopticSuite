@@ -1,11 +1,11 @@
-import '../index.css'
-import calendar from "../assets/calendar.svg";
-import resources from "../assets/resources.svg";
-import clock from "../assets/clock.svg";
-import planner from "../assets/planner.svg";
-import notes from "../assets/notes.svg"
-import analytics from "../assets/analytics.svg";
-import logo from "../assets/SuiteLogo.png";
+import '../../css/index.css'
+import calendar from "../../assets/calendar.svg";
+import resources from "../../assets/resources.svg";
+import clock from "../../assets/clock.svg";
+import planner from "../../assets/planner.svg";
+import notes from "../../assets/notes.svg"
+import analytics from "../../assets/analytics.svg";
+import logo from "../../assets/SuiteLogo.png";
 import { Icon, LinkCont } from './Sidebar'
 import { useNavigate } from "react-router-dom";
 

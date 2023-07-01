@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useState, useRef } from "react";
-import useClickClose from "./hooks/useClickClose";
+import useClickClose from "../../hooks/useClickClose";
 
 export default function PlannerCard({
   subject,
