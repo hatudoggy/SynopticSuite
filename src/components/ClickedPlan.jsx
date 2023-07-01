@@ -35,6 +35,8 @@ import { IoIosArrowDown } from "react-icons/io";
 import { AiOutlineReload } from "react-icons/ai";
 import Stack from "@mui/material/Stack";
 import CircularProgress from "@mui/material/CircularProgress";
+import useClickClose from "./hooks/useClickClose";
+import PlannerCardLoad from "./loaders/PlannerCardLoad";
 
 export default function ClickedPlan() {
   /******************************************/
@@ -248,155 +250,152 @@ export default function ClickedPlan() {
   };
 
   return (
-    <div className="flex h-full w-full flex-col bg-slate-300 px-10 py-10 sm:px-14 sm:py-14">
-      {/* MODALS */}
-      {isModalOpen ? (
-        <TodoModal
-          handleOutsideClick={handleOutsideClick}
-          handleFormSubmit={handleFormSubmit}
-          handleClose={() => setIsModalOpen(!isModalOpen)}
-          setItem={setItem}
-          item={item}
-          setNote={setNote}
-          note={note}
-          header={plan?.subject}
-          dateEdited={plan?.dateEdited?.toDate()?.toLocaleString()} //Passes the date
-          firstInput={"Item Name"}
-          secondInput={"Note"}
-          priority={priority}
-          setPriority={setPriority}
-          progress={progress}
-          setProgress={setProgress}
-          itemType={itemType}
-          setItemType={setItemType}
-          startDate={startDate}
-          setStartDate={setStartDate}
-          endDate={endDate}
-          setEndDate={setEndDate}
+    <div className="flex h-full w-full flex-row gap-10 bg-slate-300 px-10 py-10 sm:px-14 sm:py-14">
+      <div
+        className={
+          "flex h-full flex-col bg-slate-300 w-full" 
+        }
+      >
+        {/* MODALS */}
+        {isModalOpen ? (
+          <TodoModal
+            handleOutsideClick={handleOutsideClick}
+            handleFormSubmit={handleFormSubmit}
+            handleClose={() => setIsModalOpen(!isModalOpen)}
+            setItem={setItem}
+            item={item}
+            setNote={setNote}
+            note={note}
+            header={plan?.subject}
+            dateEdited={plan?.dateEdited?.toDate()?.toLocaleString()} //Passes the date
+            firstInput={"Item Name"}
+            secondInput={"Note"}
+            priority={priority}
+            setPriority={setPriority}
+            progress={progress}
+            setProgress={setProgress}
+            itemType={itemType}
+            setItemType={setItemType}
+            startDate={startDate}
+            setStartDate={setStartDate}
+            endDate={endDate}
+            setEndDate={setEndDate}
+          />
+        ) : null}
+        {isItemOpen ? (
+          <ItemModal
+            itemData={clickedItem}
+            handleOutsideClick={handleOutsideClick}
+            handleFormSubmit={handleFormSubmit}
+            handleClose={() => setIsItemOpen(!isItemOpen)}
+            setItem={setItem}
+            item={item}
+            setNote={setNote}
+            note={note}
+            header={plan?.subject}
+            dateEdited={clickedItem?.dateEdited?.toDate()?.toLocaleString()} //Passes the date
+            firstInput={"Item Name"}
+            secondInput={"Note"}
+            priority={priority}
+            setPriority={setPriority}
+            progress={progress}
+            setProgress={setProgress}
+            itemType={itemType}
+            setItemType={setItemType}
+            startDate={startDate}
+            setStartDate={setStartDate}
+            endDate={endDate}
+            setEndDate={setEndDate}
+          />
+        ) : null}
+        <img
+          src={returnButton}
+          alt=""
+          className="invert-to-white w-8 hover:cursor-pointer"
+          onClick={() => navigate(-1)}
         />
-      ) : null}
-      {isItemOpen ? (
-        <ItemModal
-          itemData={clickedItem}
-          handleOutsideClick={handleOutsideClick}
-          handleFormSubmit={handleFormSubmit}
-          handleClose={() => setIsItemOpen(!isItemOpen)}
-          setItem={setItem}
-          item={item}
-          setNote={setNote}
-          note={note}
-          header={plan?.subject}
-          dateEdited={clickedItem?.dateEdited?.toDate()?.toLocaleString()} //Passes the date
-          firstInput={"Item Name"}
-          secondInput={"Note"}
-          priority={priority}
-          setPriority={setPriority}
-          progress={progress}
-          setProgress={setProgress}
-          itemType={itemType}
-          setItemType={setItemType}
-          startDate={startDate}
-          setStartDate={setStartDate}
-          endDate={endDate}
-          setEndDate={setEndDate}
-        />
-      ) : null}
-      <img
-        src={returnButton}
-        alt=""
-        className="invert-to-white w-8 hover:cursor-pointer"
-        onClick={() => navigate(-1)}
-      />
-      <div className="mx-2 flex h-full flex-col gap-7 py-6">
-        <PlannerCard
-          subject={plan?.subject}
-          description={plan?.description}
-          color={plan?.color}
-          textColor={plan?.textColor}
-          pin={pin}
-          unpin={unpin}
-          isPinned={plan?.isPinned}
-          handlePin={handlePin}
-          handleUnpin={handleUnpin}
-          handleDelete={handleDelete}
-          settings={settings}
-          id={plan?.planId}
-        />
-        <div className="flex flex-row items-center justify-between sm:min-w-[375px] lg:max-w-[375px]">
-          <div
-            className={
-              "font-semibold hover:cursor-pointer sm:text-xl hover:underline hover:underline-offset-4 " +
-              (isAll ? "underline underline-offset-4" : "")
-            }
-            onClick={() => handleSwitchItem("all")}
-          >
-            All
-          </div>
-          {width > 319 ? (
-            <>
-              <div
-                className={
-                  "font-semibold hover:cursor-pointer sm:text-xl hover:underline hover:underline-offset-4 " +
-                  (isTask ? "underline underline-offset-4" : "")
-                }
-                onClick={() => handleSwitchItem("tasks")}
-              >
-                Tasks
-              </div>
-              <div
-                className={
-                  "font-semibold hover:cursor-pointer sm:text-xl hover:underline hover:underline-offset-4 " +
-                  (isEvent ? "underline underline-offset-4" : "")
-                }
-                onClick={() => handleSwitchItem("events")}
-              >
-                Events
-              </div>
-              <div
-                className={
-                  "font-semibold hover:cursor-pointer sm:text-xl hover:underline hover:underline-offset-4 " +
-                  (isReminder ? "underline underline-offset-4" : "")
-                }
-                onClick={() => handleSwitchItem("reminders")}
-              >
-                Reminders
-              </div>
-            </>
+        <div className="mx-2 flex h-full flex-col gap-7 py-6">
+          {plan ? (
+            <PlannerCard
+            subject={plan?.subject}
+            description={plan?.description}
+            color={plan?.color}
+            textColor={plan?.textColor}
+            pin={pin}
+            unpin={unpin}
+            isPinned={plan?.isPinned}
+            handlePin={handlePin}
+            handleUnpin={handleUnpin}
+            handleDelete={handleDelete}
+            settings={settings}
+            id={plan?.planId}
+          />
           ) : (
-            <div>
-              <IoIosArrowDown />
-            </div>
+            <PlannerCardLoad/>
           )}
-        </div>
-        <div className="flex flex-col gap-2">
-          <div className="flex flex-col gap-3 sm:min-w-[375px]">
+          
+          <div className="flex flex-row items-center justify-between sm:min-w-[375px] lg:max-w-[375px]">
             <div
-              className="flex items-center gap-1 rounded-md bg-blue-500 px-7 py-5 font-semibold text-white shadow hover:-translate-y-1 hover:cursor-pointer hover:bg-blue-300 hover:text-gray-800 hover:transition-all sm:min-w-[375px] lg:max-w-[375px]"
-              onClick={() => setIsModalOpen(!isModalOpen)}
+              className={
+                "font-semibold hover:cursor-pointer hover:underline hover:underline-offset-4 sm:text-xl " +
+                (isAll ? "underline underline-offset-4" : "")
+              }
+              onClick={() => handleSwitchItem("all")}
             >
-              <HiPlus />
-              <div>Add Item</div>
+              All
             </div>
+            {width > 319 ? (
+              <>
+                <div
+                  className={
+                    "font-semibold hover:cursor-pointer hover:underline hover:underline-offset-4 sm:text-xl " +
+                    (isTask ? "underline underline-offset-4" : "")
+                  }
+                  onClick={() => handleSwitchItem("tasks")}
+                >
+                  Tasks
+                </div>
+                <div
+                  className={
+                    "font-semibold hover:cursor-pointer hover:underline hover:underline-offset-4 sm:text-xl " +
+                    (isEvent ? "underline underline-offset-4" : "")
+                  }
+                  onClick={() => handleSwitchItem("events")}
+                >
+                  Events
+                </div>
+                <div
+                  className={
+                    "font-semibold hover:cursor-pointer hover:underline hover:underline-offset-4 sm:text-xl " +
+                    (isReminder ? "underline underline-offset-4" : "")
+                  }
+                  onClick={() => handleSwitchItem("reminders")}
+                >
+                  Reminders
+                </div>
+              </>
+            ) : (
+              <div>
+                <IoIosArrowDown />
+              </div>
+            )}
           </div>
+          <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-3 sm:min-w-[375px]">
+              <div
+                className="flex items-center gap-1 rounded-md bg-blue-500 px-7 py-5 font-semibold text-white shadow hover:-translate-y-1 hover:cursor-pointer hover:bg-blue-300 hover:text-gray-800 hover:transition-all sm:min-w-[375px] lg:max-w-[375px]"
+                onClick={() => setIsModalOpen(!isModalOpen)}
+              >
+                <HiPlus />
+                <div>Add Item</div>
+              </div>
+            </div>
 
-          {/* Checks if Tasks, Events, or Reminders is clicked 
+            {/* Checks if Tasks, Events, or Reminders is clicked 
               then displays corresponding data */}
-          {itemList
-            ? isAll
-              ? itemList.map((item, index) => (
-                  <ItemCard
-                    key={index}
-                    item={item}
-                    index={index}
-                    setIsItemOpen={setIsItemOpen}
-                    setClickedItem={setClickedItem}
-                    isItemOpen={isItemOpen}
-                  />
-                ))
-              : isTask
-              ? itemList
-                  .filter((item) => item.itemType === "task")
-                  .map((item, index) => (
+            {itemList
+              ? isAll
+                ? itemList.map((item, index) => (
                     <ItemCard
                       key={index}
                       item={item}
@@ -406,55 +405,95 @@ export default function ClickedPlan() {
                       isItemOpen={isItemOpen}
                     />
                   ))
-              : isEvent
-              ? itemList
-                  .filter((item) => item.itemType === "event")
-                  .map((item, index) => (
-                    <ItemCard
-                      key={index}
-                      item={item}
-                      index={index}
-                      setIsItemOpen={setIsItemOpen}
-                      setClickedItem={setClickedItem}
-                      isItemOpen={isItemOpen}
-                    />
-                  ))
-              : isReminder
-              ? itemList
-                  .filter((item) => item.itemType === "reminder")
-                  .map((item, index) => (
-                    <ItemCard
-                      item={item}
-                      index={index}
-                      setIsItemOpen={setIsItemOpen}
-                      setClickedItem={setClickedItem}
-                      isItemOpen={isItemOpen}
-                    />
-                  ))
-              : null
-            : null}
-        </div>
-        <div
-          className="flex items-center justify-center sm:max-w-[375px] pr-3 gap-3 font-semibold hover:cursor-pointer"
-          onClick={() => handleLoadMore()}
-          ref={scrollTo}
-        >
-          {isLoading ? (
-            <Stack sx={{ color: "grey.900" }} spacing={2} direction="row">
-              <CircularProgress color="inherit" size={15} />
-            </Stack>
-          ) : (
-            <AiOutlineReload />
-          )}
+                : isTask
+                ? itemList
+                    .filter((item) => item.itemType === "task")
+                    .map((item, index) => (
+                      <ItemCard
+                        key={index}
+                        item={item}
+                        index={index}
+                        setIsItemOpen={setIsItemOpen}
+                        setClickedItem={setClickedItem}
+                        isItemOpen={isItemOpen}
+                      />
+                    ))
+                : isEvent
+                ? itemList
+                    .filter((item) => item.itemType === "event")
+                    .map((item, index) => (
+                      <ItemCard
+                        key={index}
+                        item={item}
+                        index={index}
+                        setIsItemOpen={setIsItemOpen}
+                        setClickedItem={setClickedItem}
+                        isItemOpen={isItemOpen}
+                      />
+                    ))
+                : isReminder
+                ? itemList
+                    .filter((item) => item.itemType === "reminder")
+                    .map((item, index) => (
+                      <ItemCard
+                        item={item}
+                        index={index}
+                        setIsItemOpen={setIsItemOpen}
+                        setClickedItem={setClickedItem}
+                        isItemOpen={isItemOpen}
+                      />
+                    ))
+                : null
+              : null}
+          </div>
+          <div
+            className="flex items-center justify-center gap-3 pr-3 font-semibold hover:cursor-pointer lg:max-w-[375px]"
+            onClick={() => handleLoadMore()}
+            ref={scrollTo}
+          >
+            {isLoading ? (
+              <Stack sx={{ color: "grey.900" }} spacing={2} direction="row">
+                <CircularProgress color="inherit" size={15} />
+              </Stack>
+            ) : (
+              <AiOutlineReload />
+            )}
 
-          <span>Load More</span>
+            <span>Load More</span>
+          </div>
         </div>
       </div>
+      {/* <CardContent itemData={clickedItem} width={width} /> */}
     </div>
   );
 }
 
+function CardContent({ itemData, width }) {
+  return (
+    <>
+      {width > 1026 ? (
+        <div className="h-full w-full rounded-2xl bg-slate-100 p-5 shadow">
+          <div className="flex flex-col gap-5 text-xl font-semibold">
+            <div className="flex gap-3 items-center">
+              <ProgressIcons progress={itemData?.progress} />
+              {itemData?.itemName}
+            </div>
+          </div>
+        </div>
+      ) : null}
+    </>
+  );
+}
+
 function ItemCard({ item, index, setIsItemOpen, setClickedItem, isItemOpen }) {
+  //State for settings
+  const [isSettingsActive, setIsSettingsActive] = useState(false);
+  const parentRef = useRef(null);
+  const childRef = useRef(null);
+  useClickClose(childRef, parentRef, () => {
+    setIsSettingsActive(false);
+  });
+
   return (
     <div key={index} className="relative flex flex-col">
       <div
@@ -464,36 +503,50 @@ function ItemCard({ item, index, setIsItemOpen, setClickedItem, isItemOpen }) {
           setClickedItem(item);
         }}
       >
-        <div className="absolute right-3 top-2 z-10">
-          <BsThreeDots className="text-black hover:cursor-pointer" />
+        <div
+          className="absolute right-3 top-2 z-10"
+          ref={parentRef}
+          onClick={(e) => {
+            e.stopPropagation();
+            setIsSettingsActive(!isSettingsActive);
+          }}
+        >
+          <BsThreeDots className="relative text-black hover:cursor-pointer" />
+          {isSettingsActive ? (
+            <div
+              ref={childRef}
+              className="absolute right-1 top-4 z-10 flex flex-col rounded-md bg-slate-300 text-center text-sm font-medium"
+              id="settings"
+            >
+              <div
+                className="border-b border-black border-opacity-30 px-5 py-[0.35rem] hover:cursor-pointer hover:rounded-t-md hover:bg-slate-500 hover:text-white"
+                onClick={(e) => {
+                  if (e.target !== e.currentTarget) {
+                    setIsSettingsActive(!isSettingsActive);
+                  }
+                  e.stopPropagation();
+                  handleDelete(id);
+                }}
+              >
+                Delete
+              </div>
+              <div
+                className="py-[0.35rem] pr-[0.1rem] hover:cursor-pointer hover:rounded-b-md hover:bg-slate-500 hover:text-white"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsItemOpen(!isItemOpen);
+                }}
+              >
+                Edit
+              </div>
+            </div>
+          ) : null}
         </div>
         <div className="flex flex-col truncate">
           <div className="flex items-center gap-2 font-semibold">
             <div className="flex gap-2">
-              {/* Progress Icons */}
-              {item.progress === "completed" && (
-                <BsCheckCircle className="text-green-700" />
-              )}
-              {item.progress === "in-progress" && (
-                <BiLoader className="text-blue-700" />
-              )}
-              {item.progress === "not-started" && (
-                <BsThreeDots className="text-red-700" />
-              )}
-
-              {/* Priority Icons */}
-              {item.priority === "urgent" && (
-                <BiSolidBellRing className="text-red-700" />
-              )}
-              {item.priority === "important" && (
-                <RxDoubleArrowUp className="text-red-700" />
-              )}
-              {item.priority === "medium" && (
-                <PiEqualsBold className="text-orange-400" />
-              )}
-              {item.priority === "low" && (
-                <RxDoubleArrowDown className="text-green-700" />
-              )}
+              <ProgressIcons progress={item.progress} />
+              <PriorityIcons priority={item.priority} />
             </div>
 
             {/* Name */}
@@ -505,5 +558,28 @@ function ItemCard({ item, index, setIsItemOpen, setClickedItem, isItemOpen }) {
         </div>
       </div>
     </div>
+  );
+}
+
+function ProgressIcons({ progress }) {
+  return (
+    <>
+      {/* Progress Icons */}
+      {progress === "completed" && <BsCheckCircle className="text-green-700" />}
+      {progress === "in-progress" && <BiLoader className="text-blue-700" />}
+      {progress === "not-started" && <BsThreeDots className="text-red-700" />}
+    </>
+  );
+}
+
+function PriorityIcons({ priority }) {
+  return (
+    <>
+      {/* Priority Icons */}
+      {priority === "urgent" && <BiSolidBellRing className="text-red-700" />}
+      {priority === "important" && <RxDoubleArrowUp className="text-red-700" />}
+      {priority === "medium" && <PiEqualsBold className="text-orange-400" />}
+      {priority === "low" && <RxDoubleArrowDown className="text-green-700" />}
+    </>
   );
 }

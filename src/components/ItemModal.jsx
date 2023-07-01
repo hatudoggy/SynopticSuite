@@ -3,7 +3,6 @@ import closeButton from "../assets/close-button.svg";
 import "../index.css";
 import useWindowDimensions from "./hooks/useWindowDimensions";
 import { TwitterPicker } from "react-color";
-import { Timestamp } from "firebase/firestore";
 import checkmark from "../assets/checkmark.svg";
 import CreatableSelect, { components } from "react-select";
 import DatePicker from "react-datepicker";
@@ -15,11 +14,26 @@ import { RxDoubleArrowUp, RxDoubleArrowDown } from "react-icons/rx";
 import { BiLoader, BiSolidBellRing } from "react-icons/bi";
 import { BsThreeDots } from "react-icons/bs";
 import { PiEqualsBold } from "react-icons/pi";
+import {
+  query,
+  doc,
+  addDoc,
+  setDoc,
+  collection,
+  updateDoc,
+  deleteDoc,
+  orderBy,
+  onSnapshot,
+  where,
+  limit,
+  serverTimestamp,
+  Timestamp,
+} from "firebase/firestore";
+import { firestore } from "../config/firebase";
 
 export default function ItemModal({
   itemData,
   handleOutsideClick,
-  handleFormSubmit,
   handleClose,
   setItem,
   item,
@@ -47,6 +61,7 @@ export default function ItemModal({
   const [lastChanged, setLastChanged] = useState();
   const [showWarningForDate, setShowWarningForDate] = useState(false);
   const [animate, enableAnimations] = useAutoAnimate();
+  const [somethingChanged, setSomethingChanged] = useState(false);
 
   /* 
   Performs cleanup of state variables
@@ -75,12 +90,23 @@ export default function ItemModal({
 
     //Set default values for inputs
     setItemType(itemData.itemType);
+    setStartDate(
+      startDate ? startDate : new Date(itemData.startDate.seconds * 1000)
+    );
+    setEndDate(endDate ? endDate : new Date(itemData.endDate.seconds * 1000));
+    setPriority(itemData.priority);
+    setProgress(itemData.progress);
 
     return () => {
       setIsFocusedDescription(false);
       setIsFocusedSubject(false);
       setNote("");
       setItem("");
+      setStartDate("");
+      setEndDate("");
+      setPriority("");
+      setProgress("");
+      setItemType("");
     };
   }, []);
 
@@ -203,6 +229,38 @@ export default function ItemModal({
     },
   ];
 
+  const handleFormUpdate = async (event) => {
+    event.preventDefault();
+
+    //Get the id of the plan via the URL
+    const url = window.location.href;
+    const parts = url.split("/");
+    const id = parts[parts.length - 1];
+
+    const docRef = doc(
+      collection(doc(collection(firestore, "Plans"), id), "itemList"),
+      itemData.itemId
+    );
+
+    console.log(priority)
+
+    //Structure of data to be updated
+    const data = {
+      dateCreated: serverTimestamp(),
+      dateEdited: serverTimestamp(),
+      endDate: endDate,
+      startDate: startDate,
+      itemType: itemType,
+      priority: priority,
+      progress: progress,
+    };
+
+    //Close modal
+    handleClose();
+
+    await updateDoc(docRef, data);
+  };
+
   return (
     <div
       className="absolute right-0 top-0 z-20 flex h-full w-full items-center justify-center bg-black bg-opacity-50"
@@ -238,38 +296,55 @@ export default function ItemModal({
         <div className="flex flex-col items-center">
           <form
             className="flex w-full flex-col gap-3"
-            id="createPlan"
-            onSubmit={(event) => handleFormSubmit(event)}
+            id="updatePlan"
+            onSubmit={(event) => handleFormUpdate(event)}
           >
             <CreatableSelect
               options={PriorityOptions}
               styles={creatableSelectStyle}
-              placeholder={PriorityOptions.find(option => option.value === itemData.priority)?.label || ""}
+              placeholder={
+                PriorityOptions.find(
+                  (option) => option.value === itemData.priority
+                )?.label || ""
+              }
               className="font-medium text-gray-700"
               noOptionsMessage={() => null}
               isSearchable={false}
               isValidNewOption={() => false}
-              onChange={(e) => setPriority(e.value)}
+              onChange={(e) => {
+                setPriority(e.value);
+                setSomethingChanged(true);
+              }}
             />
             <CreatableSelect
               options={ProgressOptions}
               styles={creatableSelectStyle}
-              placeholder={ProgressOptions.find(option => option.value === itemData.progress)?.label || ""}
+              placeholder={
+                ProgressOptions.find(
+                  (option) => option.value === itemData.progress
+                )?.label || ""
+              }
               className="font-medium text-gray-700"
               noOptionsMessage={() => null}
               //components={{ Option: IconOption, SingleValue: IconSelected}}
               isSearchable={false}
               isValidNewOption={() => false}
-              onChange={(e) => setProgress(e.value)}
+              onChange={(e) => {
+                setProgress(e.value);
+                setSomethingChanged(true);
+              }}
             />
             <div className="flex gap-2">
               <div className="flex">
                 <DatePicker
                   onFocus={(e) => e.target.blur()}
                   placeholderText="Start Date"
-                  selected={new Date((itemData.startDate.seconds) * 1000)}
+                  selected={startDate}
                   dateFormat={width < 350 ? "MM/dd/yy" : "MMM d, yyyy"}
-                  onChange={(date) => setStartDate(date)}
+                  onChange={(date) => {
+                    setStartDate(date);
+                    setSomethingChanged(true);
+                  }}
                   className="w-full rounded-[4px] border-2 border-solid border-gray-500 px-3 py-2 font-medium text-gray-800 hover:border-gray-500 hover:border-opacity-50 focus:outline-none"
                   popperPlacement="top-end"
                 />
@@ -278,9 +353,12 @@ export default function ItemModal({
                 <DatePicker
                   onFocus={(e) => e.target.blur()}
                   placeholderText="End Date"
-                  selected={new Date((itemData.endDate.seconds) * 1000)}
+                  selected={endDate}
                   dateFormat={width < 350 ? "MM/dd/yy" : "MMM d, yyyy"}
-                  onChange={(date) => setEndDate(date)}
+                  onChange={(date) => {
+                    setEndDate(date);
+                    setSomethingChanged(true);
+                  }}
                   className="w-full rounded-[4px] border-2 border-solid border-gray-500 px-3 py-2 font-medium text-gray-800 hover:border-gray-500 hover:border-opacity-50 focus:outline-none"
                   popperPlacement="top-end"
                 />
@@ -316,7 +394,10 @@ export default function ItemModal({
                   type="radio"
                   name="entry"
                   value="task"
-                  onChange={handleInputChange}
+                  onChange={(e) => {
+                    handleInputChange(e);
+                    setSomethingChanged(true);
+                  }}
                 />
                 <span className="select-none">Task</span>
               </label>
@@ -333,7 +414,10 @@ export default function ItemModal({
                   type="radio"
                   name="entry"
                   value="event"
-                  onChange={handleInputChange}
+                  onChange={(e) => {
+                    handleInputChange(e);
+                    setSomethingChanged(true);
+                  }}
                 />
                 <span className="select-none">Event</span>
               </label>
@@ -350,16 +434,20 @@ export default function ItemModal({
                   type="radio"
                   name="entry"
                   value="reminder"
-                  onChange={handleInputChange}
+                  onChange={(e) => {
+                    handleInputChange(e);
+                    setSomethingChanged(true);
+                  }}
                 />
                 <span className="select-none">Reminder</span>
               </label>
             </div>
           </form>
           <button
+            disabled={!somethingChanged}
             type="submit"
-            form="createPlan"
-            className="mt-5 w-fit rounded-xl border-solid border-gray-900 bg-blue-500 px-6 py-2 text-white disabled:cursor-not-allowed"
+            form="updatePlan"
+            className="mt-5 w-fit rounded-xl border-solid border-gray-900 bg-blue-500 px-6 py-2 text-white disabled:cursor-not-allowed disabled:bg-blue-300"
           >
             Edit
           </button>
