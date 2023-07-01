@@ -1,4 +1,4 @@
-import "../App.css";
+import "../../css/App.css";
 import format from "date-fns/format";
 import {
   add,
@@ -22,7 +22,7 @@ import {
   subDays,
 } from "date-fns";
 import { useState, useEffect } from "react";
-import { firestore } from "../config/firebase";
+import { firestore } from "../../config/firebase";
 import {
   doc,
   addDoc,

@@ -1,10 +1,9 @@
 import { useState, useEffect } from "react";
-import closeButton from "../assets/close-button.svg";
-import "../index.css";
-import useWindowDimensions from "./hooks/useWindowDimensions";
+import closeButton from "../../assets/close-button.svg";
+import "../../css/index.css";
+import useWindowDimensions from "../../hooks/useWindowDimensions";
 import { TwitterPicker } from "react-color";
-import { Timestamp } from "firebase/firestore";
-import checkmark from "../assets/checkmark.svg";
+import checkmark from "../../assets/checkmark.svg";
 import CreatableSelect, { components } from "react-select";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -15,10 +14,26 @@ import { RxDoubleArrowUp, RxDoubleArrowDown } from "react-icons/rx";
 import { BiLoader, BiSolidBellRing } from "react-icons/bi";
 import { BsThreeDots } from "react-icons/bs";
 import { PiEqualsBold } from "react-icons/pi";
+import {
+  query,
+  doc,
+  addDoc,
+  setDoc,
+  collection,
+  updateDoc,
+  deleteDoc,
+  orderBy,
+  onSnapshot,
+  where,
+  limit,
+  serverTimestamp,
+  Timestamp,
+} from "firebase/firestore";
+import { firestore } from "../../config/firebase";
 
-export default function TodoModal({
+export default function ItemModal({
+  itemData,
   handleOutsideClick,
-  handleFormSubmit,
   handleClose,
   setItem,
   item,
@@ -41,10 +56,12 @@ export default function TodoModal({
 }) {
   const [isFocusedSubject, setIsFocusedSubject] = useState(false);
   const [isFocusedDescription, setIsFocusedDescription] = useState(false);
+  const [isNew, setIsNew] = useState(false);
   const { height, width } = useWindowDimensions();
   const [lastChanged, setLastChanged] = useState();
   const [showWarningForDate, setShowWarningForDate] = useState(false);
   const [animate, enableAnimations] = useAutoAnimate();
+  const [somethingChanged, setSomethingChanged] = useState(false);
 
   /* 
   Performs cleanup of state variables
@@ -60,6 +77,7 @@ export default function TodoModal({
       const hoursDifference = Math.floor(timeDifference / (1000 * 60 * 60));
 
       if (minutesDifference < 60) {
+        setIsNew(true);
         minutesDifference > 1
           ? setLastChanged(minutesDifference + " mins ago")
           : setLastChanged(minutesDifference + " min ago");
@@ -70,11 +88,25 @@ export default function TodoModal({
       }
     }
 
+    //Set default values for inputs
+    setItemType(itemData.itemType);
+    setStartDate(
+      startDate ? startDate : new Date(itemData.startDate.seconds * 1000)
+    );
+    setEndDate(endDate ? endDate : new Date(itemData.endDate.seconds * 1000));
+    setPriority(itemData.priority);
+    setProgress(itemData.progress);
+
     return () => {
       setIsFocusedDescription(false);
       setIsFocusedSubject(false);
       setNote("");
       setItem("");
+      setStartDate("");
+      setEndDate("");
+      setPriority("");
+      setProgress("");
+      setItemType("");
     };
   }, []);
 
@@ -129,30 +161,42 @@ export default function TodoModal({
   };
 
   const PriorityOptions = [
-    { value: "urgent", label: (
-      <div className="flex items-center gap-2">
-        <BiSolidBellRing className="text-red-800" />
-        Urgent
-      </div>
-    ), },
-    { value: "important", label: (
-      <div className="flex items-center gap-2">
-        <RxDoubleArrowUp className="text-red-800" />
-        Important
-      </div>
-    ), },
-    { value: "medium", label: (
-      <div className="flex items-center gap-2">
-        <PiEqualsBold className="text-orange-400" />
-        Medium
-      </div>
-    ), },
-    { value: "low", label: (
-      <div className="flex items-center gap-2">
-        <RxDoubleArrowDown className="text-green-800" />
-        Low
-      </div>
-    ), },
+    {
+      value: "urgent",
+      label: (
+        <div className="flex items-center gap-2">
+          <BiSolidBellRing className="text-red-800" />
+          Urgent
+        </div>
+      ),
+    },
+    {
+      value: "important",
+      label: (
+        <div className="flex items-center gap-2">
+          <RxDoubleArrowUp className="text-red-800" />
+          Important
+        </div>
+      ),
+    },
+    {
+      value: "medium",
+      label: (
+        <div className="flex items-center gap-2">
+          <PiEqualsBold className="text-orange-400" />
+          Medium
+        </div>
+      ),
+    },
+    {
+      value: "low",
+      label: (
+        <div className="flex items-center gap-2">
+          <RxDoubleArrowDown className="text-green-800" />
+          Low
+        </div>
+      ),
+    },
   ];
 
   const ProgressOptions = [
@@ -185,6 +229,38 @@ export default function TodoModal({
     },
   ];
 
+  const handleFormUpdate = async (event) => {
+    event.preventDefault();
+
+    //Get the id of the plan via the URL
+    const url = window.location.href;
+    const parts = url.split("/");
+    const id = parts[parts.length - 1];
+
+    const docRef = doc(
+      collection(doc(collection(firestore, "Plans"), id), "itemList"),
+      itemData.itemId
+    );
+
+    console.log(priority)
+
+    //Structure of data to be updated
+    const data = {
+      dateCreated: serverTimestamp(),
+      dateEdited: serverTimestamp(),
+      endDate: endDate,
+      startDate: startDate,
+      itemType: itemType,
+      priority: priority,
+      progress: progress,
+    };
+
+    //Close modal
+    handleClose();
+
+    await updateDoc(docRef, data);
+  };
+
   return (
     <div
       className="absolute right-0 top-0 z-20 flex h-full w-full items-center justify-center bg-black bg-opacity-50"
@@ -197,119 +273,92 @@ export default function TodoModal({
         }
       >
         <div className="text-md relative font-medium text-blue-500">
-          {header} <span className="text-black">&#x2022; New</span>
+          {header}{" "}
+          <span className="text-black">
+            &#x2022;{" "}
+            {itemData.itemType.charAt(0).toUpperCase() +
+              itemData.itemType.slice(1)}
+          </span>
           <div
             className="absolute right-0 top-[0.7rem] cursor-pointer"
             onClick={handleClose}
           >
             <img src={closeButton} alt="close button" className="w-6" />
           </div>
+          <div className="flex items-center gap-2 text-center text-black">
+            <AiOutlineCheckCircle />
+            {itemData.itemName}
+          </div>
           <div className="text-sm font-semibold text-gray-600">
             Last edited {lastChanged} by you
           </div>
         </div>
-        {/* <div className="flex items-center">
-          <img src={checkmark} className="h-6 w-6" />
-          <input
-            type="text"
-            className="mx-1 w-6/12 px-2 font-semibold focus:outline-gray-700 sm:w-8/12"
-            placeholder="New Item"
-            required
-          />
-        </div> */}
         <div className="flex flex-col items-center">
           <form
             className="flex w-full flex-col gap-3"
-            id="createPlan"
-            onSubmit={(event) => handleFormSubmit(event)}
+            id="updatePlan"
+            onSubmit={(event) => handleFormUpdate(event)}
           >
-            <div className="relative flex flex-col">
-              <label
-                htmlFor="firstInput"
-                className={
-                  "absolute left-4 top-2 z-10 font-semibold transition-all hover:cursor-text " +
-                  (isFocusedSubject || item
-                    ? "-translate-x-2 -translate-y-[1.2rem] bg-white text-sm text-gray-900"
-                    : "text-gray-400")
-                }
-              >
-                {firstInput}
-              </label>
-              <input
-                type="text"
-                id="firstInput"
-                onChange={(e) => setItem(e.target.value)}
-                // my-2 mt-6
-                className="rounded-[4px] border-2 border-solid border-gray-500 px-3 py-2 font-medium text-gray-800 hover:border-gray-500 hover:border-opacity-50 focus:outline-none"
-                required
-                onFocus={() => setIsFocusedSubject(!isFocusedSubject)}
-                onBlur={() => setIsFocusedSubject(!isFocusedSubject)}
-              />
-            </div>
-            <div className="relative flex flex-col">
-              {/* mb-4 */}
-              <label
-                htmlFor="secondInput"
-                className={
-                  "absolute left-4 top-2 z-10 font-semibold text-gray-400 transition-all hover:cursor-text " +
-                  (isFocusedDescription || note
-                    ? "-translate-x-2 -translate-y-[1.2rem] bg-white text-sm text-gray-900"
-                    : "text-gray-400")
-                }
-              >
-                {secondInput}
-              </label>
-              <input
-                type="text"
-                id="secondInput"
-                onChange={(e) => setNote(e.target.value)}
-                //my-2
-                className="rounded-[4px] border-2 border-solid border-gray-500 px-3 py-2 font-medium text-gray-800 hover:border-gray-500 hover:border-opacity-50 focus:outline-none"
-                required
-                onFocus={() => setIsFocusedDescription(!isFocusedDescription)}
-                onBlur={() => setIsFocusedDescription(!isFocusedDescription)}
-              />
-            </div>
             <CreatableSelect
               options={PriorityOptions}
               styles={creatableSelectStyle}
-              placeholder="Priority"
+              placeholder={
+                PriorityOptions.find(
+                  (option) => option.value === itemData.priority
+                )?.label || ""
+              }
               className="font-medium text-gray-700"
               noOptionsMessage={() => null}
               isSearchable={false}
               isValidNewOption={() => false}
-              onChange={(e) => setPriority(e.value)}
+              onChange={(e) => {
+                setPriority(e.value);
+                setSomethingChanged(true);
+              }}
             />
             <CreatableSelect
               options={ProgressOptions}
               styles={creatableSelectStyle}
-              placeholder="Progress"
+              placeholder={
+                ProgressOptions.find(
+                  (option) => option.value === itemData.progress
+                )?.label || ""
+              }
               className="font-medium text-gray-700"
               noOptionsMessage={() => null}
               //components={{ Option: IconOption, SingleValue: IconSelected}}
               isSearchable={false}
               isValidNewOption={() => false}
-              onChange={(e) => setProgress(e.value)}
+              onChange={(e) => {
+                setProgress(e.value);
+                setSomethingChanged(true);
+              }}
             />
             <div className="flex gap-2">
               <div className="flex">
                 <DatePicker
-                  onFocus={e => e.target.blur()}
+                  onFocus={(e) => e.target.blur()}
                   placeholderText="Start Date"
                   selected={startDate}
                   dateFormat={width < 350 ? "MM/dd/yy" : "MMM d, yyyy"}
-                  onChange={(date) => setStartDate(date)}
+                  onChange={(date) => {
+                    setStartDate(date);
+                    setSomethingChanged(true);
+                  }}
                   className="w-full rounded-[4px] border-2 border-solid border-gray-500 px-3 py-2 font-medium text-gray-800 hover:border-gray-500 hover:border-opacity-50 focus:outline-none"
                   popperPlacement="top-end"
                 />
               </div>
               <div className="flex">
                 <DatePicker
-                  onFocus={e => e.target.blur()}
+                  onFocus={(e) => e.target.blur()}
                   placeholderText="End Date"
                   selected={endDate}
                   dateFormat={width < 350 ? "MM/dd/yy" : "MMM d, yyyy"}
-                  onChange={(date) => setEndDate(date)}
+                  onChange={(date) => {
+                    setEndDate(date);
+                    setSomethingChanged(true);
+                  }}
                   className="w-full rounded-[4px] border-2 border-solid border-gray-500 px-3 py-2 font-medium text-gray-800 hover:border-gray-500 hover:border-opacity-50 focus:outline-none"
                   popperPlacement="top-end"
                 />
@@ -345,7 +394,10 @@ export default function TodoModal({
                   type="radio"
                   name="entry"
                   value="task"
-                  onChange={handleInputChange}
+                  onChange={(e) => {
+                    handleInputChange(e);
+                    setSomethingChanged(true);
+                  }}
                 />
                 <span className="select-none">Task</span>
               </label>
@@ -362,7 +414,10 @@ export default function TodoModal({
                   type="radio"
                   name="entry"
                   value="event"
-                  onChange={handleInputChange}
+                  onChange={(e) => {
+                    handleInputChange(e);
+                    setSomethingChanged(true);
+                  }}
                 />
                 <span className="select-none">Event</span>
               </label>
@@ -379,22 +434,22 @@ export default function TodoModal({
                   type="radio"
                   name="entry"
                   value="reminder"
-                  onChange={handleInputChange}
+                  onChange={(e) => {
+                    handleInputChange(e);
+                    setSomethingChanged(true);
+                  }}
                 />
                 <span className="select-none">Reminder</span>
               </label>
             </div>
           </form>
           <button
+            disabled={!somethingChanged}
             type="submit"
-            form="createPlan"
-            disabled={
-              !(item && note && priority && progress && itemType && startDate && endDate) ||
-              (item && note && priority && progress && itemType && startDate && endDate) === "" 
-            }
-            className="mt-5 w-fit rounded-xl border-solid border-gray-900 bg-blue-500 px-4 py-2 text-white disabled:cursor-not-allowed disabled:bg-blue-300"
+            form="updatePlan"
+            className="mt-5 w-fit rounded-xl border-solid border-gray-900 bg-blue-500 px-6 py-2 text-white disabled:cursor-not-allowed disabled:bg-blue-300"
           >
-            Create
+            Edit
           </button>
         </div>
       </div>

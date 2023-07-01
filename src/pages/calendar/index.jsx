@@ -1,7 +1,7 @@
-import '../App.css'
-import CalendarWidget from '../components/CalendarWidget'
+import '../../css/App.css'
+import CalendarWidget from './CalendarWidget'
 
-function CalendarPage() {
+export default function Calendar() {
 
   return (
     <div className='w-full h-full'>
@@ -14,5 +14,3 @@ function CalendarPage() {
     </div>
   )
 }
-
-export default CalendarPage
