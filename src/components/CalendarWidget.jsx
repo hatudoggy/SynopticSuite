@@ -511,7 +511,7 @@ function EventPopup({ events, color }) {
 function MoreEvent({ day, eventList }) {
   return (
     <div
-      className="invisible absolute z-20 w-96 translate-y-5 bg-white 
+      className="invisible absolute z-20 w-96 translate-y-5 bg-white rounded-md
         p-4
         text-start opacity-0 shadow-[0_24px_38px_3px_rgba(0,0,0,0.14),0_9px_46px_8px_rgba(0,0,0,0.12),0_11px_15px_-7px_rgba(0,0,0,0.2)] group-focus:visible group-focus:transform-none  group-focus:opacity-100"
       style={{
