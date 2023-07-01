@@ -1,3 +1,4 @@
+<<<<<<<< HEAD:src/main/Main.jsx
 import "../css/App.css";
 import { Routes, Route } from "react-router-dom";
 import Calendar from "../calendar";
@@ -5,6 +6,15 @@ import Planner from '../planner';
 import search from "../assets/search.svg";
 import ClickedPlan from "../planner/ClickedPlan";
 import menu from "../assets/menu.svg";
+========
+import "../../css/App.css";
+import { Routes, Route } from "react-router-dom";
+import Calendar from "../calendar";
+import Planner from '../planner';
+import search from "../../assets/search.svg";
+import ClickedPlan from "../planner/ClickedPlan";
+import menu from "../../assets/menu.svg";
+>>>>>>>> 0649bedf4810488f3e3b7c1f79de1074c52e8983:src/pages/main/Main.jsx
 import Notes from "../notes";
 
 function Main({setOpen}) {
