@@ -3,6 +3,7 @@ import './index.css'
 import Sidebar from './components/Sidebar'
 import Main from './components/Main'
 import MobileSidebar from './components/MobileSidebar'
+import LoginPage from './pages/LoginPage'
 import { useState } from 'react'
 
 
@@ -12,11 +13,12 @@ function App() {
 
 
   return (
-    <div className='flex flex-row-reverse justify-end overflow-scroll remove-scroll'>
-      <Main setOpen={setSideOpen}/> 
-      <Sidebar/>
-      <MobileSidebar open={sideOpen} setOpen={setSideOpen}/>
-    </div>
+    // <div className='flex flex-row-reverse justify-end overflow-scroll remove-scroll'>
+    //   <Main setOpen={setSideOpen}/> 
+    //   <Sidebar/>
+    //   <MobileSidebar open={sideOpen} setOpen={setSideOpen}/>
+    // </div>
+    <LoginPage/>
   )
 }
 
