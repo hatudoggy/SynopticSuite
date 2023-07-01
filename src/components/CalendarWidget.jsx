@@ -14,6 +14,12 @@ import {
   isSameDay,
   isWithinInterval,
   set,
+  intervalToDuration,
+  addDays,
+  isAfter,
+  isBefore,
+  sub,
+  subDays,
 } from "date-fns";
 import { useState, useEffect } from "react";
 import { firestore } from "../config/firebase";
@@ -57,7 +63,13 @@ function CalendarWidget() {
     end: endOfWeek(today),
   });
 
-  console.log(today);
+  const convertDurationToDays = (duration) => {
+    const { years = 0, months = 0, days = 0 } = duration;
+    const totalDays = years * 365 + months * 30 + days;
+    return totalDays;
+  };
+
+  //console.log(today);
 
   /******************************************/
   /*          Start of Use Effects          */
@@ -93,14 +105,23 @@ function CalendarWidget() {
           setItemList(items);
           let eventStructure = [];
           items.forEach((item) => {
+            let interval = intervalToDuration(
+              {
+                start: item.startDate.toDate(),
+                end: item.endDate.toDate()
+              }
+            );
             eventStructure.push({
               startDate: new Date(item.startDate.seconds * 1000),
               endDate: new Date(item.endDate.seconds * 1000),
               title: item.itemName,
+              progress: item.progress,
+              interval: convertDurationToDays(interval),
             });
           });
+          let sortedEvent = eventStructure.slice(0);
 
-          setEvents(eventStructure);
+          setEvents(sortedEvent.sort((a, b)=>{return b.interval-a.interval}));
         });
 
         return Promise.all([itemListOnSnapshot]);
@@ -116,7 +137,7 @@ function CalendarWidget() {
     };
   }, []);
 
-  console.log(itemList);
+  //console.log(events);
 
   /******************************************/
   /*          End of Use Effects            */
@@ -204,6 +225,8 @@ function Months({ day, day2, today, events }) {
   const [hoveredEvent, setHoveredEvent] = useState(null);
   const [focusEvent, setFocusEvent] = useState(null);
 
+  let pos = ['','',[]]
+
   return (
     <>
       <Header />
@@ -213,15 +236,19 @@ function Months({ day, day2, today, events }) {
       >
         {day.length > 35
           ? day.map((day, dayIx) => {
+
               return (
                 <DateCont
                   day={day}
                   today={today}
-                  events={events}
+                  events={events.filter((e)=>
+                    isWithinInterval(day, { start: e.startDate, end: e.endDate })
+                  )}
                   hover={hoveredEvent}
                   setHover={setHoveredEvent}
                   focus={focusEvent}
                   setFocus={setFocusEvent}
+                  posAll={pos}
                   key={day.toString()}
                 />
               );
@@ -230,14 +257,16 @@ function Months({ day, day2, today, events }) {
               return (
                 <>
                   <DateCont
-                    dayIx={dayIx}
                     day={day}
                     today={today}
-                    events={events}
+                    events={events.filter((e)=>
+                      isWithinInterval(day, { start: e.startDate, end: e.endDate })
+                    )}
                     hover={hoveredEvent}
                     setHover={setHoveredEvent}
                     focus={focusEvent}
                     setFocus={setFocusEvent}
+                    posAll={pos}
                     key={day.toString()}
                   />
                 </>
@@ -249,7 +278,6 @@ function Months({ day, day2, today, events }) {
 }
 
 function DateCont({
-  dayIx,
   day,
   today,
   events,
@@ -257,6 +285,7 @@ function DateCont({
   setHover,
   focus,
   setFocus,
+  posAll
 }) {
   //const [eventCount, setEventCount] = useState(0);
   //const [eventList, setEventList] = useState([]);
@@ -264,6 +293,57 @@ function DateCont({
   let eventCount = 0;
   let eventList = [];
 
+  function checkPos(events, pos){
+
+    let stack = events.slice(0);
+
+    if(isBefore(pos[0].endDate, day)){
+      pos[0] = '';
+    }
+    if(pos[0] !== ''){
+      stack = stack.filter(i=> i!= pos[0]);
+    } else if(stack.length !== 0 && stack.some(e=>isSameDay(day, e.startDate))){
+      pos[0] = stack.find(e=>isSameDay(day, e.startDate));
+      stack = stack.filter(i=> i!= pos[0]);
+    } else{
+      stack = stack.filter(i=> i!= pos[0]);
+    }
+
+    if(isBefore(pos[1].endDate, day)){
+      pos[1] = '';
+    }
+    if(pos[1] !== ''){
+      stack = stack.filter(i=> i!= pos[1]);
+    } else if(stack.length !== 0 && stack.some(e=>isSameDay(day, e.startDate))){
+      pos[1] = stack.find(e=>isSameDay(day, e.startDate));
+      stack = stack.filter(i=> i!= pos[1]);
+    } else{
+      stack = stack.filter(i=> i!= pos[1]);
+    }
+
+    //console.log(stack);
+    pos[2].forEach((e)=>{
+      if(isBefore(e.endDate, day)){
+        pos[2] = pos[2].filter(i=> i!= e);
+      }
+    })
+    stack.forEach((e)=>{
+      if(isSameDay(day, e.startDate)){
+        pos[2].push(e);
+      }
+        stack = stack.filter(i=> i!= e);
+
+    })
+
+
+      
+  }
+
+  
+  //console.log('Day'+format(day, 'd'));
+  checkPos(events, posAll)
+  //console.log('pos1: '+(posAll[0].title?posAll[0].title:' '), 'pos2: '+(posAll[1].title?posAll[1].title:' '));
+  //console.log((posAll[2]));
   return (
     <div className="flex flex-col py-1">
       <button type="button" className="flex justify-center">
@@ -285,9 +365,9 @@ function DateCont({
       <div className="flex flex-1 relative flex-col justify-between">
         <div className="grid grid-rows-2 gap-[3px] truncate">
           {events.map((e, i) => {
-            if (isWithinInterval(day, { start: e.startDate, end: e.endDate })) {
-              if (i < 2) {
-                //console.log(e.startDate==e.endDate)
+            //console.log(e);
+              if (!posAll[2].includes(e)) {
+
                 return (
                   <Event
                     pos={
@@ -300,7 +380,10 @@ function DateCont({
                         : "mid"
                     }
                     key={i}
-                    index={i}
+                    index={
+                      posAll[0].title==e.title?1:
+                      posAll[1].title==e.title?2:''
+                    }
                     events={e}
                     hover={hover}
                     setHover={setHover}
@@ -308,17 +391,17 @@ function DateCont({
                     setFocus={setFocus}
                   />
                 );
-              } else {
+              } else{
                 eventCount = eventCount + 1;
                 eventList = [...eventList, e];
               }
-            }
+            
           })}
         </div>
         {eventCount > 0 ? (
           <button className="group cursor-default">
-            <span className="cursor-pointer text-xs opacity-50">
-              {eventCount} more
+            <span className="cursor-pointer text-xs opacity-50 p-[3px] bg-slate-200 rounded-2xl">
+              +{eventCount}
             </span>
             <MoreEvent day={day} eventList={eventList} />
           </button>
@@ -366,21 +449,26 @@ function TimeCont() {
 }
 
 function Event({ index, events, pos, hover, setHover, focus, setFocus }) {
+  const color = {
+    'not-started': {bg:['bg-red-500','bg-red-600'],bd:'border-red-500'},
+    'in-progress': {bg:['bg-blue-500','bg-blue-600'],bd:'border-blue-500'},
+    'completed': {bg:['bg-green-500','bg-green-600'],bd:'border-green-500'}
+  }
   return (
     <button
       className={
         (pos == "same"
-          ? "rounded-lg"
+          ? "rounded-md"
           : pos == "start"
-          ? "rounded-l-lg"
+          ? "rounded-l-md"
           : pos == "end"
-          ? "rounded-r-lg"
+          ? "rounded-r-md w-11/12"
           : "") +
-        " group bg-green-400 px-3 text-left text-xs text-white " +
-        (hover == events.title ? "bg-green-600 " : "") +
-        (focus == events.title ? "shadow-lg" : "shadow-none")
+        " group px-3 text-left text-xs text-white " +
+        (hover == events.title ? (color[events.progress].bg[1]) : (color[events.progress].bg[0])) +
+        (focus == events.title ? " shadow-lg" : " shadow-none")
       }
-      style={{ gridRow: (index + 1).toString() + "/2" }}
+      style={{ gridRow: (index).toString() + "/2" }}
       onMouseEnter={() => {
         setHover(events.title);
       }}
@@ -395,17 +483,18 @@ function Event({ index, events, pos, hover, setHover, focus, setFocus }) {
       }}
     >
       {pos == "start" || pos == "same" ? events.title : "ㅤ"}
-      <EventPopup events={events} />
+      <EventPopup events={events} color={color} />
     </button>
   );
 }
 
-function EventPopup({ events }) {
+function EventPopup({ events, color }) {
+
   return (
     <div
-      className="invisible absolute top-10 z-20 w-56 translate-y-5 rounded border-l-8 border-green-300 bg-white p-6
-        text-start 
-        text-black opacity-0 shadow-[0_24px_38px_3px_rgba(0,0,0,0.14),0_9px_46px_8px_rgba(0,0,0,0.12),0_11px_15px_-7px_rgba(0,0,0,0.2)] group-focus:visible group-focus:transform-none  group-focus:opacity-100"
+      className={"invisible absolute top-10 z-20 w-56 translate-y-5 rounded border-l-8 "+(color[events.progress].bd)+" bg-white p-6 "+
+        "text-start text-black opacity-0 "+
+        "shadow-[0_24px_38px_3px_rgba(0,0,0,0.14),0_9px_46px_8px_rgba(0,0,0,0.12),0_11px_15px_-7px_rgba(0,0,0,0.2)] group-focus:visible group-focus:transform-none  group-focus:opacity-100"}
       style={{
         transition:
           "visibility 0.1s linear, opacity 0.2s ease-in, transform 0.2s ease-in-out",
@@ -435,10 +524,10 @@ function MoreEvent({ day, eventList }) {
         {format(day, "MMM d")}
       </div>
       <div className="flex flex-col gap-3 p-4">
-        {eventList.map((e) => {
+        {eventList.map((e, i) => {
           //console.log(e)
           return (
-            <div className="flex flex-col">
+            <div className="flex flex-col" key={i}>
               <p className="text-lg">{e.title}</p>
               <p className=" text-sm opacity-60">
                 {format(e.startDate, "MMM d")} - {format(e.endDate, "MMM d")}
