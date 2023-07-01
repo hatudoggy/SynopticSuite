@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
-import closeButton from "../assets/close-button.svg";
-import "../index.css";
-import useWindowDimensions from "./useWindowDimensions";
+import closeButton from "../../assets/close-button.svg";
+import "../../css/index.css";
+import useWindowDimensions from "../../hooks/useWindowDimensions";
 import { TwitterPicker } from "react-color";
 
-export default function Modal({
+export default function PlanModal({
   handleOutsideClick,
   handleFormSubmit,
   handleClose,

@@ -1,15 +1,16 @@
-import "../App.css";
+import "../css/App.css";
 import { Routes, Route } from "react-router-dom";
-import Calendar from "../pages/Calendar";
-import Planner from "../pages/Planner";
+import Calendar from "../calendar";
+import Planner from '../planner';
 import search from "../assets/search.svg";
-import ClickedPlan from "./ClickedPlan";
+import ClickedPlan from "../planner/ClickedPlan";
 import menu from "../assets/menu.svg";
+import Notes from "../notes";
 
 function Main({setOpen}) {
   return (
     <div className="flex h-screen w-full flex-none sm:flex-1 flex-col">
-      <div className="sticky top-0 z-0 flex h-12 flex-none items-center sm:justify-between bg-white pl-2 sm:pl-6 pr-12 shadow-lg">
+      <div className="sticky top-0 z-10 flex h-12 flex-none items-center sm:justify-between bg-white pl-2 sm:pl-6 pr-12 shadow-lg">
         <Menu setSideOpen={setOpen}/>
         <SearchBar/>
         <Profile/>
@@ -20,6 +21,7 @@ function Main({setOpen}) {
         >
           <Route path="/" element={<Calendar />}/>
           <Route path="planner" element={<Planner />}/>
+          <Route path="notes" element={<Notes />}/>
           <Route path={`planner/:id`} element={<ClickedPlan/>}/>
           <Route path={`planner/pinned/:id`} element={<ClickedPlan/>}/>
         </Routes>
