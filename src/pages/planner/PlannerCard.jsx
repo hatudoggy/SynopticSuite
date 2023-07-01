@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useRef } from "react";
+import useClickClose from "../../hooks/useClickClose";
 
 export default function PlannerCard({
   subject,
@@ -18,6 +19,9 @@ export default function PlannerCard({
 }) {
   const navigate = useNavigate();
   const [isSettingsActive, setIsSettingsActive] = useState(false);
+  const parentRef = useRef(null);
+  const childRef = useRef(null);
+  useClickClose(childRef, parentRef, () => setIsSettingsActive(false));
 
   return (
     <div
@@ -65,6 +69,7 @@ export default function PlannerCard({
         )}
         {handleDelete ? (
           <img
+            ref={parentRef}
             src={settings}
             className="relative w-5 hover:cursor-pointer"
             onClick={(e) => {
@@ -76,6 +81,7 @@ export default function PlannerCard({
       </div>
       {isSettingsActive ? (
         <div
+          ref={childRef}
           className="absolute right-4 top-10 z-10 flex flex-col rounded-md bg-slate-300 text-center text-sm font-medium"
           id="settings"
         >
