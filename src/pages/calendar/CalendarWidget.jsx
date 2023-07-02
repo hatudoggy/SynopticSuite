@@ -38,6 +38,7 @@ import {
 } from "firebase/firestore";
 import { useCollectionData } from "react-firebase-hooks/firestore";
 import { useNavigate } from "react-router-dom";
+import { BsArrowRightShort } from "react-icons/bs";
 
 function CalendarWidget() {
   let today = startOfToday();
@@ -511,11 +512,11 @@ function EventPopup({ events, color }) {
   return (
     <div
       className={
-        "invisible absolute top-10 z-20 w-56 translate-y-5 rounded border-l-8 " +
+        "group/card invisible absolute top-10 z-20 w-56 translate-y-5 rounded border-l-8 hover:bg-gray-200 " +
         color[events.progress].bd +
         " bg-white p-6 " +
         "text-start text-black opacity-0 " +
-        "shadow-[0_24px_38px_3px_rgba(0,0,0,0.14),0_9px_46px_8px_rgba(0,0,0,0.12),0_11px_15px_-7px_rgba(0,0,0,0.2)] group-focus:visible group-focus:transform-none  group-focus:opacity-100"
+        "shadow-[0_24px_38px_3px_rgba(0,0,0,0.14),0_9px_46px_8px_rgba(0,0,0,0.12),0_11px_15px_-7px_rgba(0,0,0,0.2)] group-focus:visible group-focus:transform-none group-focus:opacity-100"
       }
       style={{
         transition:
@@ -523,10 +524,14 @@ function EventPopup({ events, color }) {
       }}
       onClick={() => navigate(`planner/${events.id}`)}
     >
-      <p className="text-lg">{events.title}</p>
-      <p className=" text-sm opacity-60">
-        {format(events.startDate, "MMM d")} - {format(events.endDate, "MMM d")}
-      </p>
+      <div className="relative">
+        <p className="text-lg">{events.title}</p>
+        <p className=" text-sm opacity-60">
+          {format(events.startDate, "MMM d")} -{" "}
+          {format(events.endDate, "MMM d")}
+        </p>
+        <p className="absolute -right-3 -bottom-3 translate-x-5 transition-all font-semibold text-transparent flex gap-1 items-center group-hover/card:text-black group-hover/card:translate-x-0">Open <BsArrowRightShort className="mt-1"/></p>
+      </div>
     </div>
   );
 }
