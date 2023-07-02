@@ -253,6 +253,7 @@ export default function ItemModal({
       itemType: itemType,
       priority: priority,
       progress: progress,
+      planId: id,
     };
 
     //Close modal
