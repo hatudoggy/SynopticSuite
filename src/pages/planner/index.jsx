@@ -172,7 +172,7 @@ function Planner() {
         <img src={returnButton} alt="" className="w-8" />
       </div> */}
       {isModalOpen ? (
-        <Modal
+        <PlanModal
           handleOutsideClick={handleOutsideClick}
           handleFormSubmit={handleFormSubmit}
           handleClose={() => setIsModalOpen(!isModalOpen)}

@@ -166,6 +166,7 @@ export default function ClickedPlan() {
       endDate: endDate,
       itemId: docRef.id,
       itemType: itemType,
+      planId: id,
     };
 
     //Set data to state. This makes it easier to update data in the future
