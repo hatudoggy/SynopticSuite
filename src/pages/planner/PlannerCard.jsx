@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useState, useRef } from "react";
 import useClickClose from "../../hooks/useClickClose";
+import { BsArrowRightShort } from "react-icons/bs";
 
 export default function PlannerCard({
   subject,
@@ -16,6 +17,7 @@ export default function PlannerCard({
   settings,
   id,
   link,
+  hasOpenPrompt,
 }) {
   const navigate = useNavigate();
   const [isSettingsActive, setIsSettingsActive] = useState(false);
@@ -26,7 +28,7 @@ export default function PlannerCard({
   return (
     <div
       className={
-        "relative flex flex-row rounded-xl bg-slate-100 p-5 shadow-md sm:min-w-[375px] lg:max-w-[375px] " +
+        "group/pc relative flex flex-row rounded-xl bg-slate-100 p-5 shadow-md sm:min-w-[375px] lg:max-w-[375px] " +
         (link ? "hover:cursor-pointer" : "")
       }
       onClick={link ? () => navigate(link) : null}
@@ -102,6 +104,12 @@ export default function PlannerCard({
           >
             Edit
           </div>
+        </div>
+      ) : null}
+      {hasOpenPrompt ? (
+        <div className="text absolute bottom-2 right-5 flex translate-x-6 items-center gap-1 text-transparent transition-all group-hover/pc:translate-x-0 group-hover/pc:text-gray-600">
+          <p className="font-semibold">Open</p>
+          <BsArrowRightShort className="mt-1 h-5 w-5" />
         </div>
       ) : null}
     </div>
