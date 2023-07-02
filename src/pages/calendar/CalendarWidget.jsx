@@ -512,7 +512,7 @@ function EventPopup({ events, color }) {
   return (
     <div
       className={
-        "group/card invisible absolute top-10 z-20 w-56 translate-y-5 rounded border-l-8 hover:bg-gray-200 " +
+        "group/card truncate invisible absolute top-10 z-20 w-56 translate-y-5 rounded border-l-8 hover:bg-gray-200 " +
         color[events.progress].bd +
         " bg-white p-6 " +
         "text-start text-black opacity-0 " +
@@ -525,22 +525,25 @@ function EventPopup({ events, color }) {
       onClick={() => navigate(`planner/${events.id}`)}
     >
       <div className="relative">
-        <p className="text-lg">{events.title}</p>
+        <p className="text-lg truncate">{events.title}</p>
         <p className=" text-sm opacity-60">
           {format(events.startDate, "MMM d")} -{" "}
           {format(events.endDate, "MMM d")}
         </p>
-        <p className="absolute -right-3 -bottom-3 translate-x-5 transition-all font-semibold text-transparent flex gap-1 items-center group-hover/card:text-black group-hover/card:translate-x-0">Open <BsArrowRightShort className="mt-1"/></p>
+        <p className="absolute -bottom-3 -right-3 flex translate-x-5 items-center gap-1 font-semibold text-transparent transition-all group-hover/card:translate-x-0 group-hover/card:text-black">
+          Open <BsArrowRightShort className="mt-1 h-4 w-4" />
+        </p>
       </div>
     </div>
   );
 }
 
 function MoreEvent({ day, eventList }) {
+  //Navigation
+  const navigate = useNavigate();
   return (
     <div
-      className="invisible absolute z-20 w-96 translate-y-5 rounded-md bg-white
-        p-4
+      className="invisible absolute z-20 w-96 translate-y-5 rounded-md bg-white p-4
         text-start opacity-0 shadow-[0_24px_38px_3px_rgba(0,0,0,0.14),0_9px_46px_8px_rgba(0,0,0,0.12),0_11px_15px_-7px_rgba(0,0,0,0.2)] group-focus:visible group-focus:transform-none  group-focus:opacity-100"
       style={{
         transition:
@@ -551,14 +554,21 @@ function MoreEvent({ day, eventList }) {
         <span className="text-green-600">{format(day, "iiii")}</span>{" "}
         {format(day, "MMM d")}
       </div>
-      <div className="flex flex-col gap-3 p-4">
+      <div className="flex flex-col gap-1 p-2">
         {eventList.map((e, i) => {
           //console.log(e)
           return (
-            <div className="flex flex-col" key={i}>
+            <div
+              className="hover:cursor-pointer group/more relative flex flex-col rounded-md p-2 hover:bg-gray-300"
+              key={i}
+              onClick={() => navigate(`planner/${e.id}`)}
+            >
               <p className="text-lg">{e.title}</p>
               <p className=" text-sm opacity-60">
                 {format(e.startDate, "MMM d")} - {format(e.endDate, "MMM d")}
+              </p>
+              <p className="absolute bottom-1 right-1 flex translate-x-2 items-center gap-1 font-semibold text-transparent transition-all group-hover/more:translate-x-0 group-hover/more:text-black">
+                Open <BsArrowRightShort className="mt-1 h-5 w-5" />
               </p>
             </div>
           );

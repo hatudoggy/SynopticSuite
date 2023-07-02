@@ -250,6 +250,7 @@ function Planner() {
                       settings={settings}
                       id={item.planId}
                       link={`/planner/pinned/${item.planId}`}
+                      hasOpenPrompt={true}
                     />
                   ))
               ) : (
@@ -328,6 +329,7 @@ function Planner() {
                         settings={settings}
                         id={plan.planId}
                         link={`/planner/${plan.planId}`}
+                        hasOpenPrompt={true}
                       />
                     ))
                 ) : (
@@ -354,6 +356,7 @@ function Planner() {
                         settings={settings}
                         id={plan.planId}
                         link={`/planner/${plan.planId}`}
+                        hasOpenPrompt={true}
                       />
                     ))
                 )
