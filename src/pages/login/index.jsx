@@ -3,9 +3,8 @@ import {
   FaGoogle as Gg,
   FaMicrosoft as Mc
 } from 'react-icons/fa'
-import '../App.css'
-import logo from "../assets/SuiteLogo.png";
-import waves from "../assets/layered-waves.svg";
+import '../../css/App.css'
+import logo from "../../assets/SuiteLogo.png";
 import { IconContext } from 'react-icons/lib';
 
 function LoginPage() {

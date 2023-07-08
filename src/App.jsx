@@ -3,7 +3,7 @@ import './css/index.css'
 import Sidebar from './pages/main/Sidebar'
 import Main from './pages/main/Main'
 import MobileSidebar from './pages/main/MobileSidebar'
-import LoginPage from './pages/LoginPage'
+import LoginPage from './pages/login'
 import { useState } from 'react'
 
 
