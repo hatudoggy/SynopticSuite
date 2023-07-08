@@ -1,15 +1,15 @@
 import React, { useState, useRef, useEffect } from "react";
-import calendar from "../assets/calendar.svg";
-import resources from "../assets/resources.svg";
-import clock from "../assets/clock.svg";
-import planner from "../assets/planner.svg";
-import notes from "../assets/notes.svg";
-import analytics from "../assets/analytics.svg";
-import addButton from "../assets/add-button.svg";
-import logo from "../assets/SuiteLogo.png";
+import calendar from "../../assets/calendar.svg";
+import resources from "../../assets/resources.svg";
+import clock from "../../assets/clock.svg";
+import planner from "../../assets/planner.svg";
+import notes from "../../assets/notes.svg";
+import analytics from "../../assets/analytics.svg";
+import addButton from "../../assets/add-button.svg";
+import logo from "../../assets/SuiteLogo.png";
 import { useNavigate } from "react-router-dom";
-import "./Sidebar.css";
-import useClickClose from "./hooks/useClickClose";
+import "../../css/Sidebar.css";
+import useClickClose from "../../hooks/useClickClose";
 
 function Sidebar() {
   return (

@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from "react";
-import returnButton from "../assets/returnButton.svg";
+import returnButton from "../../assets/returnButton.svg";
 import { useNavigate } from "react-router-dom";
 import {
   query,
@@ -16,11 +16,11 @@ import {
   serverTimestamp,
   Timestamp,
 } from "firebase/firestore";
-import { firestore } from "../config/firebase";
-import pin from "../assets/pinned.svg";
-import unpin from "../assets/unpin.svg";
+import { firestore } from "../../config/firebase";
+import pin from "../../assets/pinned.svg";
+import unpin from "../../assets/unpin.svg";
 import PlannerCard from "./PlannerCard";
-import settings from "../assets/dots-settings.svg";
+import settings from "../../assets/dots-settings.svg";
 import TodoModal from "./TodoModal";
 import { set } from "date-fns";
 import { BsCheckCircle } from "react-icons/bs";
@@ -29,14 +29,14 @@ import { BsThreeDots } from "react-icons/bs";
 import { PiEqualsBold } from "react-icons/pi";
 import { RxDoubleArrowUp, RxDoubleArrowDown } from "react-icons/rx";
 import { HiPlus } from "react-icons/hi";
-import ItemModal from "./itemModal";
-import useWindowDimensions from "./hooks/useWindowDimensions";
+import ItemModal from "./ItemModal";
+import useWindowDimensions from "../../hooks/useWindowDimensions";
 import { IoIosArrowDown } from "react-icons/io";
 import { AiOutlineReload } from "react-icons/ai";
 import Stack from "@mui/material/Stack";
 import CircularProgress from "@mui/material/CircularProgress";
-import useClickClose from "./hooks/useClickClose";
-import PlannerCardLoad from "./loaders/PlannerCardLoad";
+import useClickClose from "../../hooks/useClickClose";
+import PlannerCardLoad from "../../loaders/Planner/PlannerCardLoad";
 
 export default function ClickedPlan() {
   /******************************************/
@@ -166,6 +166,7 @@ export default function ClickedPlan() {
       endDate: endDate,
       itemId: docRef.id,
       itemType: itemType,
+      planId: id,
     };
 
     //Set data to state. This makes it easier to update data in the future

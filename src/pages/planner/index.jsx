@@ -1,16 +1,16 @@
-import "../App.css";
-import returnButton from "../assets/returnButton.svg";
+import "../../css/App.css";
+import returnButton from "../../assets/returnButton.svg";
 import { useEffect, useState } from "react";
-import pin from "../assets/pinned.svg";
-import unpin from "../assets/unpin.svg";
-import settings from "../assets/dots-settings.svg";
-import addButton from "../assets/add-button-no-circle.svg";
-import useWindowDimensions from "../components/hooks/useWindowDimensions";
-import PlannerCard from "../components/PlannerCard";
-import Modal from "../components/Modal";
+import pin from "../../assets/pinned.svg";
+import unpin from "../../assets/unpin.svg";
+import settings from "../../assets/dots-settings.svg";
+import addButton from "../../assets/add-button-no-circle.svg";
+import useWindowDimensions from "../../hooks/useWindowDimensions";
+import PlannerCard from "./PlannerCard";
+import PlanModal from "./PlanModal";
 import { useNavigate } from "react-router-dom";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
-import { firestore } from "../config/firebase";
+import { firestore } from "../../config/firebase";
 import {
   doc,
   addDoc,
@@ -26,7 +26,7 @@ import {
 } from "firebase/firestore";
 import { useCollectionData } from "react-firebase-hooks/firestore";
 import { Skeleton } from "@mui/material";
-import PlannerCardLoad from "../components/loaders/PlannerCardLoad";
+import PlannerCardLoad from "../../loaders/Planner/PlannerCardLoad";
 
 function Planner() {
   /******************************************/
@@ -172,7 +172,7 @@ function Planner() {
         <img src={returnButton} alt="" className="w-8" />
       </div> */}
       {isModalOpen ? (
-        <Modal
+        <PlanModal
           handleOutsideClick={handleOutsideClick}
           handleFormSubmit={handleFormSubmit}
           handleClose={() => setIsModalOpen(!isModalOpen)}
@@ -250,6 +250,7 @@ function Planner() {
                       settings={settings}
                       id={item.planId}
                       link={`/planner/pinned/${item.planId}`}
+                      hasOpenPrompt={true}
                     />
                   ))
               ) : (
@@ -328,6 +329,7 @@ function Planner() {
                         settings={settings}
                         id={plan.planId}
                         link={`/planner/${plan.planId}`}
+                        hasOpenPrompt={true}
                       />
                     ))
                 ) : (
@@ -354,6 +356,7 @@ function Planner() {
                         settings={settings}
                         id={plan.planId}
                         link={`/planner/${plan.planId}`}
+                        hasOpenPrompt={true}
                       />
                     ))
                 )

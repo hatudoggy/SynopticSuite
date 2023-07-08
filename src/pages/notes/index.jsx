@@ -1,11 +1,11 @@
-import "../App.css";
+import "../../css/App.css";
 import { useState } from "react";
 import {nanoid} from 'nanoid';
-import deleteButton from "../assets/delete-button.svg";
+import deleteButton from "../../assets/delete-button.svg";
 import {MdDeleteForever} from 'react-icons/md';
 // import plusButton from "../assets/plus-button.svg";
 
-function NotesPage() {
+export default function Notes() {
     const [notes, setNotes] = useState([
         {
             id: nanoid(),
@@ -124,5 +124,3 @@ function AddNote({handleAddNote}) {
         </div>
     );
 }
-
-export default NotesPage;

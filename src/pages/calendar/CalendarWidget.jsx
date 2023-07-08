@@ -1,4 +1,4 @@
-import "../App.css";
+import "../../css/App.css";
 import format from "date-fns/format";
 import {
   add,
@@ -22,7 +22,7 @@ import {
   subDays,
 } from "date-fns";
 import { useState, useEffect } from "react";
-import { firestore } from "../config/firebase";
+import { firestore } from "../../config/firebase";
 import {
   doc,
   addDoc,
@@ -37,12 +37,15 @@ import {
   serverTimestamp,
 } from "firebase/firestore";
 import { useCollectionData } from "react-firebase-hooks/firestore";
+import { useNavigate } from "react-router-dom";
+import { BsArrowRightShort } from "react-icons/bs";
 
 function CalendarWidget() {
   let today = startOfToday();
   let [currMonth, setCurrMonth] = useState(format(today, "MMM-yyyy"));
   let fDayCurr = parse(currMonth, "MMM-yyyy", new Date());
 
+  //Collection of data
   const [plans, setPlans] = useState([]);
   const [plansId, setPlansId] = useState([]); //This is the id of the plan
   const [itemList, setItemList] = useState([]);
@@ -105,23 +108,26 @@ function CalendarWidget() {
           setItemList(items);
           let eventStructure = [];
           items.forEach((item) => {
-            let interval = intervalToDuration(
-              {
-                start: item.startDate.toDate(),
-                end: item.endDate.toDate()
-              }
-            );
+            let interval = intervalToDuration({
+              start: item.startDate.toDate(),
+              end: item.endDate.toDate(),
+            });
             eventStructure.push({
               startDate: new Date(item.startDate.seconds * 1000),
               endDate: new Date(item.endDate.seconds * 1000),
               title: item.itemName,
               progress: item.progress,
               interval: convertDurationToDays(interval),
+              id: item.planId,
             });
           });
           let sortedEvent = eventStructure.slice(0);
 
-          setEvents(sortedEvent.sort((a, b)=>{return b.interval-a.interval}));
+          setEvents(
+            sortedEvent.sort((a, b) => {
+              return b.interval - a.interval;
+            })
+          );
         });
 
         return Promise.all([itemListOnSnapshot]);
@@ -137,7 +143,7 @@ function CalendarWidget() {
     };
   }, []);
 
-  //console.log(events);
+  console.log(events);
 
   /******************************************/
   /*          End of Use Effects            */
@@ -225,7 +231,7 @@ function Months({ day, day2, today, events }) {
   const [hoveredEvent, setHoveredEvent] = useState(null);
   const [focusEvent, setFocusEvent] = useState(null);
 
-  let pos = ['','',[]]
+  let pos = ["", "", []];
 
   return (
     <>
@@ -236,13 +242,15 @@ function Months({ day, day2, today, events }) {
       >
         {day.length > 35
           ? day.map((day, dayIx) => {
-
               return (
                 <DateCont
                   day={day}
                   today={today}
-                  events={events.filter((e)=>
-                    isWithinInterval(day, { start: e.startDate, end: e.endDate })
+                  events={events.filter((e) =>
+                    isWithinInterval(day, {
+                      start: e.startDate,
+                      end: e.endDate,
+                    })
                   )}
                   hover={hoveredEvent}
                   setHover={setHoveredEvent}
@@ -259,8 +267,11 @@ function Months({ day, day2, today, events }) {
                   <DateCont
                     day={day}
                     today={today}
-                    events={events.filter((e)=>
-                      isWithinInterval(day, { start: e.startDate, end: e.endDate })
+                    events={events.filter((e) =>
+                      isWithinInterval(day, {
+                        start: e.startDate,
+                        end: e.endDate,
+                      })
                     )}
                     hover={hoveredEvent}
                     setHover={setHoveredEvent}
@@ -285,7 +296,7 @@ function DateCont({
   setHover,
   focus,
   setFocus,
-  posAll
+  posAll,
 }) {
   //const [eventCount, setEventCount] = useState(0);
   //const [eventList, setEventList] = useState([]);
@@ -293,55 +304,55 @@ function DateCont({
   let eventCount = 0;
   let eventList = [];
 
-  function checkPos(events, pos){
-
+  function checkPos(events, pos) {
     let stack = events.slice(0);
 
-    if(isBefore(pos[0].endDate, day)){
-      pos[0] = '';
+    if (isBefore(pos[0].endDate, day)) {
+      pos[0] = "";
     }
-    if(pos[0] !== ''){
-      stack = stack.filter(i=> i!= pos[0]);
-    } else if(stack.length !== 0 && stack.some(e=>isSameDay(day, e.startDate))){
-      pos[0] = stack.find(e=>isSameDay(day, e.startDate));
-      stack = stack.filter(i=> i!= pos[0]);
-    } else{
-      stack = stack.filter(i=> i!= pos[0]);
+    if (pos[0] !== "") {
+      stack = stack.filter((i) => i != pos[0]);
+    } else if (
+      stack.length !== 0 &&
+      stack.some((e) => isSameDay(day, e.startDate))
+    ) {
+      pos[0] = stack.find((e) => isSameDay(day, e.startDate));
+      stack = stack.filter((i) => i != pos[0]);
+    } else {
+      stack = stack.filter((i) => i != pos[0]);
     }
 
-    if(isBefore(pos[1].endDate, day)){
-      pos[1] = '';
+    if (isBefore(pos[1].endDate, day)) {
+      pos[1] = "";
     }
-    if(pos[1] !== ''){
-      stack = stack.filter(i=> i!= pos[1]);
-    } else if(stack.length !== 0 && stack.some(e=>isSameDay(day, e.startDate))){
-      pos[1] = stack.find(e=>isSameDay(day, e.startDate));
-      stack = stack.filter(i=> i!= pos[1]);
-    } else{
-      stack = stack.filter(i=> i!= pos[1]);
+    if (pos[1] !== "") {
+      stack = stack.filter((i) => i != pos[1]);
+    } else if (
+      stack.length !== 0 &&
+      stack.some((e) => isSameDay(day, e.startDate))
+    ) {
+      pos[1] = stack.find((e) => isSameDay(day, e.startDate));
+      stack = stack.filter((i) => i != pos[1]);
+    } else {
+      stack = stack.filter((i) => i != pos[1]);
     }
 
     //console.log(stack);
-    pos[2].forEach((e)=>{
-      if(isBefore(e.endDate, day)){
-        pos[2] = pos[2].filter(i=> i!= e);
+    pos[2].forEach((e) => {
+      if (isBefore(e.endDate, day)) {
+        pos[2] = pos[2].filter((i) => i != e);
       }
-    })
-    stack.forEach((e)=>{
-      if(isSameDay(day, e.startDate)){
+    });
+    stack.forEach((e) => {
+      if (isSameDay(day, e.startDate)) {
         pos[2].push(e);
       }
-        stack = stack.filter(i=> i!= e);
-
-    })
-
-
-      
+      stack = stack.filter((i) => i != e);
+    });
   }
 
-  
   //console.log('Day'+format(day, 'd'));
-  checkPos(events, posAll)
+  checkPos(events, posAll);
   //console.log('pos1: '+(posAll[0].title?posAll[0].title:' '), 'pos2: '+(posAll[1].title?posAll[1].title:' '));
   //console.log((posAll[2]));
   return (
@@ -362,45 +373,46 @@ function DateCont({
           </p>
         </time>
       </button>
-      <div className="flex flex-1 relative flex-col justify-between">
+      <div className="relative flex flex-1 flex-col justify-between">
         <div className="grid grid-rows-2 gap-[3px] truncate">
           {events.map((e, i) => {
             //console.log(e);
-              if (!posAll[2].includes(e)) {
-
-                return (
-                  <Event
-                    pos={
-                      format(e.startDate, "MMM d") == format(e.endDate, "MMM d")
-                        ? "same"
-                        : isSameDay(day, e.startDate)
-                        ? "start"
-                        : isSameDay(day, e.endDate)
-                        ? "end"
-                        : "mid"
-                    }
-                    key={i}
-                    index={
-                      posAll[0].title==e.title?1:
-                      posAll[1].title==e.title?2:''
-                    }
-                    events={e}
-                    hover={hover}
-                    setHover={setHover}
-                    focus={focus}
-                    setFocus={setFocus}
-                  />
-                );
-              } else{
-                eventCount = eventCount + 1;
-                eventList = [...eventList, e];
-              }
-            
+            if (!posAll[2].includes(e)) {
+              return (
+                <Event
+                  pos={
+                    format(e.startDate, "MMM d") == format(e.endDate, "MMM d")
+                      ? "same"
+                      : isSameDay(day, e.startDate)
+                      ? "start"
+                      : isSameDay(day, e.endDate)
+                      ? "end"
+                      : "mid"
+                  }
+                  key={i}
+                  index={
+                    posAll[0].title == e.title
+                      ? 1
+                      : posAll[1].title == e.title
+                      ? 2
+                      : ""
+                  }
+                  events={e}
+                  hover={hover}
+                  setHover={setHover}
+                  focus={focus}
+                  setFocus={setFocus}
+                />
+              );
+            } else {
+              eventCount = eventCount + 1;
+              eventList = [...eventList, e];
+            }
           })}
         </div>
         {eventCount > 0 ? (
           <button className="group cursor-default">
-            <span className="cursor-pointer text-xs opacity-50 p-[3px] bg-slate-200 rounded-2xl">
+            <span className="cursor-pointer rounded-2xl bg-slate-200 p-[3px] text-xs opacity-50">
               +{eventCount}
             </span>
             <MoreEvent day={day} eventList={eventList} />
@@ -450,10 +462,13 @@ function TimeCont() {
 
 function Event({ index, events, pos, hover, setHover, focus, setFocus }) {
   const color = {
-    'not-started': {bg:['bg-red-500','bg-red-600'],bd:'border-red-500'},
-    'in-progress': {bg:['bg-blue-500','bg-blue-600'],bd:'border-blue-500'},
-    'completed': {bg:['bg-green-500','bg-green-600'],bd:'border-green-500'}
-  }
+    "not-started": { bg: ["bg-red-500", "bg-red-600"], bd: "border-red-500" },
+    "in-progress": {
+      bg: ["bg-blue-500", "bg-blue-600"],
+      bd: "border-blue-500",
+    },
+    completed: { bg: ["bg-green-500", "bg-green-600"], bd: "border-green-500" },
+  };
   return (
     <button
       className={
@@ -462,13 +477,15 @@ function Event({ index, events, pos, hover, setHover, focus, setFocus }) {
           : pos == "start"
           ? "rounded-l-md"
           : pos == "end"
-          ? "rounded-r-md w-11/12"
+          ? "w-11/12 rounded-r-md"
           : "") +
         " group px-3 text-left text-xs text-white " +
-        (hover == events.title ? (color[events.progress].bg[1]) : (color[events.progress].bg[0])) +
+        (hover == events.title
+          ? color[events.progress].bg[1]
+          : color[events.progress].bg[0]) +
         (focus == events.title ? " shadow-lg" : " shadow-none")
       }
-      style={{ gridRow: (index).toString() + "/2" }}
+      style={{ gridRow: index.toString() + "/2" }}
       onMouseEnter={() => {
         setHover(events.title);
       }}
@@ -489,30 +506,44 @@ function Event({ index, events, pos, hover, setHover, focus, setFocus }) {
 }
 
 function EventPopup({ events, color }) {
+  //Navigation
+  const navigate = useNavigate();
 
   return (
     <div
-      className={"invisible absolute top-10 z-20 w-56 translate-y-5 rounded border-l-8 "+(color[events.progress].bd)+" bg-white p-6 "+
-        "text-start text-black opacity-0 "+
-        "shadow-[0_24px_38px_3px_rgba(0,0,0,0.14),0_9px_46px_8px_rgba(0,0,0,0.12),0_11px_15px_-7px_rgba(0,0,0,0.2)] group-focus:visible group-focus:transform-none  group-focus:opacity-100"}
+      className={
+        "group/card truncate invisible absolute top-10 z-20 w-56 translate-y-5 rounded border-l-8 hover:bg-gray-200 " +
+        color[events.progress].bd +
+        " bg-white p-6 " +
+        "text-start text-black opacity-0 " +
+        "shadow-[0_24px_38px_3px_rgba(0,0,0,0.14),0_9px_46px_8px_rgba(0,0,0,0.12),0_11px_15px_-7px_rgba(0,0,0,0.2)] group-focus:visible group-focus:transform-none group-focus:opacity-100"
+      }
       style={{
         transition:
           "visibility 0.1s linear, opacity 0.2s ease-in, transform 0.2s ease-in-out",
       }}
+      onClick={() => navigate(`planner/${events.id}`)}
     >
-      <p className="text-lg">{events.title}</p>
-      <p className=" text-sm opacity-60">
-        {format(events.startDate, "MMM d")} - {format(events.endDate, "MMM d")}
-      </p>
+      <div className="relative">
+        <p className="text-lg truncate">{events.title}</p>
+        <p className=" text-sm opacity-60">
+          {format(events.startDate, "MMM d")} -{" "}
+          {format(events.endDate, "MMM d")}
+        </p>
+        <p className="absolute -bottom-3 -right-3 flex translate-x-5 items-center gap-1 font-semibold text-transparent transition-all group-hover/card:translate-x-0 group-hover/card:text-black">
+          Open <BsArrowRightShort className="mt-1 h-4 w-4" />
+        </p>
+      </div>
     </div>
   );
 }
 
 function MoreEvent({ day, eventList }) {
+  //Navigation
+  const navigate = useNavigate();
   return (
     <div
-      className="invisible absolute z-20 w-96 translate-y-5 bg-white rounded-md
-        p-4
+      className="invisible absolute z-20 w-96 translate-y-5 rounded-md bg-white p-4
         text-start opacity-0 shadow-[0_24px_38px_3px_rgba(0,0,0,0.14),0_9px_46px_8px_rgba(0,0,0,0.12),0_11px_15px_-7px_rgba(0,0,0,0.2)] group-focus:visible group-focus:transform-none  group-focus:opacity-100"
       style={{
         transition:
@@ -523,14 +554,21 @@ function MoreEvent({ day, eventList }) {
         <span className="text-green-600">{format(day, "iiii")}</span>{" "}
         {format(day, "MMM d")}
       </div>
-      <div className="flex flex-col gap-3 p-4">
+      <div className="flex flex-col gap-1 p-2">
         {eventList.map((e, i) => {
           //console.log(e)
           return (
-            <div className="flex flex-col" key={i}>
+            <div
+              className="hover:cursor-pointer group/more relative flex flex-col rounded-md p-2 hover:bg-gray-300"
+              key={i}
+              onClick={() => navigate(`planner/${e.id}`)}
+            >
               <p className="text-lg">{e.title}</p>
               <p className=" text-sm opacity-60">
                 {format(e.startDate, "MMM d")} - {format(e.endDate, "MMM d")}
+              </p>
+              <p className="absolute bottom-1 right-1 flex translate-x-2 items-center gap-1 font-semibold text-transparent transition-all group-hover/more:translate-x-0 group-hover/more:text-black">
+                Open <BsArrowRightShort className="mt-1 h-5 w-5" />
               </p>
             </div>
           );

@@ -1,8 +1,8 @@
-import './App.css'
-import './index.css'
-import Sidebar from './components/Sidebar'
-import Main from './components/Main'
-import MobileSidebar from './components/MobileSidebar'
+import './css/App.css'
+import './css/index.css'
+import Sidebar from './pages/main/Sidebar'
+import Main from './pages/main/Main'
+import MobileSidebar from './pages/main/MobileSidebar'
 import LoginPage from './pages/LoginPage'
 import { useState } from 'react'
 
