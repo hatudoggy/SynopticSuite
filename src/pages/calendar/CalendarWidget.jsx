@@ -522,7 +522,7 @@ function EventPopup({ events, color }) {
         transition:
           "visibility 0.1s linear, opacity 0.2s ease-in, transform 0.2s ease-in-out",
       }}
-      onClick={() => navigate(`planner/${events.id}`)}
+      onClick={() => navigate(`/planner/${events.id}`)}
     >
       <div className="relative">
         <p className="text-lg truncate">{events.title}</p>
@@ -561,7 +561,7 @@ function MoreEvent({ day, eventList }) {
             <div
               className="hover:cursor-pointer group/more relative flex flex-col rounded-md p-2 hover:bg-gray-300"
               key={i}
-              onClick={() => navigate(`planner/${e.id}`)}
+              onClick={() => navigate(`/planner/${e.id}`)}
             >
               <p className="text-lg">{e.title}</p>
               <p className=" text-sm opacity-60">
