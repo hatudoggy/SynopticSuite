@@ -10,7 +10,7 @@ export function useAuth() {
 
 export function AuthProvider({children}) {
     const [authUser, setAuthUser] = useState(null);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
   
     
     function login(email, password) {
