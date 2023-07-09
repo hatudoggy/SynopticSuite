@@ -32,7 +32,7 @@ function LoginPage() {
 function TextLogin(){
   const [loading, setLoading] = useState(false);
   const [loginFail, setLoginFail] = useState(false);
-  console.log(loginFail);
+  //console.log(loginFail);
 
   useEffect(()=>{
     setTimeout(()=>{
@@ -76,7 +76,7 @@ function TextLogin(){
         <SocialLogin/>
         <div className='flex gap-1'>
           <span className='opacity-80'>Dont have an account? </span>
-          <button className='font-medium underline'>Sign up</button>
+          <button className='font-medium underline'>SignUp</button>
         </div>
 			</div>
     </div>
