@@ -13,8 +13,12 @@ export function AuthProvider({children}) {
     const [loading, setLoading] = useState(false);
   
     
+    // function login(email, password) {
+    //     return signInWithEmailAndPassword(auth, email, password);
+    // }
+
     function login(email, password) {
-        return signInWithEmailAndPassword(auth, email, password);
+        return signInWithEmailAndPassword(auth, 'crisostomo@ibarra.com', 'JuanRizal');
     }
 
     function signup(email, password) {

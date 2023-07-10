@@ -4,10 +4,10 @@ import CalendarWidget from './CalendarWidget'
 export default function Calendar() {
 
   return (
-    <div className='w-full h-full'>
-      <div className='w-full pt-10'>
+    <div className='w-full h-full flex justify-center items-center'>
+     
         <CalendarWidget/>
-      </div>
+
 
 
       

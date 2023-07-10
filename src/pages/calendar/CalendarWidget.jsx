@@ -157,8 +157,8 @@ function CalendarWidget() {
 
   return (
     <div
-      className="m-auto flex flex-col rounded-lg shadow-2xl md:w-5/6 lg:w-3/4"
-      style={{ height: "40rem" }}
+      className="m-auto flex flex-col rounded-lg shadow-2xl py-1 h-full md:h-[96%] w-full md:w-5/6 lg:w-4/4"
+      //style={{ height: "41rem" }}
     >
       <Navigation
         fDayCurr={fDayCurr}
@@ -219,7 +219,7 @@ function Navigation({ fDayCurr, setCurrMonth, setWindow }) {
 
 function Header() {
   return (
-    <div className="mb-3 grid w-full grid-cols-7 justify-items-center gap-1 border-b-2 pb-2">
+    <div className="px-3 grid w-full grid-cols-7 justify-items-center gap-1 border-b-2 pb-2">
       <div>Sun</div>
       <div>Mon</div>
       <div>Tue</div>
@@ -241,7 +241,7 @@ function Months({ day, day2, today, events }) {
     <>
       <Header />
       <div
-        className="grid flex-1 auto-rows-fr grid-cols-7 grid-rows-6 "
+        className="grid flex-1 auto-rows-fr grid-cols-7 grid-rows-6 p-3"
         // style={{maxHeight:'calc(6*(100px)', gridTemplateRows:'repeat(6,1fr)'}}
       >
         {day.length > 35
@@ -360,7 +360,7 @@ function DateCont({
   //console.log('pos1: '+(posAll[0].title?posAll[0].title:' '), 'pos2: '+(posAll[1].title?posAll[1].title:' '));
   //console.log((posAll[2]));
   return (
-    <div className="flex flex-col py-1">
+    <div className="flex flex-col py-1 relative">
       <button type="button" className="flex justify-center">
         <time dateTime={format(day, "yyyy-MM-dd")}>
           <p
@@ -378,7 +378,7 @@ function DateCont({
         </time>
       </button>
       <div className="relative flex flex-1 flex-col justify-between">
-        <div className="grid grid-rows-2 gap-[3px] truncate">
+        <div className="grid grid-rows-2 gap-[1px] truncate">
           {events.map((e, i) => {
             //console.log(e);
             if (!posAll[2].includes(e)) {
@@ -425,6 +425,7 @@ function DateCont({
           ""
         )}
       </div>
+      <div className="w-full h-full absolute border-[1px] opacity-50 -z-10"></div>
     </div>
   );
 }
@@ -479,11 +480,11 @@ function Event({ index, events, pos, hover, setHover, focus, setFocus }) {
         (pos == "same"
           ? "rounded-md"
           : pos == "start"
-          ? "rounded-l-md"
+          ? " rounded-l-md"
           : pos == "end"
-          ? "w-11/12 rounded-r-md"
+          ? "w-[97%] rounded-r-md"
           : "") +
-        " group px-3 text-left text-xs text-white " +
+        " group px-3 text-left text-xs text-white w-full " +
         (hover == events.title
           ? color[events.progress].bg[1]
           : color[events.progress].bg[0]) +
