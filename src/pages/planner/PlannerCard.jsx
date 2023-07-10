@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { useState, useRef } from "react";
 import useClickClose from "../../hooks/useClickClose";
 import { BsArrowRightShort } from "react-icons/bs";
+import useWindowDimensions from "../../hooks/useWindowDimensions";
 
 export default function PlannerCard({
   subject,
@@ -21,6 +22,7 @@ export default function PlannerCard({
 }) {
   const navigate = useNavigate();
   const [isSettingsActive, setIsSettingsActive] = useState(false);
+  const { width } = useWindowDimensions();
   const parentRef = useRef(null);
   const childRef = useRef(null);
   useClickClose(childRef, parentRef, () => setIsSettingsActive(false));
@@ -28,8 +30,11 @@ export default function PlannerCard({
   return (
     <div
       className={
-        "group/pc relative flex flex-row rounded-xl bg-slate-100 p-5 shadow-md sm:min-w-[375px] lg:max-w-[375px] " +
-        (link ? "hover:cursor-pointer" : "")
+        "group/pc relative flex flex-[2_2_40%] truncate flex-row rounded-xl bg-slate-100 p-5 shadow-md " +
+        (link ? "hover:cursor-pointer " : "") 
+        // +
+        // (width < 1438 && width > 639 ? "min-w-full max-w-[100px] " : "max-w-[345px] ") + 
+        // (width > 1437 ? "min-w-[345px]" : "")
       }
       onClick={link ? () => navigate(link) : null}
     >
@@ -48,7 +53,6 @@ export default function PlannerCard({
           {description}
         </div>
       </div>
-      <div className="lg:mx-10"></div>
       <div className="absolute right-4 top-2 flex flex-col-reverse gap-2 sm:flex-row">
         {isPinned ? (
           <img
