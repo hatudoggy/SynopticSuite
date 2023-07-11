@@ -30,11 +30,8 @@ export default function PlannerCard({
   return (
     <div
       className={
-        "group/pc relative flex flex-[2_2_40%] truncate flex-row rounded-xl bg-slate-100 p-5 shadow-md " +
+        "group/pc relative flex w-full xl:flex-[40%] truncate flex-row rounded-xl bg-slate-100 p-5 shadow-md " +
         (link ? "hover:cursor-pointer " : "") 
-        // +
-        // (width < 1438 && width > 639 ? "min-w-full max-w-[100px] " : "max-w-[345px] ") + 
-        // (width > 1437 ? "min-w-[345px]" : "")
       }
       onClick={link ? () => navigate(link) : null}
     >
@@ -48,7 +45,7 @@ export default function PlannerCard({
         MP
       </div>
       <div className="mx-5 truncate">
-        <div className="truncate font-semibold sm:text-lg">{subject}</div>
+        <div className="truncate max-w-[10ch] min-[720px]:max-w-[30ch] font-semibold sm:text-lg">{subject}</div>
         <div className="sm:text-md truncate text-xs font-medium">
           {description}
         </div>

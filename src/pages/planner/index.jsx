@@ -259,7 +259,7 @@ function Planner() {
           </div>
           <div
             ref={animate}
-            className={"mx-2 flex gap-3 sm:flex-wrap flex-row " + (width < 1438 ? "flex-col" : "flex-row")}
+            className={"mx-2 flex gap-3 sm:flex-wrap flex-col xl:flex-row"}
           >
             {/* Card */}
             {!loading ? (
