@@ -251,6 +251,15 @@ export default function ClickedPlan() {
   };
 
   return (
+    <div className="flex w-2/5 rounded-3xl bg-slate-100 shadow-lg p-5 mx-2"> 
+
+
+    </div>
+  );
+}
+
+function commentedOut() {
+  return (
     <div className="flex h-full w-full flex-row gap-10 bg-slate-300 px-10 py-10 sm:px-14 sm:py-14">
       <div
         className={
