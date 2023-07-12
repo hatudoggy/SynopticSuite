@@ -38,7 +38,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 import useClickClose from "../../hooks/useClickClose";
 import PlannerCardLoad from "../../loaders/Planner/PlannerCardLoad";
 
-export default function ClickedPlan() {
+export default function ClickedPlan({ id }) {
   /******************************************/
   /* Start of Instantiating State Variables */
   /******************************************/
@@ -84,9 +84,9 @@ export default function ClickedPlan() {
 
   useEffect(() => {
     // Get the id of the plan via the URL
-    const url = window.location.href;
-    const parts = url.split("/");
-    const id = parts[parts.length - 1];
+    // const url = window.location.href;
+    // const parts = url.split("/");
+    // const id = parts[parts.length - 1];
 
     // Get the plan from the database
     const dataSnap = query(
@@ -251,21 +251,67 @@ export default function ClickedPlan() {
   };
 
   return (
-    <div className="flex w-2/5 rounded-3xl bg-slate-100 shadow-lg p-5 mx-2"> 
-
-
+    <div className="flex flex-col gap-2 p-2">
+      {itemList
+        ? isAll
+          ? itemList.map((item, index) => (
+              <ItemCard
+                key={index}
+                item={item}
+                index={index}
+                setIsItemOpen={setIsItemOpen}
+                setClickedItem={setClickedItem}
+                isItemOpen={isItemOpen}
+              />
+            ))
+          : isTask
+          ? itemList
+              .filter((item) => item.itemType === "task")
+              .map((item, index) => (
+                <ItemCard
+                  key={index}
+                  item={item}
+                  index={index}
+                  setIsItemOpen={setIsItemOpen}
+                  setClickedItem={setClickedItem}
+                  isItemOpen={isItemOpen}
+                />
+              ))
+          : isEvent
+          ? itemList
+              .filter((item) => item.itemType === "event")
+              .map((item, index) => (
+                <ItemCard
+                  key={index}
+                  item={item}
+                  index={index}
+                  setIsItemOpen={setIsItemOpen}
+                  setClickedItem={setClickedItem}
+                  isItemOpen={isItemOpen}
+                />
+              ))
+          : isReminder
+          ? itemList
+              .filter((item) => item.itemType === "reminder")
+              .map((item, index) => (
+                <ItemCard
+                  item={item}
+                  index={index}
+                  setIsItemOpen={setIsItemOpen}
+                  setClickedItem={setClickedItem}
+                  isItemOpen={isItemOpen}
+                />
+              ))
+          : null
+        : null}
     </div>
   );
 }
 
-function commentedOut() {
+function CommentedOut() {
   return (
     <div className="flex h-full w-full flex-row gap-10 bg-slate-300 px-10 py-10 sm:px-14 sm:py-14">
-      <div
-        className={
-          "flex h-full flex-col bg-slate-300 w-full" 
-        }
-      >
+      <div className={"flex h-full w-full flex-col bg-slate-300"}>
         {/* MODALS */}
         {isModalOpen ? (
           <TodoModal
@@ -327,23 +373,23 @@ function commentedOut() {
         <div className="mx-2 flex h-full flex-col gap-7 py-6">
           {plan ? (
             <PlannerCard
-            subject={plan?.subject}
-            description={plan?.description}
-            color={plan?.color}
-            textColor={plan?.textColor}
-            pin={pin}
-            unpin={unpin}
-            isPinned={plan?.isPinned}
-            handlePin={handlePin}
-            handleUnpin={handleUnpin}
-            handleDelete={handleDelete}
-            settings={settings}
-            id={plan?.planId}
-          />
+              subject={plan?.subject}
+              description={plan?.description}
+              color={plan?.color}
+              textColor={plan?.textColor}
+              pin={pin}
+              unpin={unpin}
+              isPinned={plan?.isPinned}
+              handlePin={handlePin}
+              handleUnpin={handleUnpin}
+              handleDelete={handleDelete}
+              settings={settings}
+              id={plan?.planId}
+            />
           ) : (
-            <PlannerCardLoad/>
+            <PlannerCardLoad />
           )}
-          
+
           <div className="flex flex-row items-center justify-between sm:min-w-[375px] lg:max-w-[375px]">
             <div
               className={
@@ -477,14 +523,13 @@ function commentedOut() {
     </div>
   );
 }
-
 function CardContent({ itemData, width }) {
   return (
     <>
       {width > 1026 ? (
         <div className="h-full w-full rounded-2xl bg-slate-100 p-5 shadow">
           <div className="flex flex-col gap-5 text-xl font-semibold">
-            <div className="flex gap-3 items-center">
+            <div className="flex items-center gap-3">
               <ProgressIcons progress={itemData?.progress} />
               {itemData?.itemName}
             </div>
@@ -507,7 +552,7 @@ function ItemCard({ item, index, setIsItemOpen, setClickedItem, isItemOpen }) {
   return (
     <div key={index} className="relative flex flex-col">
       <div
-        className="relative flex flex-row rounded-xl bg-slate-100 p-5 shadow-md hover:cursor-pointer sm:min-w-[375px] lg:max-w-[375px]"
+        className="relative flex flex-row rounded-xl bg-slate-100 p-5 shadow-md hover:cursor-pointer w-full"
         onClick={() => {
           setIsItemOpen(!isItemOpen);
           setClickedItem(item);

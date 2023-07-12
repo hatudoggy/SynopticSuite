@@ -29,7 +29,7 @@ import {
 import { useCollectionData } from "react-firebase-hooks/firestore";
 import { Skeleton } from "@mui/material";
 import PlannerCardLoad from "../../loaders/Planner/PlannerCardLoad";
-import ClickedPlan from "./ClickedPlan";
+import { Masonry } from "@mui/lab";
 
 function Planner() {
   /******************************************/
@@ -212,7 +212,7 @@ function Planner() {
           Compose
         </div>
       </div>
-      <div className="flex h-full w-3/5 flex-col gap-5">
+      <div className="flex h-full w-full flex-col gap-5">
         {/* <div className="flex flex-row items-center gap-5 ">
           <div
             className="shadow-black-500/40 rounded-3xl bg-gray-700 px-4 py-2 text-lg font-semibold text-white shadow-lg shadow-slate-400/100 hover:cursor-pointer"
@@ -257,78 +257,86 @@ function Planner() {
               </ThemeProvider>
             </div>
           </div>
-          <div
+          {/* <div
             ref={animate}
             className={"mx-2 flex gap-3 sm:flex-wrap flex-col xl:flex-row"}
-          >
-            {/* Card */}
-            {!loading ? (
-              plans /* Checks if plans exists */ ? (
-                isPinned /* Checks if pinned is active or clicked */ ? (
-                  plans
-                    .sort(
-                      (a, b) => new Date(b.dateEdited) - new Date(a.dateEdited)
-                    )
-                    .filter(
-                      (item) => item.isPinned === true
-                    ) /* Removed pinned items in the list */
-                    .map((plan, index) => (
-                      <PlannerCard
-                        key={index}
-                        subject={plan.subject}
-                        description={plan.description}
-                        color={plan.color}
-                        textColor={plan.textColor}
-                        pin={pin}
-                        unpin={unpin}
-                        isPinned={plan.isPinned}
-                        handlePin={handlePin}
-                        handleUnpin={handleUnpin}
-                        handleDelete={handleDelete}
-                        settings={settings}
-                        id={plan.planId}
-                        hasOpenPrompt={true}
-                        setIsChosen={setIsChosen}
-                      />
-                    ))
-                ) : (
-                  plans /* Checks if all is active or clicked */
-                    .sort(
-                      (a, b) => new Date(b.dateEdited) - new Date(a.dateEdited)
-                    )
-                    .map((plan, index) => (
-                      <PlannerCard
-                        key={index}
-                        subject={plan.subject}
-                        description={plan.description}
-                        color={plan.color}
-                        textColor={plan.textColor}
-                        pin={pin}
-                        unpin={unpin}
-                        isPinned={plan.isPinned}
-                        handlePin={handlePin}
-                        handleUnpin={handleUnpin}
-                        handleDelete={handleDelete}
-                        settings={settings}
-                        id={plan.planId}
-                        hasOpenPrompt={true}
-                        setIsChosen={setIsChosen}
-                      />
-                    ))
-                )
-              ) : null
-            ) : (
-              <>
-                <PlannerCardLoad />
-                <PlannerCardLoad />
-                <PlannerCardLoad />
-              </>
-            )}
-            {/* Returns if plan is empty */}
+          > */}
+          <div className="flex w-full justify-center">
+            <Masonry
+              columns={{ xl: 4, lg: 3, md: 2, sm: (width < 760 ? 1 : 2), xs: 1 }}
+              spacing={2}
+            >
+              {/* Card */}
+              {!loading ? (
+                plans /* Checks if plans exists */ ? (
+                  isPinned /* Checks if pinned is active or clicked */ ? (
+                    plans
+                      .sort(
+                        (a, b) =>
+                          new Date(b.dateEdited) - new Date(a.dateEdited)
+                      )
+                      .filter(
+                        (item) => item.isPinned === true
+                      ) /* Removed pinned items in the list */
+                      .map((plan, index) => (
+                        <PlannerCard
+                          key={index}
+                          subject={plan.subject}
+                          description={plan.description}
+                          color={plan.color}
+                          textColor={plan.textColor}
+                          pin={pin}
+                          unpin={unpin}
+                          isPinned={plan.isPinned}
+                          handlePin={handlePin}
+                          handleUnpin={handleUnpin}
+                          handleDelete={handleDelete}
+                          settings={settings}
+                          id={plan.planId}
+                          hasOpenPrompt={true}
+                          setIsChosen={setIsChosen}
+                        />
+                      ))
+                  ) : (
+                    plans /* Checks if all is active or clicked */
+                      .sort(
+                        (a, b) =>
+                          new Date(b.dateEdited) - new Date(a.dateEdited)
+                      )
+                      .map((plan, index) => (
+                        <PlannerCard
+                          key={index}
+                          subject={plan.subject}
+                          description={plan.description}
+                          color={plan.color}
+                          textColor={plan.textColor}
+                          pin={pin}
+                          unpin={unpin}
+                          isPinned={plan.isPinned}
+                          handlePin={handlePin}
+                          handleUnpin={handleUnpin}
+                          handleDelete={handleDelete}
+                          settings={settings}
+                          id={plan.planId}
+                          hasOpenPrompt={true}
+                          setIsChosen={setIsChosen}
+                        />
+                      ))
+                  )
+                ) : null
+              ) : (
+                <>
+                  <PlannerCardLoad />
+                  <PlannerCardLoad />
+                  <PlannerCardLoad />
+                </>
+              )}
+              {/* Returns if plan is empty */}
+            </Masonry>
           </div>
+          {/* </div> */}
         </div>
       </div>
-      <ClickedPlan/>
     </div>
   );
 }
