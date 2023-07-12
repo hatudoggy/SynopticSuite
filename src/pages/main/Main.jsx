@@ -19,7 +19,7 @@ function Main({setOpen}) {
         <SearchBar/>
         <Profile/>
       </div>
-      <div className="grow">
+      <div className="grow ">
         <Routes
         // Page routing
         >

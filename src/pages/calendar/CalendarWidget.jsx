@@ -21,7 +21,7 @@ import {
   sub,
   subDays,
 } from "date-fns";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext, useRef } from "react";
 import { firestore } from "../../config/firebase";
 import {
   doc,
@@ -40,6 +40,8 @@ import { useCollectionData } from "react-firebase-hooks/firestore";
 import { useNavigate } from "react-router-dom";
 import { BsArrowRightShort } from "react-icons/bs";
 import { useAuth } from "../../hooks/AuthContext";
+import { WindowContext } from ".";
+import {usePosRelativeScreen} from '../../hooks/usePosRelativeScreen'
 
 function CalendarWidget() {
   let today = startOfToday();
@@ -354,7 +356,7 @@ function DateCont({
       stack = stack.filter((i) => i != e);
     });
   }
-
+  const btnRef = useRef();
   //console.log('Day'+format(day, 'd'));
   checkPos(events, posAll);
   //console.log('pos1: '+(posAll[0].title?posAll[0].title:' '), 'pos2: '+(posAll[1].title?posAll[1].title:' '));
@@ -415,11 +417,11 @@ function DateCont({
           })}
         </div>
         {eventCount > 0 ? (
-          <button className="group cursor-default">
+          <button ref={btnRef} className="group cursor-default">
             <span className="cursor-pointer rounded-2xl bg-slate-200 p-[3px] text-xs opacity-50">
               +{eventCount}
             </span>
-            <MoreEvent day={day} eventList={eventList} />
+            <MoreEvent btnRef={btnRef} day={day} eventList={eventList} />
           </button>
         ) : (
           ""
@@ -465,7 +467,13 @@ function TimeCont() {
   return <div className="flex-1">awf</div>;
 }
 
+
+
 function Event({ index, events, pos, hover, setHover, focus, setFocus }) {
+  const btnRef = useRef();
+
+  
+
   const color = {
     "not-started": { bg: ["bg-red-500", "bg-red-600"], bd: "border-red-500" },
     "in-progress": {
@@ -475,7 +483,8 @@ function Event({ index, events, pos, hover, setHover, focus, setFocus }) {
     completed: { bg: ["bg-green-500", "bg-green-600"], bd: "border-green-500" },
   };
   return (
-    <button
+    <button 
+      ref={btnRef}
       className={
         (pos == "same"
           ? "rounded-md"
@@ -505,19 +514,22 @@ function Event({ index, events, pos, hover, setHover, focus, setFocus }) {
       }}
     >
       {pos == "start" || pos == "same" ? events.title : "ㅤ"}
-      <EventPopup events={events} color={color} />
+      <EventPopup events={events} color={color} refs={btnRef}/>
     </button>
   );
 }
 
-function EventPopup({ events, color }) {
+function EventPopup({ events, color, refs}) {
   //Navigation
+  const winRef = useContext(WindowContext);
+  const popRef = useRef();
   const navigate = useNavigate();
-
+  const [x, y] = usePosRelativeScreen(popRef, refs, winRef);
   return (
     <div
+      ref={popRef}
       className={
-        "group/card truncate invisible absolute top-10 z-20 w-56 translate-y-5 rounded border-l-8 hover:bg-gray-200 " +
+        "group/card truncate invisible absolute z-20 w-56 translate-y-5 m-5 rounded border-l-8 hover:bg-gray-200 " +
         color[events.progress].bd +
         " bg-white p-6 " +
         "text-start text-black opacity-0 " +
@@ -526,6 +538,8 @@ function EventPopup({ events, color }) {
       style={{
         transition:
           "visibility 0.1s linear, opacity 0.2s ease-in, transform 0.2s ease-in-out",
+        transform: 
+          `translateX(${x}%) translateY(-${y}px)`
       }}
       onClick={() => navigate(`/planner/${events.id}`)}
     >
@@ -543,16 +557,22 @@ function EventPopup({ events, color }) {
   );
 }
 
-function MoreEvent({ day, eventList }) {
+function MoreEvent({ day, eventList, btnRef }) {
   //Navigation
   const navigate = useNavigate();
+  const winRef = useContext(WindowContext);
+  const popRef = useRef();
+  const [x, y] = usePosRelativeScreen(popRef, btnRef, winRef);
   return (
     <div
-      className="invisible absolute z-20 w-96 translate-y-5 rounded-md bg-white p-4
+      ref={popRef}
+      className="invisible absolute z-20 w-96 translate-y-5 m-5 rounded-md bg-white p-4
         text-start opacity-0 shadow-[0_24px_38px_3px_rgba(0,0,0,0.14),0_9px_46px_8px_rgba(0,0,0,0.12),0_11px_15px_-7px_rgba(0,0,0,0.2)] group-focus:visible group-focus:transform-none  group-focus:opacity-100"
       style={{
         transition:
           "visibility 0.1s linear, opacity 0.2s ease-in, transform 0.2s ease-in-out",
+          transform: 
+          `translateX(${x}%) translateY(-${y}px)`
       }}
     >
       <div className="text-sm opacity-60">
