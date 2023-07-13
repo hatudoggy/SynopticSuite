@@ -250,6 +250,7 @@ function Months({ day, day2, today, events }) {
           ? day.map((day, dayIx) => {
               return (
                 <DateCont
+                  dayIx={dayIx}
                   day={day}
                   today={today}
                   events={events.filter((e) =>
@@ -268,9 +269,11 @@ function Months({ day, day2, today, events }) {
               );
             })
           : day2.map((day, dayIx) => {
+            
               return (
                 <>
                   <DateCont
+                    dayIx={dayIx}
                     day={day}
                     today={today}
                     events={events.filter((e) =>
@@ -295,6 +298,7 @@ function Months({ day, day2, today, events }) {
 }
 
 function DateCont({
+  dayIx,
   day,
   today,
   events,
@@ -311,7 +315,18 @@ function DateCont({
   let eventList = [];
 
   function checkPos(events, pos) {
+
     let stack = events.slice(0);
+    if(dayIx===0 && stack.length !== 0){
+      //If there are events that has no start date
+      pos[0] = stack[0];
+      pos[1] = stack[1];
+      stack.forEach((e) => {
+        if(!isSameDay(day, e.startDate) && e!==pos[0] && e!==pos[1] ){
+          pos[2].push(e);
+        }
+      });
+    }
 
     if (isBefore(pos[0].endDate, day)) {
       pos[0] = "";
@@ -350,11 +365,12 @@ function DateCont({
       }
     });
     stack.forEach((e) => {
-      if (isSameDay(day, e.startDate)) {
+      if (isSameDay(day, e.startDate)  || (pos[0] !== "" && pos[1] !== "")) {
         pos[2].push(e);
       }
       stack = stack.filter((i) => i != e);
     });
+
   }
   const btnRef = useRef();
   //console.log('Day'+format(day, 'd'));
@@ -362,15 +378,13 @@ function DateCont({
   //console.log('pos1: '+(posAll[0].title?posAll[0].title:' '), 'pos2: '+(posAll[1].title?posAll[1].title:' '));
   //console.log((posAll[2]));
   return (
-    <div className="flex flex-col py-1 relative">
+    <div className="flex flex-col py-1 relative ">
       <button type="button" className="flex justify-center">
         <time dateTime={format(day, "yyyy-MM-dd")}>
           <p
             className={
               "flex h-6 w-6 items-center justify-center rounded-full " +
-              (isToday(day)
-                ? "bg-red-600 text-white"
-                : !isSameMonth(day, today)
+              (!isSameMonth(day, today)
                 ? "text-slate-300"
                 : "text-gray-900")
             }
@@ -427,7 +441,11 @@ function DateCont({
           ""
         )}
       </div>
-      <div className="w-full h-full absolute border-[1px] opacity-50 -z-10"></div>
+      <div className={"w-full h-full absolute border-[1px] opacity-50 -z-10 "+
+          (isToday(day)
+          ? "bg-slate-300"
+          : "")
+          }></div>
     </div>
   );
 }
@@ -529,7 +547,7 @@ function EventPopup({ events, color, refs}) {
     <div
       ref={popRef}
       className={
-        "group/card truncate invisible absolute z-20 w-56 translate-y-5 m-5 rounded border-l-8 hover:bg-gray-200 " +
+        "group/card truncate invisible absolute z-20 w-80 translate-y-5 m-5 rounded border-l-8 hover:bg-gray-200 " +
         color[events.progress].bd +
         " bg-white p-6 " +
         "text-start text-black opacity-0 " +
@@ -566,7 +584,7 @@ function MoreEvent({ day, eventList, btnRef }) {
   return (
     <div
       ref={popRef}
-      className="invisible absolute z-20 w-96 translate-y-5 m-5 rounded-md bg-white p-4
+      className="invisible absolute z-20 w-96 overflow-clip translate-y-5 m-5 rounded-md bg-white p-4
         text-start opacity-0 shadow-[0_24px_38px_3px_rgba(0,0,0,0.14),0_9px_46px_8px_rgba(0,0,0,0.12),0_11px_15px_-7px_rgba(0,0,0,0.2)] group-focus:visible group-focus:transform-none  group-focus:opacity-100"
       style={{
         transition:
@@ -579,7 +597,7 @@ function MoreEvent({ day, eventList, btnRef }) {
         <span className="text-green-600">{format(day, "iiii")}</span>{" "}
         {format(day, "MMM d")}
       </div>
-      <div className="flex flex-col gap-1 p-2">
+      <div className="flex flex-col gap-1 p-2 w-full max-h-[20rem]overflow-auto">
         {eventList.map((e, i) => {
           //console.log(e)
           return (
