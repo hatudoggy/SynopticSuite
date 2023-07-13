@@ -41,10 +41,10 @@ export default function PlannerCard({
   useClickClose(childRef, parentRef, () => setIsDropdownOpen(false));
 
   return (
-    <div className="flex flex-col rounded-xl bg-slate-600 h-fit">
+    <div className="flex flex-col rounded-xl bg-white h-fit shadow">
       <div
         className={
-          "group/pc relative flex w-full flex-row truncate rounded-xl bg-slate-100 p-5 shadow-md " +
+          "group/pc relative flex w-full flex-row truncate rounded-xl bg-white p-5 shadow-md " +
           (link ? "hover:cursor-pointer " : "")
         }
         onClick={link ? () => navigate(link) : null}
@@ -108,7 +108,7 @@ export default function PlannerCard({
           </div>
         ) : null}
       </div>
-      <div className="relative flex w-full items-center text-center font-semibold text-white">
+      <div className="relative flex w-full items-center text-center font-semibold text-black">
         <div className="ml-5 px-2 py-3 underline underline-offset-4">All</div>
         <div
           className="cursor-pointer"
