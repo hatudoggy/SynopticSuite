@@ -20,6 +20,9 @@ import {
   isBefore,
   sub,
   subDays,
+  eachHourOfInterval,
+  startOfDay,
+  endOfDay,
 } from "date-fns";
 import { useState, useEffect, useContext, useRef } from "react";
 import { firestore } from "../../config/firebase";
@@ -155,7 +158,7 @@ function CalendarWidget() {
   /*          End of Use Effects            */
   /******************************************/
 
-  let [window, setWindow] = useState("Month");
+  let [window, setWindow] = useState("Week");
 
   return (
     <div
@@ -220,15 +223,19 @@ function Navigation({ fDayCurr, setCurrMonth, setWindow }) {
 }
 
 function Header() {
+  const week = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+
   return (
-    <div className="px-3 grid w-full grid-cols-7 justify-items-center gap-1 border-b-2 pb-2">
-      <div>Sun</div>
-      <div>Mon</div>
-      <div>Tue</div>
-      <div>Wed</div>
-      <div>Thu</div>
-      <div>Fri</div>
-      <div>Sat</div>
+    <div className=" flex-1 grid grid-cols-7 gap-1 border-b-2 pb-2">
+      {
+        week.map((day, ix)=>{
+          return(
+            <div className="text-center w-full box-border " key={ix}>
+              {day}
+            </div>
+          )
+        })
+      }
     </div>
   );
 }
@@ -240,60 +247,37 @@ function Months({ day, day2, today, events }) {
   let pos = ["", "", []];
 
   return (
-    <>
+    <div className="flex flex-col flex-1 px-3 pb-3">
       <Header />
       <div
-        className="grid flex-1 auto-rows-fr grid-cols-7 grid-rows-6 p-3"
+        className="grid flex-1 auto-rows-fr grid-cols-7 grid-rows-6"
         // style={{maxHeight:'calc(6*(100px)', gridTemplateRows:'repeat(6,1fr)'}}
       >
-        {day.length > 35
-          ? day.map((day, dayIx) => {
-              return (
-                <DateCont
-                  dayIx={dayIx}
-                  day={day}
-                  today={today}
-                  events={events.filter((e) =>
-                    isWithinInterval(day, {
-                      start: e.startDate,
-                      end: e.endDate,
-                    })
-                  )}
-                  hover={hoveredEvent}
-                  setHover={setHoveredEvent}
-                  focus={focusEvent}
-                  setFocus={setFocusEvent}
-                  posAll={pos}
-                  key={(day.toString()+dayIx)}
-                />
-              );
-            })
-          : day2.map((day, dayIx) => {
-            
-              return (
-                <>
-                  <DateCont
-                    dayIx={dayIx}
-                    day={day}
-                    today={today}
-                    events={events.filter((e) =>
-                      isWithinInterval(day, {
-                        start: e.startDate,
-                        end: e.endDate,
-                      })
-                    )}
-                    hover={hoveredEvent}
-                    setHover={setHoveredEvent}
-                    focus={focusEvent}
-                    setFocus={setFocusEvent}
-                    posAll={pos}
-                    key={day.toString()}
-                  />
-                </>
-              );
-            })}
+
+        {(day.length > 35 ? day:day2).map((day, dayIx) => {
+          
+          return (
+            <DateCont
+              dayIx={dayIx}
+              day={day}
+              today={today}
+              events={events.filter((e) =>
+                isWithinInterval(day, {
+                  start: e.startDate,
+                  end: e.endDate,
+                })
+              )}
+              hover={hoveredEvent}
+              setHover={setHoveredEvent}
+              focus={focusEvent}
+              setFocus={setFocusEvent}
+              posAll={pos}
+              key={(day.toString()+dayIx)}
+            />
+          );
+        })}
       </div>
-    </>
+    </div>
   );
 }
 
@@ -451,40 +435,82 @@ function DateCont({
 }
 
 function Sider() {
+  const time = eachHourOfInterval({
+    start: startOfDay(new Date()),
+    end: endOfDay(new Date())
+  }).map((d)=>{
+    return d.getHours().toString().padStart(2, '0') + ':00';
+  })
+  //console.log(time);
   return (
-    <div className="w-10">
-      <div>1</div>
-      <div>1</div>
-      <div>1</div>
-      <div>1</div>
-      <div>1</div>
-      <div>1</div>
-      <div>1</div>
-      <div>1</div>
-      <div>1</div>
+    <div className="w-14 text-center">
+      {
+        time.map((t, ix)=>{
+          return(
+            <div className="h-12" key={ix}>
+              {t}
+            </div>
+          )
+        })
+      }
     </div>
   );
 }
 
 function Weeks() {
   return (
-    <div className="flex flex-col overflow-scroll">
-      <div className="flex">
-        <div className="w-10"></div>
+    <div className="flex flex-col px-3 pb-3">
+      <div className="flex overflow-scroll">
+        <div className="w-14"></div>
         <Header />
       </div>
-      <div className="flex flex-1 overflow-scroll">
-        <Sider />
-        <TimeCont />
+      <div className="max-h-[35rem] overflow-scroll">
+        <div className="flex">
+          <Sider />
+          <TimeCont />
+        </div>
       </div>
     </div>
   );
 }
 
+
 function TimeCont() {
-  return <div className="flex-1">awf</div>;
+  const eventTest = [
+    {date: {start:"Mon", end:"Mon"}, time: {start:"6", end:"7"}, title:"Test1"}
+  ];
+  
+  const week = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+  return (
+    <div className=" flex-1 grid grid-cols-7 justify-center ">
+      {
+        week.map((day, index)=>{
+          return(
+            <div className=" relative text-center w-full box-border border-l-2
+              bg-[linear-gradient(to_bottom,#E5E7EB,#E5E7EB_2px,#ffffff_2px,#ffffff)] bg-[center_top_0.7rem] bg-[length:100%_3rem]">
+                {eventTest.map((e)=>{
+                  if(e.date.start == day){
+                    return <EventTest date={e.date} time={e.time} title={e.title}/>
+                  }
+                })}
+            </div>
+          )
+        })
+      }
+    </div>
+  );
 }
 
+function EventTest({date, time, title}){
+
+  return(
+    <div className="absolute w-full bg-red-300 min-h-[1.5rem]" 
+      style={{top:((time.start*3)+0.7)+"rem",
+      height:((time.end - time.start)*3)+"rem"}}>
+      {title}
+    </div>
+  )
+}
 
 
 function Event({ index, events, pos, hover, setHover, focus, setFocus }) {
