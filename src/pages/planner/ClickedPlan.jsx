@@ -251,8 +251,8 @@ export default function ClickedPlan() {
   };
 
   return (
-    <div className="flex w-2/5 rounded-3xl bg-slate-100 shadow-lg p-5 mx-2"> 
-
+    <div className=""> 
+      Dog
 
     </div>
   );

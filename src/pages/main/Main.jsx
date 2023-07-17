@@ -20,10 +20,12 @@ function Main({setOpen}) {
         // Page routing
         >
           <Route path="/" element={<Calendar />}/>
-          <Route path="planner" element={<Planner />}/>
+
+          <Route path="planner/" element={<Planner />}>
+            <Route path={`:id`} element={<ClickedPlan/>}/>
+            <Route path={`pinned/:id`} element={<ClickedPlan/>}/>
+          </Route>
           <Route path="notes" element={<Notes />}/>
-          <Route path={`planner/:id`} element={<ClickedPlan/>}/>
-          <Route path={`planner/pinned/:id`} element={<ClickedPlan/>}/>
         </Routes>
       </div>
     </div>

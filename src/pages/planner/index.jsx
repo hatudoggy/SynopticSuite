@@ -10,7 +10,7 @@ import PlannerCard from "./PlannerCard";
 import PlanModal from "./PlanModal";
 import { ButtonGroup, Button } from "@mui/material";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { useNavigate } from "react-router-dom";
+import { Routes, Route, useNavigate, useResolvedPath, Outlet } from "react-router-dom";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { firestore } from "../../config/firebase";
 import {
@@ -179,7 +179,7 @@ function Planner() {
   });
 
   return (
-    <div className="flex h-full w-full flex-row bg-slate-300 px-10 py-10">
+    <div className="relative flex h-full w-full flex-row bg-slate-300 px-10 py-10 overflow-hidden">
       {/* <div className="invert-to-white mb-4 w-fit hover:cursor-pointer hover:fill-black hover:shadow-lg hover:invert-0">
         <img src={returnButton} alt="" className="w-8" />
       </div> */}
@@ -212,7 +212,7 @@ function Planner() {
           Compose
         </div>
       </div>
-      <div className="flex h-full w-3/5 flex-col gap-5">
+      <div className="flex flex-1 h-full flex-col gap-5">
         {/* <div className="flex flex-row items-center gap-5 ">
           <div
             className="shadow-black-500/40 rounded-3xl bg-gray-700 px-4 py-2 text-lg font-semibold text-white shadow-lg shadow-slate-400/100 hover:cursor-pointer"
@@ -259,7 +259,7 @@ function Planner() {
           </div>
           <div
             ref={animate}
-            className={"mx-2 flex gap-3 sm:flex-wrap flex-col xl:flex-row"}
+            className={"mx-2 flex gap-3 flex-wrap flex-col lg:flex-row"}
           >
             {/* Card */}
             {!loading ? (
@@ -328,9 +328,26 @@ function Planner() {
           </div>
         </div>
       </div>
-      <ClickedPlan/>
+      <SideContent/>
+
     </div>
   );
+}
+
+function SideContent(){
+
+  let url = useResolvedPath();
+
+  //<ClickedPlan/>
+  return(
+    <div className="h-full w-[400px] sm:w-auto flex flex-[0_1_400px] rounded-3xl bg-slate-100 shadow-lg p-5 mx-2 
+        absolute sm:relative translate-x-[100vw] sm:translate-x-[auto]"
+    >
+
+      <Outlet/>
+
+    </div>
+  )
 }
 
 export default Planner;

@@ -27,10 +27,12 @@ export default function PlannerCard({
   const childRef = useRef(null);
   useClickClose(childRef, parentRef, () => setIsSettingsActive(false));
 
+  link = "cat";
+
   return (
     <div
       className={
-        "group/pc relative flex w-full xl:flex-[40%] truncate flex-row rounded-xl bg-slate-100 p-5 shadow-md " +
+        "group/pc relative flex w-full lg:w-[30%]  truncate flex-row rounded-xl bg-slate-100 p-5 shadow-md " +
         (link ? "hover:cursor-pointer " : "") 
       }
       onClick={link ? () => navigate(link) : null}
