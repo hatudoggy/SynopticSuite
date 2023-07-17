@@ -179,7 +179,7 @@ function Planner() {
   });
 
   return (
-    <div className="relative flex h-full w-full flex-row bg-slate-300 px-10 py-10 overflow-hidden">
+    <div className="relative flex justify-center h-full w-full flex-row bg-slate-300 px-10 py-10 overflow-hidden">
       {/* <div className="invert-to-white mb-4 w-fit hover:cursor-pointer hover:fill-black hover:shadow-lg hover:invert-0">
         <img src={returnButton} alt="" className="w-8" />
       </div> */}
@@ -212,7 +212,13 @@ function Planner() {
           Compose
         </div>
       </div>
-      <div className="flex flex-1 h-full flex-col gap-5">
+      <div className={"flex flex-1 h-full flex-col gap-5 "+
+          "relative sm:static translate-x-[auto] sm:translate-x-[auto] transition-transform "+
+          (
+            isChosen?"translate-x-[-100vw]":"translate-x-[auto]"
+          )}
+      
+      >
         {/* <div className="flex flex-row items-center gap-5 ">
           <div
             className="shadow-black-500/40 rounded-3xl bg-gray-700 px-4 py-2 text-lg font-semibold text-white shadow-lg shadow-slate-400/100 hover:cursor-pointer"
@@ -287,6 +293,7 @@ function Planner() {
                         handleDelete={handleDelete}
                         settings={settings}
                         id={plan.planId}
+                        link={`/planner/${plan.planId}`}
                         hasOpenPrompt={true}
                         setIsChosen={setIsChosen}
                       />
@@ -311,6 +318,7 @@ function Planner() {
                         handleDelete={handleDelete}
                         settings={settings}
                         id={plan.planId}
+                        link={`/planner/${plan.planId}`}
                         hasOpenPrompt={true}
                         setIsChosen={setIsChosen}
                       />
@@ -328,23 +336,24 @@ function Planner() {
           </div>
         </div>
       </div>
-      <SideContent/>
+      <SideContent isChosen={isChosen} setIsChosen={setIsChosen}/>
 
     </div>
   );
 }
 
-function SideContent(){
-
-  let url = useResolvedPath();
+function SideContent({isChosen, setIsChosen}){
 
   //<ClickedPlan/>
   return(
-    <div className="h-full w-[400px] sm:w-auto flex flex-[0_1_400px] rounded-3xl bg-slate-100 shadow-lg p-5 mx-2 
-        absolute sm:relative translate-x-[100vw] sm:translate-x-[auto]"
+    <div className={" h-[80vh] w-3/4 sm:w-[400px] flex-auto flex sm:flex-[0_1_450px] rounded-3xl bg-slate-100 shadow-lg p-5 mx-2 "+ 
+        "absolute sm:relative translate-x-[100vw] sm:translate-x-[auto] "+
+        "transition-transform " + (
+          isChosen?"translate-x-[auto]":"translate-x-[100vw]"
+        )}
     >
 
-      <Outlet/>
+      <Outlet context={{setIsChosen}}/>
 
     </div>
   )

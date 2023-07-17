@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import returnButton from "../../assets/returnButton.svg";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useOutletContext } from "react-router-dom";
 import {
   query,
   doc,
@@ -250,15 +250,235 @@ export default function ClickedPlan() {
     }
   };
 
-  return (
-    <div className=""> 
-      Dog
+  const {setIsChosen} = useOutletContext();
 
+  return (
+    // <div className=""> 
+    //   Dog
+    // </div>
+    <div className="flex flex-row overflow-hidden">
+    <div
+      className={
+        "flex h-full flex-col  w-full" 
+      }
+    >
+      {/* MODALS */}
+      {isModalOpen ? (
+        <TodoModal
+          handleOutsideClick={handleOutsideClick}
+          handleFormSubmit={handleFormSubmit}
+          handleClose={() => setIsModalOpen(!isModalOpen)}
+          setItem={setItem}
+          item={item}
+          setNote={setNote}
+          note={note}
+          header={plan?.subject}
+          dateEdited={plan?.dateEdited?.toDate()?.toLocaleString()} //Passes the date
+          firstInput={"Item Name"}
+          secondInput={"Note"}
+          priority={priority}
+          setPriority={setPriority}
+          progress={progress}
+          setProgress={setProgress}
+          itemType={itemType}
+          setItemType={setItemType}
+          startDate={startDate}
+          setStartDate={setStartDate}
+          endDate={endDate}
+          setEndDate={setEndDate}
+        />
+      ) : null}
+      {isItemOpen ? (
+        <ItemModal
+          itemData={clickedItem}
+          handleOutsideClick={handleOutsideClick}
+          handleFormSubmit={handleFormSubmit}
+          handleClose={() => setIsItemOpen(!isItemOpen)}
+          setItem={setItem}
+          item={item}
+          setNote={setNote}
+          note={note}
+          header={plan?.subject}
+          dateEdited={clickedItem?.dateEdited?.toDate()?.toLocaleString()} //Passes the date
+          firstInput={"Item Name"}
+          secondInput={"Note"}
+          priority={priority}
+          setPriority={setPriority}
+          progress={progress}
+          setProgress={setProgress}
+          itemType={itemType}
+          setItemType={setItemType}
+          startDate={startDate}
+          setStartDate={setStartDate}
+          endDate={endDate}
+          setEndDate={setEndDate}
+        />
+      ) : null}
+      <img
+        src={returnButton}
+        alt=""
+        className="invert-to-white w-8 hover:cursor-pointer"
+        onClick={() => {navigate(-1); setIsChosen(false);}}
+      />
+      <div className="mx-2 flex h-full flex-col gap-7 py-6">
+        {plan ? (
+          <div>
+          <PlannerCard
+            subject={plan?.subject}
+            description={plan?.description}
+            color={plan?.color}
+            textColor={plan?.textColor}
+            pin={pin}
+            unpin={unpin}
+            isPinned={plan?.isPinned}
+            handlePin={handlePin}
+            handleUnpin={handleUnpin}
+            handleDelete={handleDelete}
+            settings={settings}
+            id={plan?.planId}
+          />
+          </div>
+        ) : (
+          <PlannerCardLoad/>
+        )}
+        
+        <div className="flex flex-row items-center justify-between sm:min-w-[375px] lg:max-w-[375px]">
+          <div
+            className={
+              "font-semibold hover:cursor-pointer hover:underline hover:underline-offset-4 sm:text-xl " +
+              (isAll ? "underline underline-offset-4" : "")
+            }
+            onClick={() => handleSwitchItem("all")}
+          >
+            All
+          </div>
+          {width > 319 ? (
+            <>
+              <div
+                className={
+                  "font-semibold hover:cursor-pointer hover:underline hover:underline-offset-4 sm:text-xl " +
+                  (isTask ? "underline underline-offset-4" : "")
+                }
+                onClick={() => handleSwitchItem("tasks")}
+              >
+                Tasks
+              </div>
+              <div
+                className={
+                  "font-semibold hover:cursor-pointer hover:underline hover:underline-offset-4 sm:text-xl " +
+                  (isEvent ? "underline underline-offset-4" : "")
+                }
+                onClick={() => handleSwitchItem("events")}
+              >
+                Events
+              </div>
+              <div
+                className={
+                  "font-semibold hover:cursor-pointer hover:underline hover:underline-offset-4 sm:text-xl " +
+                  (isReminder ? "underline underline-offset-4" : "")
+                }
+                onClick={() => handleSwitchItem("reminders")}
+              >
+                Reminders
+              </div>
+            </>
+          ) : (
+            <div>
+              <IoIosArrowDown />
+            </div>
+          )}
+        </div>
+        <div className="flex flex-col gap-2 overflow-y-scroll flex-1">
+          <div className="flex flex-col gap-3 sm:min-w-[375px]">
+            <div
+              className="flex items-center gap-1 rounded-md bg-blue-500 px-7 py-5 font-semibold text-white shadow hover:-translate-y-1 hover:cursor-pointer hover:bg-blue-300 hover:text-gray-800 hover:transition-all sm:min-w-[375px] lg:max-w-[375px]"
+              onClick={() => setIsModalOpen(!isModalOpen)}
+            >
+              <HiPlus />
+              <div>Add Item</div>
+            </div>
+          </div>
+
+          {/* Checks if Tasks, Events, or Reminders is clicked 
+            then displays corresponding data */}
+          {itemList
+            ? isAll
+              ? itemList.map((item, index) => (
+                  <ItemCard
+                    key={index}
+                    item={item}
+                    index={index}
+                    setIsItemOpen={setIsItemOpen}
+                    setClickedItem={setClickedItem}
+                    isItemOpen={isItemOpen}
+                  />
+                ))
+              : isTask
+              ? itemList
+                  .filter((item) => item.itemType === "task")
+                  .map((item, index) => (
+                    <ItemCard
+                      key={index}
+                      item={item}
+                      index={index}
+                      setIsItemOpen={setIsItemOpen}
+                      setClickedItem={setClickedItem}
+                      isItemOpen={isItemOpen}
+                    />
+                  ))
+              : isEvent
+              ? itemList
+                  .filter((item) => item.itemType === "event")
+                  .map((item, index) => (
+                    <ItemCard
+                      key={index}
+                      item={item}
+                      index={index}
+                      setIsItemOpen={setIsItemOpen}
+                      setClickedItem={setClickedItem}
+                      isItemOpen={isItemOpen}
+                    />
+                  ))
+              : isReminder
+              ? itemList
+                  .filter((item) => item.itemType === "reminder")
+                  .map((item, index) => (
+                    <ItemCard
+                      item={item}
+                      index={index}
+                      setIsItemOpen={setIsItemOpen}
+                      setClickedItem={setClickedItem}
+                      isItemOpen={isItemOpen}
+                    />
+                  ))
+              : null
+            : null}
+
+          <div
+            className="flex items-center justify-center gap-3 pr-3 font-semibold hover:cursor-pointer lg:max-w-[375px]"
+            onClick={() => handleLoadMore()}
+            ref={scrollTo}
+          >
+            {isLoading ? (
+              <Stack sx={{ color: "grey.900" }} spacing={2} direction="row">
+                <CircularProgress color="inherit" size={15} />
+              </Stack>
+            ) : (
+              <AiOutlineReload />
+            )}
+
+            <span>Load More</span>
+          </div>
+        </div>
+
+      </div>
     </div>
+    {/* <CardContent itemData={clickedItem} width={width} /> */}
+  </div>
   );
 }
 
-function commentedOut() {
+function CommentedOut() {
   return (
     <div className="flex h-full w-full flex-row gap-10 bg-slate-300 px-10 py-10 sm:px-14 sm:py-14">
       <div

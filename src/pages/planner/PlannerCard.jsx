@@ -19,6 +19,7 @@ export default function PlannerCard({
   id,
   link,
   hasOpenPrompt,
+  setIsChosen
 }) {
   const navigate = useNavigate();
   const [isSettingsActive, setIsSettingsActive] = useState(false);
@@ -27,15 +28,14 @@ export default function PlannerCard({
   const childRef = useRef(null);
   useClickClose(childRef, parentRef, () => setIsSettingsActive(false));
 
-  link = "cat";
 
   return (
     <div
       className={
-        "group/pc relative flex w-full lg:w-[30%]  truncate flex-row rounded-xl bg-slate-100 p-5 shadow-md " +
+        "group/pc relative flex xl:flex-[0_1_30%] lg:flex-[0_1_45%] truncate flex-row rounded-xl bg-slate-100 p-5 shadow-md " +
         (link ? "hover:cursor-pointer " : "") 
       }
-      onClick={link ? () => navigate(link) : null}
+      onClick={()=>{link ? navigate(link) : null; setIsChosen(true);}}
     >
       <div
         className="flex items-center rounded-md p-5 font-bold"
