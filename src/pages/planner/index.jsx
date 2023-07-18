@@ -89,7 +89,7 @@ function Planner() {
     return () => unsubscribe();
   }, []);
 
-  console.log(plans);
+  //console.log(plans);
 
   /******************************************/
   /*          End of Use Effects            */
@@ -265,7 +265,7 @@ function Planner() {
           </div>
           <div
             ref={animate}
-            className={"mx-2 flex gap-3 flex-wrap flex-col lg:flex-row"}
+            className={"mx-2 flex gap-3 lg:flex-wrap flex-col lg:flex-row"}
           >
             {/* Card */}
             {!loading ? (
@@ -347,9 +347,9 @@ function SideContent({isChosen, setIsChosen}){
   //<ClickedPlan/>
   return(
     <div className={" h-[80vh] w-3/4 sm:w-[400px] flex-auto flex sm:flex-[0_1_450px] rounded-3xl bg-slate-100 shadow-lg p-5 mx-2 "+ 
-        "absolute sm:relative translate-x-[100vw] sm:translate-x-[auto] "+
+        "absolute sm:relative sm:translate-x-[auto] sm:visible "+
         "transition-transform " + (
-          isChosen?"translate-x-[auto]":"translate-x-[100vw]"
+          isChosen?"translate-x-[auto] visible":"translate-x-[100vw] invisible"
         )}
     >
 

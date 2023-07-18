@@ -15,7 +15,7 @@ function MobileSidebar({open, setOpen}) {
   return (
     
     <>
-    <div className={(open?'min-[450px]:w-3/5 w-64':'w-0')+' sm:hidden flex bg-slate-300 z-50 overflow-hidden flex-none transition-[width]'}>
+    <div className={(open?'sm:w-80 w-72':'w-0')+' lg:hidden flex bg-slate-300 z-50 overflow-hidden flex-none transition-[width]'}>
         <div className='flex flex-col items-center gap-3 bg-slate-300 px-3 py-5'>
             <LinkCont/>
         </div>
@@ -25,7 +25,7 @@ function MobileSidebar({open, setOpen}) {
         
     </div>
 
-    <div className={(open?'visible opacity-50':'invisible opacity-0')+' sm:hidden z-40 absolute top-0 left-0 bg-slate-900 h-full w-screen'}
+    <div className={(open?'visible opacity-50':'invisible opacity-0')+' lg:hidden z-40 absolute top-0 left-0 bg-slate-900 h-full w-screen'}
         style={{transition:'visibility 0.1s linear, opacity 0.1s linear'}}
         onClick={()=>setOpen(false)}></div>
     </> 
@@ -48,7 +48,7 @@ function Link(){
 function Nav(){
     
     return(
-        <div className='bg-slate-500 flex flex-col gap-3 py-6 px-4 flex-wrap content-center flex-none w-auto min-[450px]:flex-auto md:hidden'>
+        <div className='bg-slate-500 flex flex-col gap-3 py-6 px-4 flex-wrap content-center w-auto flex-auto'>
             <div className='flex justify-center items-center py-5 text-white text-2xl'>
                 <img src={logo} className="w-10" />
                 <span className='ml-4 min-[450px]:w-auto w-24'>Synoptic Suite</span>

@@ -11,8 +11,10 @@ function Main({setOpen}) {
   return (
     <div className="flex h-screen w-full flex-none sm:flex-1 flex-col">
       <div className="sticky top-0 z-10 flex h-12 flex-none items-center sm:justify-between bg-white pl-2 sm:pl-6 pr-12 shadow-lg">
-        <Menu setSideOpen={setOpen}/>
-        <SearchBar/>
+        <div className="flex gap-3">
+          <Menu setSideOpen={setOpen}/>
+          <SearchBar/>
+        </div>
         <Profile/>
       </div>
       <div className="grow">
@@ -35,7 +37,7 @@ function Main({setOpen}) {
 function Menu({setSideOpen}){
 
   return(
-    <button className="sm:hidden ml-2 flex-none" onClick={()=>{setSideOpen(true)}}>
+    <button className="lg:hidden ml-2 flex-none" onClick={()=>{setSideOpen(true)}}>
       <img src={menu} alt="search" className="w-6" />
     </button>
   )
