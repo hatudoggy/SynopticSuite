@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import useClickClose from "../../hooks/useClickClose";
 import { BsArrowRightShort } from "react-icons/bs";
 import useWindowDimensions from "../../hooks/useWindowDimensions";
@@ -18,8 +18,9 @@ export default function PlannerCard({
   settings,
   id,
   link,
+  setLink,
   hasOpenPrompt,
-  setIsChosen
+  setIsChosen,
 }) {
   const navigate = useNavigate();
   const [isSettingsActive, setIsSettingsActive] = useState(false);
@@ -28,14 +29,15 @@ export default function PlannerCard({
   const childRef = useRef(null);
   useClickClose(childRef, parentRef, () => setIsSettingsActive(false));
 
-
   return (
     <div
       className={
-        "group/pc h-min flex-none relative flex xl:flex-[0_1_30%] lg:flex-[0_1_48%] truncate flex-row rounded-xl bg-slate-100 p-5 shadow-md " +
-        (link ? "hover:cursor-pointer " : "") 
+        "group/pc relative flex h-min flex-none flex-row truncate rounded-xl bg-slate-100 p-5 shadow-md hover:cursor-pointer lg:flex-[0_1_48%] xl:flex-[0_1_30%] "
       }
-      onClick={()=>{link ? navigate(link) : null; setIsChosen(true);}}
+      onClick={() => {
+        setLink(link);
+        setIsChosen(true);
+      }}
     >
       <div
         className="flex items-center rounded-md p-5 font-bold"
@@ -47,7 +49,9 @@ export default function PlannerCard({
         MP
       </div>
       <div className="mx-5 truncate">
-        <div className="truncate max-w-[10ch] min-[720px]:max-w-[30ch] font-semibold sm:text-lg">{subject}</div>
+        <div className="max-w-[10ch] truncate font-semibold sm:text-lg min-[720px]:max-w-[30ch]">
+          {subject}
+        </div>
         <div className="sm:text-md truncate text-xs font-medium">
           {description}
         </div>

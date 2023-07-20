@@ -10,7 +10,13 @@ import PlannerCard from "./PlannerCard";
 import PlanModal from "./PlanModal";
 import { ButtonGroup, Button } from "@mui/material";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { Routes, Route, useNavigate, useResolvedPath, Outlet } from "react-router-dom";
+import {
+  Routes,
+  Route,
+  useNavigate,
+  useResolvedPath,
+  Outlet,
+} from "react-router-dom";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { firestore } from "../../config/firebase";
 import {
@@ -38,6 +44,7 @@ function Planner() {
 
   //Navigation/Routing
   const navigate = useNavigate();
+  const [link, setLink] = useState();
 
   //Detects window dimension
   const { height, width } = useWindowDimensions();
@@ -89,7 +96,13 @@ function Planner() {
     return () => unsubscribe();
   }, []);
 
-  //console.log(plans);
+  //If a card is chosen, page will navigate to that card
+  useEffect(() => {
+    isChosen ? navigate(link) : navigate(`/planner/`);
+  }, [isChosen, link]);
+
+  // console.log(isChosen);
+  // console.log(link);
 
   /******************************************/
   /*          End of Use Effects            */
@@ -179,7 +192,7 @@ function Planner() {
   });
 
   return (
-    <div className="relative flex justify-center h-full w-full flex-row bg-slate-300 px-10 py-10 overflow-hidden">
+    <div className="relative flex h-full w-full flex-row justify-center overflow-hidden bg-slate-300 px-10 py-10">
       {/* <div className="invert-to-white mb-4 w-fit hover:cursor-pointer hover:fill-black hover:shadow-lg hover:invert-0">
         <img src={returnButton} alt="" className="w-8" />
       </div> */}
@@ -200,7 +213,7 @@ function Planner() {
         />
       ) : null}
       <div
-        className="text-md absolute bottom-10 right-10 z-10 flex items-center justify-center gap-2 rounded-2xl bg-blue-500 px-5 py-5 font-semibold text-white shadow-lg shadow-slate-400/100 hover:cursor-pointer"
+        className="text-md fixed bottom-10 right-10 z-[12] flex items-center justify-center gap-2 rounded-2xl bg-blue-500 px-5 py-5 font-semibold text-white shadow-lg shadow-slate-400/100 hover:cursor-pointer"
         onClick={() => setIsModalOpen(!isModalOpen)}
       >
         <img src={addButton} alt="add" className="w-6 sm:w-8" />
@@ -212,12 +225,12 @@ function Planner() {
           Compose
         </div>
       </div>
-      <div className={"flex flex-1 h-full flex-col gap-5 "+
-          "relative sm:static translate-x-[auto] sm:translate-x-[auto] transition-transform "+
-          (
-            isChosen?"translate-x-[-100vw]":"translate-x-[auto]"
-          )}
-      
+      <div
+        className={
+          "flex h-full flex-1 flex-col gap-5 " +
+          "relative translate-x-[auto] transition-transform sm:static sm:translate-x-[auto] " +
+          (isChosen ? "translate-x-[-100vw]" : "translate-x-[auto]")
+        }
       >
         {/* <div className="flex flex-row items-center gap-5 ">
           <div
@@ -265,7 +278,7 @@ function Planner() {
           </div>
           <div
             ref={animate}
-            className={"mx-2 flex gap-3 lg:flex-wrap flex-col lg:flex-row"}
+            className={"mx-2 flex flex-col gap-3 lg:flex-row lg:flex-wrap"}
           >
             {/* Card */}
             {!loading ? (
@@ -294,6 +307,7 @@ function Planner() {
                         settings={settings}
                         id={plan.planId}
                         link={`/planner/${plan.planId}`}
+                        setLink={setLink}
                         hasOpenPrompt={true}
                         setIsChosen={setIsChosen}
                       />
@@ -319,6 +333,7 @@ function Planner() {
                         settings={settings}
                         id={plan.planId}
                         link={`/planner/${plan.planId}`}
+                        setLink={setLink}
                         hasOpenPrompt={true}
                         setIsChosen={setIsChosen}
                       />
@@ -332,31 +347,35 @@ function Planner() {
                 <PlannerCardLoad />
               </>
             )}
-            {/* Returns if plan is empty */}
           </div>
         </div>
       </div>
-      <SideContent isChosen={isChosen} setIsChosen={setIsChosen}/>
-
+      <SideContent isChosen={isChosen} setIsChosen={setIsChosen} />
     </div>
   );
 }
 
-function SideContent({isChosen, setIsChosen}){
-
-  //<ClickedPlan/>
-  return(
-    <div className={" h-[80vh] w-3/4 sm:w-[400px] flex-auto flex sm:flex-[0_1_450px] rounded-3xl bg-slate-100 shadow-lg p-5 mx-2 "+ 
-        "absolute sm:relative sm:translate-x-[auto] sm:visible "+
-        "transition-transform " + (
-          isChosen?"translate-x-[auto] visible":"translate-x-[100vw] invisible"
-        )}
-    >
-
-      <Outlet context={{setIsChosen}}/>
-
-    </div>
-  )
+function SideContent({ isChosen, setIsChosen }) {
+  return (
+    <>
+      <div
+        className={
+          "fixed top-0 z-10 h-screen w-screen bg-black opacity-50 sm:hidden " +
+          (isChosen ? "visible" : "invisible")
+        }
+      ></div>
+      <div
+        className={
+          "fixed z-[11] mx-2 flex h-[80vh] w-3/4 flex-auto rounded-3xl bg-slate-100 p-5 shadow-lg transition-all sm:visible sm:relative sm:w-[25rem] sm:flex-[0_1_28.125rem] sm:translate-x-[auto] " +
+          (isChosen
+            ? "visible z-[11] translate-x-[auto]"
+            : "invisible translate-x-[100vw]")
+        }
+      >
+        {isChosen && <Outlet context={{ setIsChosen }} />}
+      </div>
+    </>
+  );
 }
 
 export default Planner;
