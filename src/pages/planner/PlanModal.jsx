@@ -38,7 +38,7 @@ export default function PlanModal({
 
   return (
     <div
-      className="absolute right-0 top-0 z-20 flex h-full w-full items-center justify-center bg-black bg-opacity-50"
+      className="fixed right-0 top-0 z-20 flex h-full w-full items-center justify-center bg-black bg-opacity-50"
       onClick={handleOutsideClick}
     >
       <div
