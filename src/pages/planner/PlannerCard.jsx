@@ -32,7 +32,7 @@ export default function PlannerCard({
   return (
     <div
       className={
-        "group/pc relative flex h-min flex-none flex-row truncate rounded-xl bg-slate-100 p-5 shadow-md hover:cursor-pointer lg:flex-[0_1_48%] xl:flex-[0_1_30%] "
+        "group/pc relative flex h-min flex-none flex-row truncate rounded-xl bg-slate-100 p-5 shadow-md hover:cursor-pointer lg:flex-[0_1_48%] 2xl:flex-[0_1_32%] "
       }
       onClick={() => {
         setLink(link);
