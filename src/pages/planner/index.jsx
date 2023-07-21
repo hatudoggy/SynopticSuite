@@ -192,7 +192,7 @@ function Planner() {
   });
 
   return (
-    <div className="relative flex h-full w-full flex-row justify-center overflow-hidden bg-slate-300 px-10 py-10">
+    <div className="relative flex h-[calc(100vh-3rem)] w-full flex-row justify-center overflow-hidden bg-slate-300 px-10 py-10">
       {/* <div className="invert-to-white mb-4 w-fit hover:cursor-pointer hover:fill-black hover:shadow-lg hover:invert-0">
         <img src={returnButton} alt="" className="w-8" />
       </div> */}
@@ -212,7 +212,7 @@ function Planner() {
           setColor={setColor}
         />
       ) : null}
-      <div
+      {/* <div
         className="text-md fixed bottom-10 right-10 z-[12] flex items-center justify-center gap-2 rounded-2xl bg-blue-500 px-5 py-5 font-semibold text-white shadow-lg shadow-slate-400/100 hover:cursor-pointer"
         onClick={() => setIsModalOpen(!isModalOpen)}
       >
@@ -224,10 +224,10 @@ function Planner() {
         >
           Compose
         </div>
-      </div>
+      </div> */}
       <div
         className={
-          "flex h-full flex-1 flex-col gap-5 " +
+          "flex h-full flex-1 flex-col gap-5 pb-0 " +
           "relative translate-x-[auto] transition-transform sm:static sm:translate-x-[auto] " +
           (isChosen ? "translate-x-[-100vw]" : "translate-x-[auto]")
         }
@@ -243,9 +243,25 @@ function Planner() {
             Notes
           </div>
         </div> */}
-        <div className="flex w-full flex-col gap-5">
-          <div className="flex flex-col gap-3 py-4">
-            <div className="px-2 text-2xl font-semibold sm:text-4xl">Plans</div>
+        <div className="fakeNoScroll thinScrollbar flex w-full flex-col gap-5 overflow-y-scroll">
+          <div className="sticky top-0 z-10 flex flex-col gap-3 bg-slate-300 py-4">
+            <div className="flex items-center px-2 text-2xl font-semibold sm:text-4xl float-right min-[1300px]:mr-5">
+              <span>Plans</span>
+              <div
+                className="text-md ml-auto flex items-center justify-center gap-2 rounded-md bg-blue-500 px-2 py-1 font-semibold text-white shadow-lg shadow-slate-400/100 hover:cursor-pointer"
+                onClick={() => setIsModalOpen(!isModalOpen)}
+              >
+                <img src={addButton} alt="add" className="w-4 sm:w-5" />
+                <div
+                  className={
+                    "pr-3 text-sm sm:text-base "
+                    // (width < 300 ? "hidden" : "inherit")
+                  }
+                >
+                  Compose
+                </div>
+              </div>
+            </div>
             <div className="flex flex-row items-center">
               <ThemeProvider theme={theme}>
                 <ButtonGroup
@@ -278,7 +294,9 @@ function Planner() {
           </div>
           <div
             ref={animate}
-            className={"mx-2 flex flex-col gap-3 lg:flex-row lg:flex-wrap"}
+            className={
+              "mx-2 flex flex-col gap-3 pb-3 min-[1300px]:flex-row min-[1300px]:flex-wrap"
+            }
           >
             {/* Card */}
             {!loading ? (
@@ -366,7 +384,7 @@ function SideContent({ isChosen, setIsChosen }) {
       ></div>
       <div
         className={
-          "fixed z-[11] mx-2 flex h-[80vh] w-3/4 flex-auto rounded-3xl bg-slate-100 p-5 shadow-lg transition-all sm:visible sm:relative sm:w-[25rem] sm:flex-[0_1_28.125rem] sm:translate-x-[auto] " +
+          "fixed z-[11] mx-2 h-[80vh] w-3/4 flex-auto overflow-y-hidden rounded-3xl bg-slate-100 p-5 shadow-lg transition-all sm:visible sm:relative sm:top-10 sm:w-[25rem] sm:flex-[0_1_28.125rem] sm:translate-x-[auto] " +
           (isChosen
             ? "visible z-[11] translate-x-[auto]"
             : "invisible translate-x-[100vw]")

@@ -1,8 +1,42 @@
 .noScroll::-webkit-scrollbar {
+  display: none;
+}
+
+.noScroll {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* OPACITY'D SCROLLBAR */
+.fakeNoScroll::-webkit-scrollbar-thumb {
+  background: rgba(135, 140, 146, 0.5);
+}
+
+.fakeNoScroll:hover::-webkit-scrollbar-thumb {
+  background: rgba(135, 140, 146, 1);
+}
+
+/* CUSTOMIZE SCROLLBAR WIDTH AND LOOK */
+.thinScrollbar::-webkit-scrollbar {
+  width: 0.2rem;
+}
+
+.thinScrollbar::-webkit-scrollbar-track {
+  border-radius: 100vh;
+}
+
+.thinScrollbar::-webkit-scrollbar-thumb {
+  border-radius: 100vh;
+}
+
+/* SCROLLBAR FOR BIG SCREENS ONLY */
+@media screen and (min-width: 1024px) {
+ .lgNoScroll::-webkit-scrollbar {
     display: none;
   }
-  
-.noScroll {
-    -ms-overflow-style: none;  
-    scrollbar-width: none;  
+
+  .lgNoScroll {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  } 
 }
