@@ -192,7 +192,7 @@ function Planner() {
   });
 
   return (
-    <div className="relative flex h-[calc(100vh-3rem)] w-full flex-row justify-center overflow-hidden bg-slate-300 px-10 py-10">
+    <div className="relative flex h-[calc(100vh-3rem)] w-full flex-row justify-center overflow-hidden bg-slate-300 px-5 py-10 lg:px-10">
       {/* <div className="invert-to-white mb-4 w-fit hover:cursor-pointer hover:fill-black hover:shadow-lg hover:invert-0">
         <img src={returnButton} alt="" className="w-8" />
       </div> */}
@@ -245,16 +245,16 @@ function Planner() {
         </div> */}
         <div className="fakeNoScroll thinScrollbar flex w-full flex-col gap-5 overflow-y-scroll">
           <div className="sticky top-0 z-10 flex flex-col gap-3 bg-slate-300 py-4">
-            <div className="flex items-center px-2 text-2xl font-semibold sm:text-4xl float-right min-[1300px]:mr-5">
+            <div className="float-right flex items-center px-2 text-4xl font-semibold min-[1300px]:mr-5">
               <span>Plans</span>
               <div
-                className="text-md ml-auto flex items-center justify-center gap-2 rounded-md bg-blue-500 px-2 py-1 font-semibold text-white shadow-lg shadow-slate-400/100 hover:cursor-pointer"
+                className="text-md ml-auto flex items-center justify-center gap-2 rounded-md bg-blue-500 px-2 py-2 font-semibold text-white shadow-lg shadow-slate-400/100 hover:cursor-pointer"
                 onClick={() => setIsModalOpen(!isModalOpen)}
               >
-                <img src={addButton} alt="add" className="w-4 sm:w-5" />
+                <img src={addButton} alt="add" className="w-5" />
                 <div
                   className={
-                    "pr-3 text-sm sm:text-base "
+                    "pr-3 text-base "
                     // (width < 300 ? "hidden" : "inherit")
                   }
                 >
@@ -266,7 +266,7 @@ function Planner() {
               <ThemeProvider theme={theme}>
                 <ButtonGroup
                   aria-label="outlined primary button group"
-                  className="px-2"
+                  className="h-4/5 px-2 lg:h-full"
                   fullWidth={width > 1024 ? false : true}
                   disableElevation
                 >
