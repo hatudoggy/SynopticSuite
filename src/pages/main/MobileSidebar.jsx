@@ -49,9 +49,9 @@ function Nav(){
     
     return(
         <div className='bg-slate-500 flex flex-col gap-3 py-6 px-4 flex-wrap content-center w-auto flex-auto'>
-            <div className='flex justify-center items-center py-5 text-white text-2xl'>
+            <div className='flex justify-center items-center py-5 text-white sm:text-2xl text-xl'>
                 <img src={logo} className="w-10" />
-                <span className='ml-4 min-[450px]:w-auto w-24'>Synoptic Suite</span>
+                <span className='ml-4 min-[450px]:w-full break-words w-24'>Synoptic Suite</span>
             </div>
             <ResIcon image={calendar} text={"Calendar"} link={"/"} />
             <ResIcon image={resources} text={"Resources"} link={"resources"} />
