@@ -13,6 +13,7 @@
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
     "@formkit/auto-animate": "^0.7.0",
+    "@mui/lab": "^5.0.0-alpha.137",
     "@mui/material": "^5.13.6",
     "@tailwindcss/line-clamp": "^0.4.4",
     "date-fns": "^2.30.0",

@@ -31,12 +31,18 @@
 
 /* SCROLLBAR FOR BIG SCREENS ONLY */
 @media screen and (min-width: 1024px) {
- .lgNoScroll::-webkit-scrollbar {
+  .lgNoScroll::-webkit-scrollbar {
     display: none;
   }
 
   .lgNoScroll {
     -ms-overflow-style: none;
     scrollbar-width: none;
-  } 
+  }
+}
+
+@media screen and (min-height: 652px) {
+  .enableScrollForPortrait {
+    overflow-y: scroll;
+  }
 }

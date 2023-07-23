@@ -378,13 +378,13 @@ function SideContent({ isChosen, setIsChosen }) {
     <>
       <div
         className={
-          "fixed top-0 z-10 h-screen w-screen bg-black opacity-50 ml:hidden " +
+          "fixed top-0 z-10 h-screen w-screen bg-black opacity-50 min-[900px]:hidden " +
           (isChosen ? "visible" : "invisible")
         }
       ></div>
       <div
         className={
-          "fixed top-[5%] z-[11] mx-2 h-[90vh] w-11/12 flex-auto overflow-y-hidden rounded-3xl bg-slate-100 p-5 shadow-lg transition-all ml:visible ml:relative ml:h-[80vh] ml:w-3/4 ml:flex-[0_1_28.125rem] ml:translate-x-[auto] " +
+          "fixed top-[5%] z-[11] mx-2 h-[90vh] w-11/12 flex-auto overflow-y-hidden rounded-3xl bg-slate-100 p-5 shadow-lg transition-all min-[900px]:visible min-[900px]:relative min-[900px]:h-[80vh] min-[900px]:w-3/4 min-[900px]:flex-[0_1_28.125rem] min-[900px]:translate-x-[auto] " +
           (isChosen
             ? "visible z-[11] translate-x-[auto]"
             : "invisible translate-x-[100vw]")

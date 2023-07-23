@@ -39,6 +39,12 @@ import useClickClose from "../../hooks/useClickClose";
 import PlannerCardLoad from "../../loaders/Planner/PlannerCardLoad";
 import "../../css/Sidebar.css";
 
+//testing
+import { createTheme, ThemeProvider } from "@mui/material/styles";
+import Box from "@mui/material/Box";
+import Tab from "@mui/material/Tab";
+import Tabs from "@mui/material/Tabs";
+
 export default function ClickedPlan() {
   /******************************************/
   /* Start of Instantiating State Variables */
@@ -58,6 +64,7 @@ export default function ClickedPlan() {
   //Navigation/Routing
   const navigate = useNavigate();
   const [clickedItem, setClickedItem] = useState();
+  const [tabIndex, setTabIndex] = useState("1");
 
   //Collection of Data
   const [plan, setPlan] = useState();
@@ -254,8 +261,12 @@ export default function ClickedPlan() {
     }
   };
 
+  const handleTabChange = (event, newValue) => {
+    setTabIndex(newValue);
+  };
+
   return (
-    <div className="flex h-full w-full flex-row overflow-scroll noScroll">
+    <div className="noScroll flex h-full w-full flex-row overflow-scroll">
       <div className="flex h-full w-full flex-col">
         {/* MODALS */}
         {isModalOpen ? (
@@ -339,8 +350,46 @@ export default function ClickedPlan() {
           ) : (
             <PlannerCardLoad />
           )}
-
-          <div className="flex w-[98%] flex-row items-center justify-between">
+          <div className="w-full">
+            <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+              <Tabs
+                value={tabIndex}
+                onChange={handleTabChange}
+                variant="scrollable"
+              >
+                <Tab
+                  label="All"
+                  value="1"
+                  onClick={() => handleSwitchItem("all")}
+                />
+                <Tab
+                  label="Tasks"
+                  value="2"
+                  onClick={() => handleSwitchItem("tasks")}
+                />
+                <Tab
+                  label="Events"
+                  value="3"
+                  onClick={() => handleSwitchItem("events")}
+                />
+                <Tab
+                  label="Reminders"
+                  value="4"
+                  onClick={() => handleSwitchItem("reminders")}
+                />
+              </Tabs>
+            </Box>
+          </div>
+          <div className="flex w-full flex-col gap-3">
+            <div
+              className="flex w-full items-center gap-1 rounded-md bg-blue-500 px-7 py-2.5 font-semibold text-white shadow hover:-translate-y-1 hover:cursor-pointer hover:bg-blue-300 hover:text-gray-800 hover:transition-all"
+              onClick={() => setIsModalOpen(!isModalOpen)}
+            >
+              <HiPlus />
+              <div>Add Item</div>
+            </div>
+          </div>
+          {/* <div className="flex w-[98%] flex-row items-center justify-between">
             <div
               className={
                 "font-semibold hover:cursor-pointer hover:underline hover:underline-offset-4 sm:text-xl " +
@@ -385,17 +434,8 @@ export default function ClickedPlan() {
                 <IoIosArrowDown />
               </div>
             )}
-          </div>
-          <div className="flex w-full flex-col gap-3">
-            <div
-              className="flex w-full items-center gap-1 rounded-md bg-blue-500 px-7 py-2.5 font-semibold text-white shadow hover:-translate-y-1 hover:cursor-pointer hover:bg-blue-300 hover:text-gray-800 hover:transition-all"
-              onClick={() => setIsModalOpen(!isModalOpen)}
-            >
-              <HiPlus />
-              <div>Add Item</div>
-            </div>
-          </div>
-          <div className="fakeNoScroll thinScrollbar flex h-full w-full flex-col gap-2 tall:overflow-y-scroll">
+          </div> */}
+          <div className="fakeNoScroll thinScrollbar enableScrollForPortrait flex h-full w-full flex-col gap-2">
             {/* Checks if Tasks, Events, or Reminders is clicked 
             then displays corresponding data */}
             {itemList
@@ -717,7 +757,7 @@ function ItemCard({ item, index, setIsItemOpen, setClickedItem, isItemOpen }) {
   });
 
   return (
-    <div key={index} className="w-full flex flex-col">
+    <div key={index} className="flex w-full flex-col">
       <div
         className="relative flex w-full flex-row rounded-xl bg-slate-100 p-5 shadow-md hover:cursor-pointer"
         onClick={() => {
@@ -772,7 +812,9 @@ function ItemCard({ item, index, setIsItemOpen, setClickedItem, isItemOpen }) {
             </div>
 
             {/* Name */}
-            <div className="line-clamp-1 whitespace-pre-wrap">{item.itemName}</div>
+            <div className="line-clamp-1 whitespace-pre-wrap">
+              {item.itemName}
+            </div>
           </div>
           <div className="flex font-semibold">
             {item.endDate.toDate()?.toDateString()}

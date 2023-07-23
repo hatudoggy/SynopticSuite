@@ -1,6 +1,7 @@
 /** @type {import('tailwindcss').Config} */
 const colors = require("tailwindcss/colors");
 export default {
+  mode: "jit",
   content: ["./index.html", "./src/**/*.{jsx,css}"],
   theme: {
     extend: {
@@ -25,29 +26,33 @@ export default {
         "hover-color": "#909090",
       },
     },
-    screens: {
-      /**** WIDTH ****/
 
-      sm: "640px",
-      // => @media (min-width: 640px) { ... }
+    /**** JUST USE FOR REFERENCE ****/
 
-      md: "768px",
-      // => @media (min-width: 768px) { ... }
+    /**** WIDTH ****/
 
-      ml: "900px",
-      // => @media (min-width: 900px) { ... }
+    // xsm: "450px",
+    // // => @media (min-width: 450px) { ... }
 
-      lg: "1024px",
-      // => @media (min-width: 1024px) { ... }
+    // sm: "640px",
+    // // => @media (min-width: 640px) { ... }
 
-      xl: "1280px",
-      // => @media (min-width: 1280px) { ... }
+    // md: "768px",
+    // // => @media (min-width: 768px) { ... }
 
-      "2xl": "1536px",
-      // => @media (min-width: 1536px) { ... }
+    // ml: "900px",
+    // // => @media (min-width: 900px) { ... }
 
-      /**** HEIGHT ****/
-      tall: { raw: "(min-height: 652px)" },
-    },
+    // lg: "1024px",
+    // // => @media (min-width: 1024px) { ... }
+
+    // xl: "1280px",
+    // // => @media (min-width: 1280px) { ... }
+
+    // "2xl": "1536px",
+    // // => @media (min-width: 1536px) { ... }
+
+    /**** HEIGHT ****/
+    // tall: { raw: "(min-height: 652px)" },
   },
 };
