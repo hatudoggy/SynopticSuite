@@ -255,7 +255,7 @@ export default function ClickedPlan() {
   };
 
   return (
-    <div className="flex h-full w-full flex-row overflow-hidden">
+    <div className="flex h-full w-full flex-row overflow-scroll noScroll">
       <div className="flex h-full w-full flex-col">
         {/* MODALS */}
         {isModalOpen ? (
@@ -388,14 +388,14 @@ export default function ClickedPlan() {
           </div>
           <div className="flex w-full flex-col gap-3">
             <div
-              className="flex w-full items-center gap-1 rounded-md bg-blue-500 px-7 py-5 font-semibold text-white shadow hover:-translate-y-1 hover:cursor-pointer hover:bg-blue-300 hover:text-gray-800 hover:transition-all"
+              className="flex w-full items-center gap-1 rounded-md bg-blue-500 px-7 py-2.5 font-semibold text-white shadow hover:-translate-y-1 hover:cursor-pointer hover:bg-blue-300 hover:text-gray-800 hover:transition-all"
               onClick={() => setIsModalOpen(!isModalOpen)}
             >
               <HiPlus />
               <div>Add Item</div>
             </div>
           </div>
-          <div className="fakeNoScroll thinScrollbar flex h-full flex-1 flex-col gap-2 overflow-y-scroll">
+          <div className="fakeNoScroll thinScrollbar flex h-full w-full flex-col gap-2 tall:overflow-y-scroll">
             {/* Checks if Tasks, Events, or Reminders is clicked 
             then displays corresponding data */}
             {itemList
@@ -717,7 +717,7 @@ function ItemCard({ item, index, setIsItemOpen, setClickedItem, isItemOpen }) {
   });
 
   return (
-    <div key={index} className="relative flex flex-col">
+    <div key={index} className="w-full flex flex-col">
       <div
         className="relative flex w-full flex-row rounded-xl bg-slate-100 p-5 shadow-md hover:cursor-pointer"
         onClick={() => {
@@ -772,7 +772,7 @@ function ItemCard({ item, index, setIsItemOpen, setClickedItem, isItemOpen }) {
             </div>
 
             {/* Name */}
-            <div className="truncate">{item.itemName}</div>
+            <div className="line-clamp-1 whitespace-pre-wrap">{item.itemName}</div>
           </div>
           <div className="flex font-semibold">
             {item.endDate.toDate()?.toDateString()}
