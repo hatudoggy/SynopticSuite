@@ -129,30 +129,42 @@ export default function TodoModal({
   };
 
   const PriorityOptions = [
-    { value: "urgent", label: (
-      <div className="flex items-center gap-2">
-        <BiSolidBellRing className="text-red-800" />
-        Urgent
-      </div>
-    ), },
-    { value: "important", label: (
-      <div className="flex items-center gap-2">
-        <RxDoubleArrowUp className="text-red-800" />
-        Important
-      </div>
-    ), },
-    { value: "medium", label: (
-      <div className="flex items-center gap-2">
-        <PiEqualsBold className="text-orange-400" />
-        Medium
-      </div>
-    ), },
-    { value: "low", label: (
-      <div className="flex items-center gap-2">
-        <RxDoubleArrowDown className="text-green-800" />
-        Low
-      </div>
-    ), },
+    {
+      value: "urgent",
+      label: (
+        <div className="flex items-center gap-2">
+          <BiSolidBellRing className="text-red-800" />
+          Urgent
+        </div>
+      ),
+    },
+    {
+      value: "important",
+      label: (
+        <div className="flex items-center gap-2">
+          <RxDoubleArrowUp className="text-red-800" />
+          Important
+        </div>
+      ),
+    },
+    {
+      value: "medium",
+      label: (
+        <div className="flex items-center gap-2">
+          <PiEqualsBold className="text-orange-400" />
+          Medium
+        </div>
+      ),
+    },
+    {
+      value: "low",
+      label: (
+        <div className="flex items-center gap-2">
+          <RxDoubleArrowDown className="text-green-800" />
+          Low
+        </div>
+      ),
+    },
   ];
 
   const ProgressOptions = [
@@ -192,12 +204,15 @@ export default function TodoModal({
     >
       <div
         className={
-          "z-30 flex w-11/12 flex-col gap-2 rounded-xl bg-white sm:w-7/12 md:w-5/12 lg:w-4/12 2xl:w-3/12 " +
+          "z-30 flex w-[95%] flex-col gap-2 rounded-xl bg-white " +
           (width > 385 ? "p-10" : "p-7")
         }
       >
         <div className="text-md relative font-medium text-blue-500">
-          {header} <span className="text-black">&#x2022; New</span>
+          <span className="line-clamp-2 whitespace-pre-wrap max-w-[87%]">
+            <span className="text-black">New &#x2022; </span>
+            {header}
+          </span>
           <div
             className="absolute right-0 top-[0.7rem] cursor-pointer"
             onClick={handleClose}
@@ -294,7 +309,7 @@ export default function TodoModal({
             <div className="flex gap-2">
               <div className="flex">
                 <DatePicker
-                  onFocus={e => e.target.blur()}
+                  onFocus={(e) => e.target.blur()}
                   placeholderText="Start Date"
                   selected={startDate}
                   dateFormat={width < 350 ? "MM/dd/yy" : "MMM d, yyyy"}
@@ -305,7 +320,7 @@ export default function TodoModal({
               </div>
               <div className="flex">
                 <DatePicker
-                  onFocus={e => e.target.blur()}
+                  onFocus={(e) => e.target.blur()}
                   placeholderText="End Date"
                   selected={endDate}
                   dateFormat={width < 350 ? "MM/dd/yy" : "MMM d, yyyy"}
@@ -389,8 +404,22 @@ export default function TodoModal({
             type="submit"
             form="createPlan"
             disabled={
-              !(item && note && priority && progress && itemType && startDate && endDate) ||
-              (item && note && priority && progress && itemType && startDate && endDate) === "" 
+              !(
+                item &&
+                note &&
+                priority &&
+                progress &&
+                itemType &&
+                startDate &&
+                endDate
+              ) ||
+              (item &&
+                note &&
+                priority &&
+                progress &&
+                itemType &&
+                startDate &&
+                endDate) === ""
             }
             className="mt-5 w-fit rounded-xl border-solid border-gray-900 bg-blue-500 px-4 py-2 text-white disabled:cursor-not-allowed disabled:bg-blue-300"
           >

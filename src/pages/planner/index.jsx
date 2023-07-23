@@ -248,7 +248,7 @@ function Planner() {
             <div className="float-right flex items-center px-2 text-4xl font-semibold min-[1300px]:mr-5">
               <span>Plans</span>
               <div
-                className="text-md ml-auto flex items-center justify-center gap-2 rounded-md bg-blue-500 px-2 py-2 font-semibold text-white shadow-lg shadow-slate-400/100 hover:cursor-pointer"
+                className="text-md ml-auto flex items-center justify-center gap-2 rounded-md bg-gray-600 bg-opacity-90 px-2 py-2 font-semibold text-white shadow-lg shadow-slate-400/100 hover:cursor-pointer"
                 onClick={() => setIsModalOpen(!isModalOpen)}
               >
                 <img src={addButton} alt="add" className="w-5" />
