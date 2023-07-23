@@ -3,6 +3,7 @@ import closeButton from "../../assets/close-button.svg";
 import "../../css/index.css";
 import useWindowDimensions from "../../hooks/useWindowDimensions";
 import { TwitterPicker } from "react-color";
+import "../../css/Sidebar.css";
 
 export default function PlanModal({
   handleOutsideClick,
@@ -32,7 +33,7 @@ export default function PlanModal({
       setIsFocusedSubject(false);
       setDescription("");
       setSubject("");
-      setColor("")
+      setColor("");
     };
   }, []);
 
@@ -43,8 +44,13 @@ export default function PlanModal({
     >
       <div
         className={
-          "z-30 flex flex-col rounded-xl bg-white w-11/12 sm:w-7/12 md:w-5/12 lg:w-4/12 2xl:w-3/12 " +
-          (width > 385 ? "p-10" : "p-7")
+          "z-30 flex w-11/12 flex-col rounded-xl bg-white sm:w-7/12 md:w-5/12 lg:w-4/12 2xl:w-3/12 " +
+          (width > 385 ? "p-10 " : "p-7 ") +
+          (height < 512
+            ? "h-[95%] overflow-y-scroll"
+            : height < 652
+            ? "overflow-y-scroll "
+            : "")
         }
       >
         <div className="relative py-2 text-2xl font-medium text-gray-700">
@@ -119,7 +125,9 @@ export default function PlanModal({
             type="submit"
             form="createPlan"
             disabled={
-              (!(subject && description) || (subject && description) === "") || (!color)
+              !(subject && description) ||
+              (subject && description) === "" ||
+              !color
             }
             className="mt-5 w-fit rounded-xl border-solid border-gray-900 bg-blue-500 px-4 py-2 text-white disabled:cursor-not-allowed disabled:bg-blue-300"
           >

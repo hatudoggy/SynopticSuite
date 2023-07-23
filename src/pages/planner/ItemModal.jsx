@@ -242,7 +242,7 @@ export default function ItemModal({
       itemData.itemId
     );
 
-    console.log(priority)
+    console.log(priority);
 
     //Structure of data to be updated
     const data = {
@@ -269,16 +269,18 @@ export default function ItemModal({
     >
       <div
         className={
-          "z-30 flex w-11/12 flex-col gap-2 rounded-xl bg-white sm:w-7/12 md:w-5/12 lg:w-4/12 2xl:w-3/12 " +
+          "z-30 flex w-11/12 flex-col gap-2 rounded-xl bg-white " +
           (width > 385 ? "p-10" : "p-7")
         }
       >
         <div className="text-md relative font-medium text-blue-500">
-          {header}{" "}
-          <span className="text-black">
-            &#x2022;{" "}
-            {itemData.itemType.charAt(0).toUpperCase() +
-              itemData.itemType.slice(1)}
+          <span className="line-clamp-2 max-w-[87%] whitespace-pre-wrap">
+            <span className="text-black">
+              {itemData.itemType.charAt(0).toUpperCase() +
+                itemData.itemType.slice(1)}{" "}
+              &#x2022;{" "}
+            </span>
+            {header}{" "}
           </span>
           <div
             className="absolute right-0 top-[0.7rem] cursor-pointer"
@@ -286,9 +288,9 @@ export default function ItemModal({
           >
             <img src={closeButton} alt="close button" className="w-6" />
           </div>
-          <div className="flex items-center gap-2 text-center text-black">
-            <AiOutlineCheckCircle />
-            {itemData.itemName}
+          <div className="flex gap-2 text-black">
+            <AiOutlineCheckCircle className="shrink-0 mt-1" />
+            <span className="line-clamp-2 whitespace-pre-wrap">{itemData.itemName}</span>
           </div>
           <div className="text-sm font-semibold text-gray-600">
             Last edited {lastChanged} by you
