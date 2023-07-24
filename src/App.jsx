@@ -36,7 +36,7 @@ function App() {
         <Route element={<ProtectedRoutes/>}>
           <Route path='/*' element={
 
-              <div className='flex flex-row-reverse justify-end overflow-scroll remove-scroll'>
+              <div className='flex h-screen flex-row-reverse justify-end overflow-scroll remove-scroll'>
                 <Main setOpen={setSideOpen}/> 
                 <Sidebar/>
                 <MobileSidebar open={sideOpen} setOpen={setSideOpen}/>

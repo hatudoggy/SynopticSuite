@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import returnButton from "../../assets/returnButton.svg";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useOutletContext } from "react-router-dom";
 import {
   query,
   doc,
@@ -37,18 +37,34 @@ import Stack from "@mui/material/Stack";
 import CircularProgress from "@mui/material/CircularProgress";
 import useClickClose from "../../hooks/useClickClose";
 import PlannerCardLoad from "../../loaders/Planner/PlannerCardLoad";
+import "../../css/Sidebar.css";
+
+//testing
+import { createTheme, ThemeProvider } from "@mui/material/styles";
+import Box from "@mui/material/Box";
+import Tab from "@mui/material/Tab";
+import Tabs from "@mui/material/Tabs";
 
 export default function ClickedPlan() {
   /******************************************/
   /* Start of Instantiating State Variables */
   /******************************************/
 
+  // Get the id of the plan via the URL
+  const url = window.location.href;
+  const parts = url.split("/");
+  const id = parts[parts.length - 1];
+
   //useRef
   const scrollTo = useRef(null);
+
+  //Context
+  const { setIsChosen } = useOutletContext();
 
   //Navigation/Routing
   const navigate = useNavigate();
   const [clickedItem, setClickedItem] = useState();
+  const [tabIndex, setTabIndex] = useState("1");
 
   //Collection of Data
   const [plan, setPlan] = useState();
@@ -83,11 +99,6 @@ export default function ClickedPlan() {
   /******************************************/
 
   useEffect(() => {
-    // Get the id of the plan via the URL
-    const url = window.location.href;
-    const parts = url.split("/");
-    const id = parts[parts.length - 1];
-
     // Get the plan from the database
     const dataSnap = query(
       collection(firestore, "Plans"),
@@ -122,7 +133,7 @@ export default function ClickedPlan() {
       unsubscribe();
       itemListOnSnapshot();
     };
-  }, [loadMore]);
+  }, [loadMore, id]);
 
   /******************************************/
   /*            End of UseEffects           */
@@ -250,13 +261,263 @@ export default function ClickedPlan() {
     }
   };
 
+  const handleTabChange = (event, newValue) => {
+    setTabIndex(newValue);
+  };
+
+  return (
+    <div className="noScroll flex h-full w-full flex-row overflow-scroll">
+      <div className="flex h-full w-full flex-col">
+        {/* MODALS */}
+        {isModalOpen ? (
+          <TodoModal
+            handleOutsideClick={handleOutsideClick}
+            handleFormSubmit={handleFormSubmit}
+            handleClose={() => setIsModalOpen(!isModalOpen)}
+            setItem={setItem}
+            item={item}
+            setNote={setNote}
+            note={note}
+            header={plan?.subject}
+            dateEdited={plan?.dateEdited?.toDate()?.toLocaleString()} //Passes the date
+            firstInput={"Item Name"}
+            secondInput={"Note"}
+            priority={priority}
+            setPriority={setPriority}
+            progress={progress}
+            setProgress={setProgress}
+            itemType={itemType}
+            setItemType={setItemType}
+            startDate={startDate}
+            setStartDate={setStartDate}
+            endDate={endDate}
+            setEndDate={setEndDate}
+          />
+        ) : null}
+        {isItemOpen ? (
+          <ItemModal
+            itemData={clickedItem}
+            handleOutsideClick={handleOutsideClick}
+            handleFormSubmit={handleFormSubmit}
+            handleClose={() => setIsItemOpen(!isItemOpen)}
+            setItem={setItem}
+            item={item}
+            setNote={setNote}
+            note={note}
+            header={plan?.subject}
+            dateEdited={clickedItem?.dateEdited?.toDate()?.toLocaleString()} //Passes the date
+            firstInput={"Item Name"}
+            secondInput={"Note"}
+            priority={priority}
+            setPriority={setPriority}
+            progress={progress}
+            setProgress={setProgress}
+            itemType={itemType}
+            setItemType={setItemType}
+            startDate={startDate}
+            setStartDate={setStartDate}
+            endDate={endDate}
+            setEndDate={setEndDate}
+          />
+        ) : null}
+        <img
+          src={returnButton}
+          alt=""
+          className="invert-to-white w-8 hover:cursor-pointer"
+          onClick={() => {
+            navigate(`/planner/`);
+            setIsChosen(false);
+          }}
+        />
+        <div className="mx-2 flex h-[95%] flex-col gap-7 py-6">
+          {plan ? (
+            <div>
+              <PlannerCard
+                subject={plan?.subject}
+                description={plan?.description}
+                color={plan?.color}
+                textColor={plan?.textColor}
+                pin={pin}
+                unpin={unpin}
+                isPinned={plan?.isPinned}
+                handlePin={handlePin}
+                handleUnpin={handleUnpin}
+                handleDelete={handleDelete}
+                settings={settings}
+                id={plan?.planId}
+              />
+            </div>
+          ) : (
+            <PlannerCardLoad />
+          )}
+          <div className="w-full">
+            <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+              <Tabs
+                value={tabIndex}
+                onChange={handleTabChange}
+                variant="scrollable"
+              >
+                <Tab
+                  label="All"
+                  value="1"
+                  onClick={() => handleSwitchItem("all")}
+                />
+                <Tab
+                  label="Tasks"
+                  value="2"
+                  onClick={() => handleSwitchItem("tasks")}
+                />
+                <Tab
+                  label="Events"
+                  value="3"
+                  onClick={() => handleSwitchItem("events")}
+                />
+                <Tab
+                  label="Reminders"
+                  value="4"
+                  onClick={() => handleSwitchItem("reminders")}
+                />
+              </Tabs>
+            </Box>
+          </div>
+          <div className="flex w-full flex-col gap-3">
+            <div
+              className="flex w-full items-center gap-1 rounded-md bg-blue-500 px-7 py-2.5 font-semibold text-white shadow hover:-translate-y-1 hover:cursor-pointer hover:bg-blue-300 hover:text-gray-800 hover:transition-all"
+              onClick={() => setIsModalOpen(!isModalOpen)}
+            >
+              <HiPlus />
+              <div>Add Item</div>
+            </div>
+          </div>
+          {/* <div className="flex w-[98%] flex-row items-center justify-between">
+            <div
+              className={
+                "font-semibold hover:cursor-pointer hover:underline hover:underline-offset-4 sm:text-xl " +
+                (isAll ? "underline underline-offset-4" : "")
+              }
+              onClick={() => handleSwitchItem("all")}
+            >
+              All
+            </div>
+            {width > 319 ? (
+              <>
+                <div
+                  className={
+                    "font-semibold hover:cursor-pointer hover:underline hover:underline-offset-4 sm:text-xl " +
+                    (isTask ? "underline underline-offset-4" : "")
+                  }
+                  onClick={() => handleSwitchItem("tasks")}
+                >
+                  Tasks
+                </div>
+                <div
+                  className={
+                    "font-semibold hover:cursor-pointer hover:underline hover:underline-offset-4 sm:text-xl " +
+                    (isEvent ? "underline underline-offset-4" : "")
+                  }
+                  onClick={() => handleSwitchItem("events")}
+                >
+                  Events
+                </div>
+                <div
+                  className={
+                    "font-semibold hover:cursor-pointer hover:underline hover:underline-offset-4 sm:text-xl " +
+                    (isReminder ? "underline underline-offset-4" : "")
+                  }
+                  onClick={() => handleSwitchItem("reminders")}
+                >
+                  Reminders
+                </div>
+              </>
+            ) : (
+              <div>
+                <IoIosArrowDown />
+              </div>
+            )}
+          </div> */}
+          <div className="fakeNoScroll thinScrollbar enableScrollForPortrait flex h-full w-full flex-col gap-2">
+            {/* Checks if Tasks, Events, or Reminders is clicked 
+            then displays corresponding data */}
+            {itemList
+              ? isAll
+                ? itemList.map((item, index) => (
+                    <ItemCard
+                      key={index}
+                      item={item}
+                      index={index}
+                      setIsItemOpen={setIsItemOpen}
+                      setClickedItem={setClickedItem}
+                      isItemOpen={isItemOpen}
+                    />
+                  ))
+                : isTask
+                ? itemList
+                    .filter((item) => item.itemType === "task")
+                    .map((item, index) => (
+                      <ItemCard
+                        key={index}
+                        item={item}
+                        index={index}
+                        setIsItemOpen={setIsItemOpen}
+                        setClickedItem={setClickedItem}
+                        isItemOpen={isItemOpen}
+                      />
+                    ))
+                : isEvent
+                ? itemList
+                    .filter((item) => item.itemType === "event")
+                    .map((item, index) => (
+                      <ItemCard
+                        key={index}
+                        item={item}
+                        index={index}
+                        setIsItemOpen={setIsItemOpen}
+                        setClickedItem={setClickedItem}
+                        isItemOpen={isItemOpen}
+                      />
+                    ))
+                : isReminder
+                ? itemList
+                    .filter((item) => item.itemType === "reminder")
+                    .map((item, index) => (
+                      <ItemCard
+                        item={item}
+                        index={index}
+                        setIsItemOpen={setIsItemOpen}
+                        setClickedItem={setClickedItem}
+                        isItemOpen={isItemOpen}
+                      />
+                    ))
+                : null
+              : null}
+
+            <div
+              className="mb-8 mr-3 mt-3 flex items-center justify-center gap-3 font-semibold hover:cursor-pointer"
+              onClick={() => handleLoadMore()}
+              ref={scrollTo}
+            >
+              {isLoading ? (
+                <Stack sx={{ color: "grey.900" }} spacing={2} direction="row">
+                  <CircularProgress color="inherit" size={15} />
+                </Stack>
+              ) : (
+                <AiOutlineReload />
+              )}
+
+              <span>Load More</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      {/* <CardContent itemData={clickedItem} width={width} /> */}
+    </div>
+  );
+}
+
+function CommentedOut() {
   return (
     <div className="flex h-full w-full flex-row gap-10 bg-slate-300 px-10 py-10 sm:px-14 sm:py-14">
-      <div
-        className={
-          "flex h-full flex-col bg-slate-300 w-full" 
-        }
-      >
+      <div className={"flex h-full w-full flex-col bg-slate-300"}>
         {/* MODALS */}
         {isModalOpen ? (
           <TodoModal
@@ -318,23 +579,23 @@ export default function ClickedPlan() {
         <div className="mx-2 flex h-full flex-col gap-7 py-6">
           {plan ? (
             <PlannerCard
-            subject={plan?.subject}
-            description={plan?.description}
-            color={plan?.color}
-            textColor={plan?.textColor}
-            pin={pin}
-            unpin={unpin}
-            isPinned={plan?.isPinned}
-            handlePin={handlePin}
-            handleUnpin={handleUnpin}
-            handleDelete={handleDelete}
-            settings={settings}
-            id={plan?.planId}
-          />
+              subject={plan?.subject}
+              description={plan?.description}
+              color={plan?.color}
+              textColor={plan?.textColor}
+              pin={pin}
+              unpin={unpin}
+              isPinned={plan?.isPinned}
+              handlePin={handlePin}
+              handleUnpin={handleUnpin}
+              handleDelete={handleDelete}
+              settings={settings}
+              id={plan?.planId}
+            />
           ) : (
-            <PlannerCardLoad/>
+            <PlannerCardLoad />
           )}
-          
+
           <div className="flex flex-row items-center justify-between sm:min-w-[375px] lg:max-w-[375px]">
             <div
               className={
@@ -475,7 +736,7 @@ function CardContent({ itemData, width }) {
       {width > 1026 ? (
         <div className="h-full w-full rounded-2xl bg-slate-100 p-5 shadow">
           <div className="flex flex-col gap-5 text-xl font-semibold">
-            <div className="flex gap-3 items-center">
+            <div className="flex items-center gap-3">
               <ProgressIcons progress={itemData?.progress} />
               {itemData?.itemName}
             </div>
@@ -496,9 +757,9 @@ function ItemCard({ item, index, setIsItemOpen, setClickedItem, isItemOpen }) {
   });
 
   return (
-    <div key={index} className="relative flex flex-col">
+    <div key={index} className="flex w-full flex-col">
       <div
-        className="relative flex flex-row rounded-xl bg-slate-100 p-5 shadow-md hover:cursor-pointer sm:min-w-[375px] lg:max-w-[375px]"
+        className="relative flex w-full flex-row rounded-xl bg-slate-100 p-5 shadow-md hover:cursor-pointer"
         onClick={() => {
           setIsItemOpen(!isItemOpen);
           setClickedItem(item);
@@ -551,7 +812,9 @@ function ItemCard({ item, index, setIsItemOpen, setClickedItem, isItemOpen }) {
             </div>
 
             {/* Name */}
-            <div className="truncate">{item.itemName}</div>
+            <div className="line-clamp-1 whitespace-pre-wrap">
+              {item.itemName}
+            </div>
           </div>
           <div className="flex font-semibold">
             {item.endDate.toDate()?.toDateString()}
