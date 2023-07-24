@@ -39,6 +39,7 @@ import {
 import { useCollectionData } from "react-firebase-hooks/firestore";
 import { useNavigate } from "react-router-dom";
 import { BsArrowRightShort } from "react-icons/bs";
+import { useAuth } from "../../hooks/AuthContext";
 
 function CalendarWidget() {
   let today = startOfToday();
@@ -50,6 +51,8 @@ function CalendarWidget() {
   const [plansId, setPlansId] = useState([]); //This is the id of the plan
   const [itemList, setItemList] = useState([]);
   const [events, setEvents] = useState([]);
+
+  const { authUser } = useAuth();
 
   let days = eachDayOfInterval({
     start: startOfWeek(startOfMonth(fDayCurr)),
@@ -81,7 +84,8 @@ function CalendarWidget() {
   useEffect(() => {
     const dataSnap = query(
       collection(firestore, "Plans"),
-      orderBy("dateEdited", "desc")
+      orderBy("dateEdited", "desc"),
+      where("uid", "==", authUser.uid)
     );
 
     const plans = [];
@@ -143,7 +147,7 @@ function CalendarWidget() {
     };
   }, []);
 
-  console.log(events);
+  //console.log(events);
 
   /******************************************/
   /*          End of Use Effects            */
@@ -257,7 +261,7 @@ function Months({ day, day2, today, events }) {
                   focus={focusEvent}
                   setFocus={setFocusEvent}
                   posAll={pos}
-                  key={day.toString()}
+                  key={(day.toString()+dayIx)}
                 />
               );
             })
@@ -522,7 +526,7 @@ function EventPopup({ events, color }) {
         transition:
           "visibility 0.1s linear, opacity 0.2s ease-in, transform 0.2s ease-in-out",
       }}
-      onClick={() => navigate(`planner/${events.id}`)}
+      onClick={() => navigate(`/planner/${events.id}`)}
     >
       <div className="relative">
         <p className="text-lg truncate">{events.title}</p>
@@ -561,7 +565,7 @@ function MoreEvent({ day, eventList }) {
             <div
               className="hover:cursor-pointer group/more relative flex flex-col rounded-md p-2 hover:bg-gray-300"
               key={i}
-              onClick={() => navigate(`planner/${e.id}`)}
+              onClick={() => navigate(`/planner/${e.id}`)}
             >
               <p className="text-lg">{e.title}</p>
               <p className=" text-sm opacity-60">

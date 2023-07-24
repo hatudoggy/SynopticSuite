@@ -27,7 +27,7 @@ function Sidebar() {
         </a>
 
         <div className="flex flex-col gap-4 ">
-          <Icon image={calendar} text={"Calendar"} link={"/"} />
+          <Icon image={calendar} text={"Calendar"} link={"calendar"} />
           <Icon image={resources} text={"Resources"} link={"resources"} />
           <Icon image={clock} text={"Schedule"} link={"schedule"} />
           <Icon image={planner} text={"Planner"} link={"planner"} />

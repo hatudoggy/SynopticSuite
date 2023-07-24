@@ -35,6 +35,7 @@ import {
 import { useCollectionData } from "react-firebase-hooks/firestore";
 import { Skeleton } from "@mui/material";
 import PlannerCardLoad from "../../loaders/Planner/PlannerCardLoad";
+import { useAuth } from "../../hooks/AuthContext";
 import ClickedPlan from "./ClickedPlan";
 
 function Planner() {
@@ -66,6 +67,8 @@ function Planner() {
 
   const [animate, enableAnimations] = useAutoAnimate(true);
 
+  const { authUser } = useAuth();
+
   /******************************************/
   /* End of Instantiating State Variables   */
   /******************************************/
@@ -78,7 +81,7 @@ function Planner() {
   useEffect(() => {
     const dataSnap = query(
       collection(firestore, "Plans"),
-      orderBy("dateEdited", "desc")
+      orderBy("dateEdited", "desc"), where("uid", "==", authUser.uid)
     );
 
     //This function sets all the necessary data from the database to all the state variables
@@ -138,6 +141,7 @@ function Planner() {
       textColor: adaptingText(color.hex, "#F9F9F3", "#28282B"),
       isPinned: false,
       planId: docRef.id,
+      uid: authUser.uid
     };
 
     //Set data to state. This makes it easier to update data in the future
