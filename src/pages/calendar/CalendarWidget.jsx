@@ -158,7 +158,7 @@ function CalendarWidget() {
   /*          End of Use Effects            */
   /******************************************/
 
-  let [window, setWindow] = useState("Week");
+  let [window, setWindow] = useState("Month");
 
   return (
     <div
@@ -190,13 +190,8 @@ function Navigation({ fDayCurr, setCurrMonth, setWindow }) {
   }
 
   return (
-    <div className="flex justify-center gap-5 px-4 pb-4 pt-2 ">
-      {/* <div className='flex items-center'>
-        <button className='h-11 w-11 bg-green-500 rounded-full'></button>
-        <div className='h-7 w-7 bg-green-700 absolute -z-10 translate-x-4'></div>
-        <button className='h-7 w-9 bg-green-700'></button>
-        <button className='h-7 w-10 bg-green-800 rounded-r-lg'></button>
-      </div> */}
+    <div className="flex justify-between gap-5 px-14 pb-4 pt-4 ">
+      <AddBtnCont/>
       <div className="flex gap-5">
         <button
           className="flex h-7 w-7 justify-center rounded-full hover:bg-zinc-200"
@@ -204,8 +199,9 @@ function Navigation({ fDayCurr, setCurrMonth, setWindow }) {
         >
           {"<"}
         </button>
-        <div className="text-xl font-semibold">
-          {format(fDayCurr, "MMM yyyy")}
+        <div className="text-xl font-semibold flex flex-col text-center">
+          <p>{format(fDayCurr, "MMM")}</p>
+          <p className="text-xs opacity-60">{format(fDayCurr, "yyyy")}</p>
         </div>
         <button
           className="flex h-7 w-7 justify-center rounded-full hover:bg-zinc-200"
@@ -214,19 +210,38 @@ function Navigation({ fDayCurr, setCurrMonth, setWindow }) {
           {">"}
         </button>
       </div>
-      <div className="flex gap-4 [&>button]:h-fit [&>button]:w-20 [&>button]:rounded-md [&>button]:bg-zinc-100 [&>button]:p-2">
-        {/* <button className='' onClick={()=>{setWindow('Month')}}>Month</button>
-        <button onClick={()=>{setWindow('Week')}}>Week</button> */}
-      </div>
+      <ViewsBtnCont setWindow={setWindow}/>
     </div>
   );
+}
+
+function AddBtnCont (){
+
+  return(
+    <div className='flex items-center'>
+      <button className='h-11 w-11 bg-green-500 rounded-full'></button>
+      <div className='h-7 w-7 bg-green-700 absolute -z-10 translate-x-4'></div>
+      <button className='h-7 w-9 bg-green-700'></button>
+      <button className='h-7 w-10 bg-green-800 rounded-r-lg'></button>
+    </div>
+  )
+}
+
+function ViewsBtnCont({setWindow}){
+
+  return(
+    <div className="flex gap-4 [&>button]:h-fit [&>button]:w-20 [&>button]:rounded-md [&>button]:bg-zinc-100 [&>button]:p-2">
+      <button className='' onClick={()=>{setWindow('Month')}}>Month</button>
+      <button onClick={()=>{setWindow('Week')}}>Week</button>
+    </div>
+  )
 }
 
 function Header() {
   const week = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
 
   return (
-    <div className=" flex-1 grid grid-cols-7 gap-1 border-b-2 pb-2">
+    <div className="w-full grid grid-cols-7 gap-1 border-b-2 pb-2">
       {
         week.map((day, ix)=>{
           return(
