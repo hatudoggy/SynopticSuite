@@ -180,7 +180,7 @@ function CalendarWidget() {
       {window == "Month" && (
         <Months day={days} day2={days2}  today={fDayCurr} events={events} />
       )}
-      {window == "Week" && <Weeks week={week} />}
+      {window == "Week" && <Weeks week={week} events={events} />}
     </div>
   );
 }
@@ -473,6 +473,23 @@ function DateCont({
   );
 }
 
+function Weeks({week, events}) {
+  return (
+    <div className="flex flex-col px-3 pb-3">
+      <div className="flex overflow-scroll">
+        <div className="w-14"></div>
+        <Header week={week}/>
+      </div>
+      <div className="max-h-[35rem] overflow-scroll">
+        <div className="flex">
+          <Sider />
+          <TimeCont week={week} events={events}/>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function Sider() {
   const time = eachHourOfInterval({
     start: startOfDay(new Date()),
@@ -496,30 +513,14 @@ function Sider() {
   );
 }
 
-function Weeks({week}) {
-  return (
-    <div className="flex flex-col px-3 pb-3">
-      <div className="flex overflow-scroll">
-        <div className="w-14"></div>
-        <Header week={week}/>
-      </div>
-      <div className="max-h-[35rem] overflow-scroll">
-        <div className="flex">
-          <Sider />
-          <TimeCont />
-        </div>
-      </div>
-    </div>
-  );
-}
 
-
-function TimeCont() {
+function TimeCont({week, events}) {
   const eventTest = [
     {date: {start:"Mon", end:"Mon"}, time: {start:"6", end:"7"}, title:"Test1"}
   ];
   
-  const week = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+  //const weeks = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+
   return (
     <div className=" flex-1 grid grid-cols-7 justify-center ">
       {
@@ -527,9 +528,15 @@ function TimeCont() {
           return(
             <div className=" relative text-center w-full box-border border-l-2
               bg-[linear-gradient(to_bottom,#E5E7EB,#E5E7EB_2px,#ffffff_2px,#ffffff)] bg-[center_top_0.7rem] bg-[length:100%_3rem]">
-                {eventTest.map((e)=>{
-                  if(e.date.start == day){
-                    return <EventTest date={e.date} time={e.time} title={e.title}/>
+                {events.map((e)=>{
+                  
+                  if(
+                    isWithinInterval(day, {
+                      start: e.startDate,
+                      end: e.endDate,
+                    })
+                  ){
+                    return <EventWeek event={e} />//<EventTest date={e.date} time={e.time} title={e.title}/>
                   }
                 })}
             </div>
@@ -538,6 +545,18 @@ function TimeCont() {
       }
     </div>
   );
+}
+
+function EventWeek({event}){
+  console.log(event.title)
+  return(
+    <div className="absolute w-full bg-red-300 min-h-[1.5rem]" 
+      //style={{top:((time.start*3)+0.7)+"rem",
+      //height:((time.end - time.start)*3)+"rem"}}
+    >
+      {event.title}
+    </div>
+  )
 }
 
 function EventTest({date, time, title}){
