@@ -81,7 +81,8 @@ function Planner() {
   useEffect(() => {
     const dataSnap = query(
       collection(firestore, "Plans"),
-      orderBy("dateEdited", "desc"), where("uid", "==", authUser.uid)
+      orderBy("dateEdited", "desc"),
+      where("uid", "==", authUser.uid)
     );
 
     //This function sets all the necessary data from the database to all the state variables
@@ -104,8 +105,7 @@ function Planner() {
     isChosen ? navigate(link) : navigate(`/planner/`);
   }, [isChosen, link]);
 
-  // console.log(isChosen);
-  // console.log(link);
+  console.log(plans);
 
   /******************************************/
   /*          End of Use Effects            */
@@ -141,7 +141,7 @@ function Planner() {
       textColor: adaptingText(color.hex, "#F9F9F3", "#28282B"),
       isPinned: false,
       planId: docRef.id,
-      uid: authUser.uid
+      uid: authUser.uid,
     };
 
     //Set data to state. This makes it easier to update data in the future
@@ -295,6 +295,15 @@ function Planner() {
                 </ButtonGroup>
               </ThemeProvider>
             </div>
+          </div>
+          <div
+            onClick={() => {
+              setLink("/planner/quick-plans");
+              setIsChosen(true);
+            }}
+            className="mx-2 flex h-fit cursor-pointer items-center rounded-lg border-r-8 border-gray-600 bg-slate-100 px-6 py-4 text-xl font-medium shadow-md min-[1300px]:w-fit"
+          >
+            Quick Plans
           </div>
           <div
             ref={animate}

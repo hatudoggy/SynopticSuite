@@ -3,6 +3,7 @@ import Calendar from "../calendar";
 import Planner from '../planner';
 import search from "../../assets/search.svg";
 import ClickedPlan from "../planner/ClickedPlan";
+import QuickPlans from "../planner/QuickPlans";
 import menu from "../../assets/menu.svg";
 import Notes from "../notes";
 import { Routes, Route, Navigate } from "react-router-dom";
@@ -35,6 +36,7 @@ function Main({setOpen}) {
           <Route path="planner/" element={<Planner />}>
             <Route path={`:id`} element={<ClickedPlan/>}/>
             <Route path={`pinned/:id`} element={<ClickedPlan/>}/>
+            <Route path={`quick-plans`} element={<QuickPlans/>}/>
           </Route>
           <Route path="notes" element={<Notes />}/>
         </Routes>
