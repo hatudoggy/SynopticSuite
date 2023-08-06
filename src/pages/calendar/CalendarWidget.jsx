@@ -49,7 +49,10 @@ import {usePosRelativeScreen} from '../../hooks/usePosRelativeScreen'
 function CalendarWidget() {
   let today = startOfToday();
   let [currMonth, setCurrMonth] = useState(format(today, "MMM-yyyy"));
+  let [currWeek, setCurrWeek] = useState(format(today, "dd-MMM-yyyy"));
   let fDayCurr = parse(currMonth, "MMM-yyyy", new Date());
+  let fWeekCurr = parse(currWeek, "dd-MMM-yyyy", new Date());
+  
 
   //Collection of data
   const [plans, setPlans] = useState([]);
@@ -70,9 +73,10 @@ function CalendarWidget() {
   });
 
   let week = eachDayOfInterval({
-    start: startOfWeek(today),
-    end: endOfWeek(today),
+    start: startOfWeek(fWeekCurr),
+    end: endOfWeek(fWeekCurr),
   });
+
 
   const convertDurationToDays = (duration) => {
     const { years = 0, months = 0, days = 0 } = duration;
@@ -168,29 +172,43 @@ function CalendarWidget() {
       <Navigation
         fDayCurr={fDayCurr}
         setCurrMonth={setCurrMonth}
+        fWeekCurr={fWeekCurr}
+        setCurrWeek={setCurrWeek}
+        window={window}
         setWindow={setWindow}
       />
       {window == "Month" && (
-        <Months day={days} day2={days2} today={fDayCurr} events={events} />
+        <Months day={days} day2={days2}  today={fDayCurr} events={events} />
       )}
-      {window == "Week" && <Weeks />}
+      {window == "Week" && <Weeks week={week} />}
     </div>
   );
 }
 
-function Navigation({ fDayCurr, setCurrMonth, setWindow }) {
+function Navigation({ fDayCurr, setCurrMonth, fWeekCurr, setCurrWeek, window, setWindow }) {
   function nextMonth() {
-    let fDayNext = add(fDayCurr, { months: 1 });
-    setCurrMonth(format(fDayNext, "MMM-yyyy"));
+    if(window == "Month"){
+      let fDayNext = add(fDayCurr, { months: 1 });
+      setCurrMonth(format(fDayNext, "MMM-yyyy"));
+    } else if(window == "Week"){
+      let fWeekNext = add(fWeekCurr, { weeks: 1 });
+      setCurrWeek(format(fWeekNext, "dd-MMM-yyyy"));
+    }
+
   }
 
   function prevMonth() {
+    if(window == "Month"){
     let fDayPrev = add(fDayCurr, { months: -1 });
-    setCurrMonth(format(fDayPrev, "MMM-yyyy"));
+      setCurrMonth(format(fDayPrev, "MMM-yyyy"));
+    } else if(window == "Week"){
+      let fWeekPrev = add(fWeekCurr, { weeks: -1 });
+      setCurrWeek(format(fWeekPrev, "dd-MMM-yyyy"));
+    }
   }
 
   return (
-    <div className="flex justify-between gap-5 px-14 pb-4 pt-4 ">
+    <div className="flex justify-between gap-5 px-8 pb-4 pt-4 ">
       <AddBtnCont/>
       <div className="flex gap-5">
         <button
@@ -200,7 +218,12 @@ function Navigation({ fDayCurr, setCurrMonth, setWindow }) {
           {"<"}
         </button>
         <div className="text-xl font-semibold flex flex-col text-center">
-          <p>{format(fDayCurr, "MMM")}</p>
+          {window=="Month"?
+            <p>{format(fDayCurr, "MMM")}</p>:
+            window=="Week"?
+              <p>{format(fWeekCurr, "MMM")}</p>:
+              null
+          }
           <p className="text-xs opacity-60">{format(fDayCurr, "yyyy")}</p>
         </div>
         <button
@@ -237,16 +260,17 @@ function ViewsBtnCont({setWindow}){
   )
 }
 
-function Header() {
-  const week = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+function Header({week}) {
+  const weekLabel = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
 
   return (
     <div className="w-full grid grid-cols-7 gap-1 border-b-2 pb-2">
       {
-        week.map((day, ix)=>{
+        weekLabel.map((day, ix)=>{
           return(
             <div className="text-center w-full box-border " key={ix}>
-              {day}
+              <p>{day}</p>
+              <p>{week?format(week[ix],"dd"):null}</p>
             </div>
           )
         })
@@ -472,12 +496,12 @@ function Sider() {
   );
 }
 
-function Weeks() {
+function Weeks({week}) {
   return (
     <div className="flex flex-col px-3 pb-3">
       <div className="flex overflow-scroll">
         <div className="w-14"></div>
-        <Header />
+        <Header week={week}/>
       </div>
       <div className="max-h-[35rem] overflow-scroll">
         <div className="flex">
