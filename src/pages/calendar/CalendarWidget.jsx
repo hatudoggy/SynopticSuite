@@ -242,10 +242,16 @@ function AddBtnCont (){
 
   return(
     <div className='flex items-center'>
-      <button className='h-11 w-11 bg-green-500 rounded-full'></button>
-      <div className='h-7 w-7 bg-green-700 absolute -z-10 translate-x-4'></div>
-      <button className='h-7 w-9 bg-green-700'></button>
-      <button className='h-7 w-10 bg-green-800 rounded-r-lg'></button>
+      <button
+        className=" p-2 rounded-l-lg border-r-2 bg-slate-400"
+      >
+        New
+      </button>
+      <button
+        className=" p-2 rounded-r-lg bg-slate-400"
+      >
+        v
+      </button>
     </div>
   )
 }
