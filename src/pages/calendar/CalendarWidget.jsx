@@ -210,8 +210,8 @@ function Navigation({ fDayCurr, setCurrMonth, fWeekCurr, setCurrWeek, window, se
   }
 
   return (
-    <div className="flex justify-between gap-5 px-8 pb-4 pt-4 ">
-      <AddBtnCont/>
+    <div className="flex justify-between sm:px-8 px-1 pb-4 pt-4 ">
+      <AddBtnCont window={window}/>
       <div className="flex gap-5">
         <button
           className="flex h-7 w-7 justify-center rounded-full hover:bg-zinc-200"
@@ -240,7 +240,7 @@ function Navigation({ fDayCurr, setCurrMonth, fWeekCurr, setCurrWeek, window, se
   );
 }
 
-function AddBtnCont (){
+function AddBtnCont ({}){
 
   return(
     <div className='flex items-center'>
@@ -250,9 +250,9 @@ function AddBtnCont (){
         New
       </button>
       <button
-        className=" p-1 py-[0.63rem] rounded-r-lg bg-[#534444] text-white"
+        className=" p-1 py-[0.625rem] rounded-r-lg bg-[#534444] text-white"
       >
-        <img src={downarrow} className="w-5"/>
+        <img src={downarrow} className="w-5 min-w-[1.25rem]"/>
       </button>
     </div>
   )
@@ -261,9 +261,19 @@ function AddBtnCont (){
 function ViewsBtnCont({window, setWindow}){
   
   return(
-    <div className="flex gap-4 [&>button]:h-fit [&>button]:w-20 [&>button]:rounded-md [&>button]:p-2 [&>button]:transition-colors">
-      <button className={`${window=='Month'?'bg-primary text-white':'bg-zinc-200'}`} onClick={()=>{setWindow('Month')}}>Month</button>
-      <button className={`${window=='Week'?'bg-primary text-white':'bg-zinc-200'}`} onClick={()=>{setWindow('Week')}}>Week</button>
+    <div className="flex sm:gap-4 gap-1 [&>button]:h-fit sm:[&>button]:w-20 [&>button]:rounded-md [&>button]:p-2 [&>button]:transition-colors ">
+      <button 
+        className={`${window=='Month'?'bg-secondary text-white':'bg-zinc-200'}`} 
+        onClick={()=>{setWindow('Month')}}>
+        <p className="hidden sm:inline">Month</p>
+        <p className="sm:hidden inline">M</p>
+      </button>
+      <button 
+        className={`${window=='Week'?'bg-secondary text-white':'bg-zinc-200'}`} 
+        onClick={()=>{setWindow('Week')}}>
+        <p className="hidden sm:inline">Week</p>
+        <p className="sm:hidden inline">W</p>
+      </button>
     </div>
   )
 }

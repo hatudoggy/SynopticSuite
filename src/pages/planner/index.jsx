@@ -248,7 +248,7 @@ function Planner() {
           </div>
         </div> */}
         <div className="fakeNoScroll thinScrollbar flex w-full flex-col gap-5 overflow-y-scroll">
-          <div className="sticky top-0 z-10 flex flex-col gap-3  py-4">
+          <div className="sticky top-0 z-10 flex flex-col gap-3 bg-zinc-200 py-4">
             <div className="float-right flex items-center px-2 text-4xl font-semibold min-[1300px]:mr-5">
               <span>Plans</span>
               <div
