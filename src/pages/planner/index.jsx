@@ -190,13 +190,13 @@ function Planner() {
   const theme = createTheme({
     palette: {
       primary: {
-        main: "#64748B",
+        main: "#534444",
       },
     },
   });
 
   return (
-    <div className="relative flex h-[calc(100vh-3rem)] w-full flex-row justify-center overflow-hidden bg-slate-300 px-5 py-10 lg:px-10">
+    <div className="relative flex h-[calc(100vh-3rem)] w-full flex-row justify-center overflow-hidden bg-gray-200 px-5 py-10 lg:px-10">
       {/* <div className="invert-to-white mb-4 w-fit hover:cursor-pointer hover:fill-black hover:shadow-lg hover:invert-0">
         <img src={returnButton} alt="" className="w-8" />
       </div> */}
@@ -248,11 +248,11 @@ function Planner() {
           </div>
         </div> */}
         <div className="fakeNoScroll thinScrollbar flex w-full flex-col gap-5 overflow-y-scroll">
-          <div className="sticky top-0 z-10 flex flex-col gap-3 bg-slate-300 py-4">
+          <div className="sticky top-0 z-10 flex flex-col gap-3  py-4">
             <div className="float-right flex items-center px-2 text-4xl font-semibold min-[1300px]:mr-5">
               <span>Plans</span>
               <div
-                className="text-md ml-auto flex items-center justify-center gap-2 rounded-md bg-gray-600 bg-opacity-90 px-2 py-2 font-semibold text-white shadow-lg shadow-slate-400/100 hover:cursor-pointer"
+                className="text-md ml-auto flex items-center justify-center gap-2 rounded-md bg-secondary bg-opacity-90 px-2 py-2 font-semibold text-white shadow-lg shadow-slate-400/100 hover:cursor-pointer"
                 onClick={() => setIsModalOpen(!isModalOpen)}
               >
                 <img src={addButton} alt="add" className="w-5" />
@@ -301,7 +301,7 @@ function Planner() {
               setLink("/planner/quick-plans");
               setIsChosen(true);
             }}
-            className="mx-2 flex h-fit cursor-pointer items-center rounded-lg border-r-8 border-gray-600 bg-slate-100 px-6 py-4 text-xl font-medium shadow-md min-[1300px]:w-fit"
+            className="mx-2 flex h-fit cursor-pointer items-center rounded-lg border-r-8 border-secondary bg-slate-100 px-6 py-4 text-xl font-medium shadow-md min-[1300px]:w-fit"
           >
             Quick Plans
           </div>

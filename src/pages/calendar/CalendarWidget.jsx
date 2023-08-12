@@ -235,7 +235,7 @@ function Navigation({ fDayCurr, setCurrMonth, fWeekCurr, setCurrWeek, window, se
           {">"}
         </button>
       </div>
-      <ViewsBtnCont setWindow={setWindow}/>
+      <ViewsBtnCont window={window} setWindow={setWindow}/>
     </div>
   );
 }
@@ -258,12 +258,12 @@ function AddBtnCont (){
   )
 }
 
-function ViewsBtnCont({setWindow}){
-
+function ViewsBtnCont({window, setWindow}){
+  
   return(
-    <div className="flex gap-4 [&>button]:h-fit [&>button]:w-20 [&>button]:rounded-md [&>button]:bg-zinc-100 [&>button]:p-2">
-      <button className='' onClick={()=>{setWindow('Month')}}>Month</button>
-      <button onClick={()=>{setWindow('Week')}}>Week</button>
+    <div className="flex gap-4 [&>button]:h-fit [&>button]:w-20 [&>button]:rounded-md [&>button]:p-2 [&>button]:transition-colors">
+      <button className={`${window=='Month'?'bg-primary text-white':'bg-zinc-200'}`} onClick={()=>{setWindow('Month')}}>Month</button>
+      <button className={`${window=='Week'?'bg-primary text-white':'bg-zinc-200'}`} onClick={()=>{setWindow('Week')}}>Week</button>
     </div>
   )
 }
