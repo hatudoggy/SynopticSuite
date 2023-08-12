@@ -1,3 +1,6 @@
 Test user
 email: ricson@maasim.com
 password: TinolangTanga
+
+email: crisostomo@ibarra.com
+password: JuanRizal

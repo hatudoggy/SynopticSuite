@@ -1,7 +1,8 @@
 import { useNavigate } from "react-router-dom";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import useClickClose from "../../hooks/useClickClose";
 import { BsArrowRightShort } from "react-icons/bs";
+import useWindowDimensions from "../../hooks/useWindowDimensions";
 
 export default function PlannerCard({
   subject,
@@ -17,10 +18,13 @@ export default function PlannerCard({
   settings,
   id,
   link,
+  setLink,
   hasOpenPrompt,
+  setIsChosen,
 }) {
   const navigate = useNavigate();
   const [isSettingsActive, setIsSettingsActive] = useState(false);
+  const { width } = useWindowDimensions();
   const parentRef = useRef(null);
   const childRef = useRef(null);
   useClickClose(childRef, parentRef, () => setIsSettingsActive(false));
@@ -28,10 +32,12 @@ export default function PlannerCard({
   return (
     <div
       className={
-        "group/pc relative flex flex-row rounded-xl bg-slate-100 p-5 shadow-md sm:min-w-[375px] lg:max-w-[375px] " +
-        (link ? "hover:cursor-pointer" : "")
+        "group/pc relative flex h-min flex-none flex-row truncate rounded-xl bg-slate-100 p-5 shadow-md hover:cursor-pointer min-[1300px]:flex-[0_1_48%] "
       }
-      onClick={link ? () => navigate(link) : null}
+      onClick={() => {
+        setLink(link);
+        setIsChosen(true);
+      }}
     >
       <div
         className="flex items-center rounded-md p-5 font-bold"
@@ -42,13 +48,14 @@ export default function PlannerCard({
       >
         MP
       </div>
-      <div className="mx-5 truncate">
-        <div className="truncate font-semibold sm:text-lg">{subject}</div>
-        <div className="sm:text-md truncate text-xs font-medium">
+      <div className="mx-5">
+        <div className="line-clamp-2 min-[900px]:max-w-[40ch] whitespace-pre-wrap truncate font-semibold sm:text-lg">
+          {subject}
+        </div>
+        <div className="sm:text-md truncate text-xs max-w-[20ch] font-medium">
           {description}
         </div>
       </div>
-      <div className="lg:mx-10"></div>
       <div className="absolute right-4 top-2 flex flex-col-reverse gap-2 sm:flex-row">
         {isPinned ? (
           <img

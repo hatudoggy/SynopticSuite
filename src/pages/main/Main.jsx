@@ -3,6 +3,7 @@ import Calendar from "../calendar";
 import Planner from '../planner';
 import search from "../../assets/search.svg";
 import ClickedPlan from "../planner/ClickedPlan";
+import QuickPlans from "../planner/QuickPlans";
 import menu from "../../assets/menu.svg";
 import Notes from "../notes";
 import { Routes, Route, Navigate } from "react-router-dom";
@@ -15,8 +16,10 @@ function Main({setOpen}) {
   return (
     <div className="flex h-screen w-full flex-none sm:flex-1 flex-col">
       <div className="sticky top-0 z-10 flex h-14 flex-none items-center sm:justify-between bg-white pl-2 sm:pl-6 pr-12 shadow-lg">
-        <Menu setSideOpen={setOpen}/>
-        <SearchBar/>
+        <div className="flex gap-3">
+          <Menu setSideOpen={setOpen}/>
+          <SearchBar/>
+        </div>
         <Profile/>
       </div>
       <div className="grow ">
@@ -29,12 +32,13 @@ function Main({setOpen}) {
           {/* private routes */}
           <Route path="/" element={<Navigate to={'calendar'} replace={true}/>}/>
           <Route path={'calendar'} element={<Calendar />}/>
-          <Route path="planner" element={<Planner />}/>
+
+          <Route path="planner/" element={<Planner />}>
+            <Route path={`:id`} element={<ClickedPlan/>}/>
+            <Route path={`pinned/:id`} element={<ClickedPlan/>}/>
+            <Route path={`quick-plans`} element={<QuickPlans/>}/>
+          </Route>
           <Route path="notes" element={<Notes />}/>
-          <Route path={`planner/:id`} element={<ClickedPlan/>}/>
-          <Route path={`planner/pinned/:id`} element={<ClickedPlan/>}/>
-
-
         </Routes>
       </div>
     </div>
@@ -44,7 +48,7 @@ function Main({setOpen}) {
 function Menu({setSideOpen}){
 
   return(
-    <button className="sm:hidden ml-2 flex-none" onClick={()=>{setSideOpen(true)}}>
+    <button className="lg:hidden ml-2 flex-none" onClick={()=>{setSideOpen(true)}}>
       <img src={menu} alt="search" className="w-6" />
     </button>
   )

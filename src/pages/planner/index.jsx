@@ -8,7 +8,15 @@ import addButton from "../../assets/add-button-no-circle.svg";
 import useWindowDimensions from "../../hooks/useWindowDimensions";
 import PlannerCard from "./PlannerCard";
 import PlanModal from "./PlanModal";
-import { useNavigate } from "react-router-dom";
+import { ButtonGroup, Button } from "@mui/material";
+import { createTheme, ThemeProvider } from "@mui/material/styles";
+import {
+  Routes,
+  Route,
+  useNavigate,
+  useResolvedPath,
+  Outlet,
+} from "react-router-dom";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { firestore } from "../../config/firebase";
 import {
@@ -28,6 +36,7 @@ import { useCollectionData } from "react-firebase-hooks/firestore";
 import { Skeleton } from "@mui/material";
 import PlannerCardLoad from "../../loaders/Planner/PlannerCardLoad";
 import { useAuth } from "../../hooks/AuthContext";
+import ClickedPlan from "./ClickedPlan";
 
 function Planner() {
   /******************************************/
@@ -36,6 +45,7 @@ function Planner() {
 
   //Navigation/Routing
   const navigate = useNavigate();
+  const [link, setLink] = useState();
 
   //Detects window dimension
   const { height, width } = useWindowDimensions();
@@ -45,8 +55,9 @@ function Planner() {
 
   //Checks for conditional items
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isRecent, setIsRecent] = useState(true);
-  const [isAll, setIsAll] = useState(false);
+  const [isPinned, setIsPinned] = useState(false);
+  const [isAll, setIsAll] = useState(true);
+  const [isChosen, setIsChosen] = useState(false);
 
   //Form data
   const [subject, setSubject] = useState("");
@@ -70,7 +81,8 @@ function Planner() {
   useEffect(() => {
     const dataSnap = query(
       collection(firestore, "Plans"),
-      orderBy("dateEdited", "desc"), where("uid", "==", authUser.uid)
+      orderBy("dateEdited", "desc"),
+      where("uid", "==", authUser.uid)
     );
 
     //This function sets all the necessary data from the database to all the state variables
@@ -88,7 +100,12 @@ function Planner() {
     return () => unsubscribe();
   }, []);
 
-  //console.log(plans);
+  //If a card is chosen, page will navigate to that card
+  useEffect(() => {
+    isChosen ? navigate(link) : navigate(`/planner/`);
+  }, [isChosen, link]);
+
+  console.log(plans);
 
   /******************************************/
   /*          End of Use Effects            */
@@ -124,7 +141,7 @@ function Planner() {
       textColor: adaptingText(color.hex, "#F9F9F3", "#28282B"),
       isPinned: false,
       planId: docRef.id,
-      uid: authUser.uid
+      uid: authUser.uid,
     };
 
     //Set data to state. This makes it easier to update data in the future
@@ -170,8 +187,16 @@ function Planner() {
     await deleteDoc(doc(firestore, "Plans", id));
   }
 
+  const theme = createTheme({
+    palette: {
+      primary: {
+        main: "#64748B",
+      },
+    },
+  });
+
   return (
-    <div className="flex h-full w-full flex-col bg-slate-300 px-10 py-10">
+    <div className="relative flex h-[calc(100vh-3rem)] w-full flex-row justify-center overflow-hidden bg-slate-300 px-5 py-10 lg:px-10">
       {/* <div className="invert-to-white mb-4 w-fit hover:cursor-pointer hover:fill-black hover:shadow-lg hover:invert-0">
         <img src={returnButton} alt="" className="w-8" />
       </div> */}
@@ -191,8 +216,8 @@ function Planner() {
           setColor={setColor}
         />
       ) : null}
-      <div
-        className="text-md absolute bottom-10 right-10 z-10 flex items-center justify-center gap-2 rounded-2xl bg-blue-500 px-5 py-5 font-semibold text-white shadow-lg shadow-slate-400/100 hover:cursor-pointer"
+      {/* <div
+        className="text-md fixed bottom-10 right-10 z-[12] flex items-center justify-center gap-2 rounded-2xl bg-blue-500 px-5 py-5 font-semibold text-white shadow-lg shadow-slate-400/100 hover:cursor-pointer"
         onClick={() => setIsModalOpen(!isModalOpen)}
       >
         <img src={addButton} alt="add" className="w-6 sm:w-8" />
@@ -203,8 +228,14 @@ function Planner() {
         >
           Compose
         </div>
-      </div>
-      <div className="flex h-full w-full flex-col gap-5">
+      </div> */}
+      <div
+        className={
+          "flex h-full flex-1 flex-col gap-5 pb-0 " +
+          "relative translate-x-[auto] transition-transform sm:static sm:translate-x-[auto] " +
+          (isChosen ? "translate-x-[-100vw]" : "translate-x-[auto]")
+        }
+      >
         {/* <div className="flex flex-row items-center gap-5 ">
           <div
             className="shadow-black-500/40 rounded-3xl bg-gray-700 px-4 py-2 text-lg font-semibold text-white shadow-lg shadow-slate-400/100 hover:cursor-pointer"
@@ -216,107 +247,81 @@ function Planner() {
             Notes
           </div>
         </div> */}
-        <div className="flex w-full flex-col gap-5">
-          <div className="flex flex-row pr-2">
-            <div className="px-2 text-lg font-semibold">Pinned</div>
-            <img
-              src={returnButton}
-              alt=""
-              className="invert-to-white ml-auto w-8 rotate-180 hover:cursor-pointer"
-              onClick={() => navigate("/")}
-            />
-          </div>
-          <div
-            ref={animate}
-            className="mx-2 flex flex-col gap-3 sm:flex-wrap lg:flex-row"
-          >
-            {/* Checks for pinned items */}
-            {!loading ? (
-              plans.find((plan) => plan.isPinned === true) ? (
-                plans
-                  .sort(
-                    (a, b) => new Date(b.dateEdited) - new Date(a.dateEdited)
-                  )
-                  .filter((plan) => plan.isPinned === true)
-                  .map((item, index) => (
-                    <PlannerCard
-                      key={index}
-                      subject={item.subject}
-                      description={item.description}
-                      color={item.color}
-                      textColor={item.textColor}
-                      pin={pin}
-                      unpin={unpin}
-                      isPinned={item.isPinned}
-                      handlePin={handlePin}
-                      handleUnpin={handleUnpin}
-                      handleDelete={handleDelete}
-                      settings={settings}
-                      id={item.planId}
-                      link={`/planner/pinned/${item.planId}`}
-                      hasOpenPrompt={true}
-                    />
-                  ))
-              ) : (
-                <div className="mx-2 flex justify-center rounded-xl bg-slate-100">
-                  <div className="py-10 font-semibold sm:px-32 sm:py-10">
-                    No Pinned Items
-                  </div>
+        <div className="fakeNoScroll thinScrollbar flex w-full flex-col gap-5 overflow-y-scroll">
+          <div className="sticky top-0 z-10 flex flex-col gap-3 bg-slate-300 py-4">
+            <div className="float-right flex items-center px-2 text-4xl font-semibold min-[1300px]:mr-5">
+              <span>Plans</span>
+              <div
+                className="text-md ml-auto flex items-center justify-center gap-2 rounded-md bg-gray-600 bg-opacity-90 px-2 py-2 font-semibold text-white shadow-lg shadow-slate-400/100 hover:cursor-pointer"
+                onClick={() => setIsModalOpen(!isModalOpen)}
+              >
+                <img src={addButton} alt="add" className="w-5" />
+                <div
+                  className={
+                    "pr-3 text-base "
+                    // (width < 300 ? "hidden" : "inherit")
+                  }
+                >
+                  Compose
                 </div>
-              )
-            ) : (
-              <>
-                <PlannerCardLoad />
-                <PlannerCardLoad />
-                <PlannerCardLoad />
-              </>
-            )}
-          </div>
-          <div className="flex flex-row gap-12">
-            <div
-              className={
-                "px-2 text-lg font-semibold hover:cursor-pointer hover:underline hover:underline-offset-4 " +
-                (isRecent ? "underline decoration-2 underline-offset-4" : "")
-              }
-              onClick={() => {
-                setIsRecent(true);
-                setIsAll(false);
-              }}
-            >
-              Recent
+              </div>
             </div>
-            <div
-              className={
-                "text-lg font-semibold hover:cursor-pointer hover:underline hover:underline-offset-4 " +
-                (isAll ? "underline decoration-2 underline-offset-4" : "")
-              }
-              onClick={() => {
-                setIsRecent(false);
-                setIsAll(true);
-              }}
-            >
-              All
+            <div className="flex flex-row items-center">
+              <ThemeProvider theme={theme}>
+                <ButtonGroup
+                  aria-label="outlined primary button group"
+                  className="h-4/5 px-2 lg:h-full"
+                  fullWidth={width > 1024 ? false : true}
+                  disableElevation
+                >
+                  <Button
+                    variant={isAll ? "contained" : "outlined"}
+                    onClick={() => {
+                      setIsPinned(false);
+                      setIsAll(true);
+                    }}
+                  >
+                    All
+                  </Button>
+                  <Button
+                    variant={isPinned ? "contained" : "outlined"}
+                    onClick={() => {
+                      setIsPinned(true);
+                      setIsAll(false);
+                    }}
+                  >
+                    Pinned
+                  </Button>
+                </ButtonGroup>
+              </ThemeProvider>
             </div>
           </div>
           <div
+            onClick={() => {
+              setLink("/planner/quick-plans");
+              setIsChosen(true);
+            }}
+            className="mx-2 flex h-fit cursor-pointer items-center rounded-lg border-r-8 border-gray-600 bg-slate-100 px-6 py-4 text-xl font-medium shadow-md min-[1300px]:w-fit"
+          >
+            Quick Plans
+          </div>
+          <div
             ref={animate}
-            className="mx-2 flex flex-col gap-3 sm:flex-wrap lg:flex-row"
+            className={
+              "mx-2 flex flex-col gap-3 pb-3 min-[1300px]:flex-row min-[1300px]:flex-wrap"
+            }
           >
             {/* Card */}
             {!loading ? (
               plans /* Checks if plans exists */ ? (
-                isRecent /* Checks if recent is active or clicked */ ? (
+                isPinned /* Checks if pinned is active or clicked */ ? (
                   plans
                     .sort(
                       (a, b) => new Date(b.dateEdited) - new Date(a.dateEdited)
                     )
                     .filter(
-                      (item) => item.isPinned !== true
+                      (item) => item.isPinned === true
                     ) /* Removed pinned items in the list */
-                    .slice(
-                      0,
-                      3
-                    ) /* Part that determines the number of cards present */
                     .map((plan, index) => (
                       <PlannerCard
                         key={index}
@@ -333,7 +338,9 @@ function Planner() {
                         settings={settings}
                         id={plan.planId}
                         link={`/planner/${plan.planId}`}
+                        setLink={setLink}
                         hasOpenPrompt={true}
+                        setIsChosen={setIsChosen}
                       />
                     ))
                 ) : (
@@ -341,9 +348,6 @@ function Planner() {
                     .sort(
                       (a, b) => new Date(b.dateEdited) - new Date(a.dateEdited)
                     )
-                    .filter(
-                      (item) => item.isPinned !== true
-                    ) /* Removes pinned items in the list */
                     .map((plan, index) => (
                       <PlannerCard
                         key={index}
@@ -360,7 +364,9 @@ function Planner() {
                         settings={settings}
                         id={plan.planId}
                         link={`/planner/${plan.planId}`}
+                        setLink={setLink}
                         hasOpenPrompt={true}
+                        setIsChosen={setIsChosen}
                       />
                     ))
                 )
@@ -372,11 +378,34 @@ function Planner() {
                 <PlannerCardLoad />
               </>
             )}
-            {/* Returns if plan is empty */}
           </div>
         </div>
       </div>
+      <SideContent isChosen={isChosen} setIsChosen={setIsChosen} />
     </div>
+  );
+}
+
+function SideContent({ isChosen, setIsChosen }) {
+  return (
+    <>
+      <div
+        className={
+          "fixed top-0 z-10 h-screen w-screen bg-black opacity-50 min-[900px]:hidden " +
+          (isChosen ? "visible" : "invisible")
+        }
+      ></div>
+      <div
+        className={
+          "fixed top-[5%] z-[11] mx-2 h-[90vh] w-11/12 flex-auto overflow-y-hidden rounded-3xl bg-slate-100 p-5 shadow-lg transition-all min-[900px]:visible min-[900px]:relative min-[900px]:h-[80vh] min-[900px]:w-3/4 min-[900px]:flex-[0_1_28.125rem] min-[900px]:translate-x-[auto] " +
+          (isChosen
+            ? "visible z-[11] translate-x-[auto]"
+            : "invisible translate-x-[100vw]")
+        }
+      >
+        {isChosen && <Outlet context={{ setIsChosen }} />}
+      </div>
+    </>
   );
 }
 

@@ -38,6 +38,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 import useClickClose from "../../hooks/useClickClose";
 import PlannerCardLoad from "../../loaders/Planner/PlannerCardLoad";
 import "../../css/Sidebar.css";
+import { useAuth } from "../../hooks/AuthContext";
 
 //testing
 import { createTheme, ThemeProvider } from "@mui/material/styles";
@@ -45,15 +46,16 @@ import Box from "@mui/material/Box";
 import Tab from "@mui/material/Tab";
 import Tabs from "@mui/material/Tabs";
 
-export default function ClickedPlan() {
+export default function QuickPlans() {
   /******************************************/
   /* Start of Instantiating State Variables */
   /******************************************/
 
-  // Get the id of the plan via the URL
-  const url = window.location.href;
-  const parts = url.split("/");
-  const id = parts[parts.length - 1];
+  //User info
+  const { authUser } = useAuth();
+
+  // ID for Quick Plans
+  const quickPlansID = "2nf1Siymise8eKnkwKCC";
 
   //useRef
   const scrollTo = useRef(null);
@@ -102,7 +104,7 @@ export default function ClickedPlan() {
     // Get the plan from the database
     const dataSnap = query(
       collection(firestore, "Plans"),
-      where("planId", "==", id)
+      where("planId", "==", quickPlansID)
     );
 
     const unsubscribe = onSnapshot(dataSnap, (querySnapshot) => {
@@ -116,9 +118,10 @@ export default function ClickedPlan() {
 
     // Get the subcollection
     const itemList = query(
-      collection(doc(collection(firestore, "Plans"), id), "itemList"),
+      collection(doc(collection(firestore, "Plans"), quickPlansID), "itemList"),
+      where("uid", "==", authUser.uid),
       orderBy("dateEdited", "desc"),
-      limit(loadMore)
+      limit(loadMore),
     );
 
     const itemListOnSnapshot = onSnapshot(itemList, (querySnapshot) => {
@@ -133,7 +136,7 @@ export default function ClickedPlan() {
       unsubscribe();
       itemListOnSnapshot();
     };
-  }, [loadMore, id]);
+  }, [loadMore, quickPlansID]);
 
   /******************************************/
   /*            End of UseEffects           */
@@ -155,14 +158,9 @@ export default function ClickedPlan() {
   const handleFormSubmit = async (event) => {
     event.preventDefault();
 
-    // Get the id of the plan via the URL
-    const url = window.location.href;
-    const parts = url.split("/");
-    const id = parts[parts.length - 1];
-
     //Generate and attach the document ID to a variable for later use
     const docRef = doc(
-      collection(doc(collection(firestore, "Plans"), id), "itemList")
+      collection(doc(collection(firestore, "Plans"), quickPlansID), "itemList")
     );
 
     //Document structure
@@ -177,7 +175,8 @@ export default function ClickedPlan() {
       endDate: endDate,
       itemId: docRef.id,
       itemType: itemType,
-      planId: id,
+      planId: quickPlansID,
+      uid: authUser.uid,
     };
 
     //Set data to state. This makes it easier to update data in the future
