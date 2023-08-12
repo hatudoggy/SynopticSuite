@@ -15,11 +15,11 @@ function Sidebar() {
   return (
     <div className="sticky left-0 top-0 hidden z-10 h-screen w-36 flex-row self-start lg:flex">
       
-      <div className="flex h-full w-5/12 flex-col items-center gap-8 bg-slate-300 py-6">
+      <div className="flex h-full w-5/12 flex-col items-center gap-8 bg-white0 py-6">
         <LinkCont />
       </div>
 
-      <div className="flex h-full w-7/12 flex-col  items-center gap-8 bg-slate-500 py-6">
+      <div className="flex h-full w-7/12 flex-col  items-center gap-8 bg-primary-light py-6">
         <a href="/">
           <div className="">
             <img src={logo} className="w-12" alt="Logo" />
@@ -94,8 +94,8 @@ function Icon({ image, text, link }) {
   return (
     <div
       className="group relative flex h-14 w-14 items-center
-      justify-center rounded-3xl bg-gray-700 shadow-md
-      transition-all hover:cursor-pointer hover:rounded-2xl hover:bg-gray-800"
+      justify-center rounded-3xl bg-[#534444]  shadow-md
+      transition-all hover:cursor-pointer hover:rounded-2xl hover:brightness-125"
       onClick={() => {
         navigate(link);
       }}
@@ -109,7 +109,7 @@ function Icon({ image, text, link }) {
 function ToolTip({ text }) {
   return (
     <span
-      className="invisible absolute px-2 left-16 z-20 w-auto min-w-max origin-left scale-50 rounded bg-gray-800
+      className="invisible absolute px-2 left-16 z-20 w-auto min-w-max origin-left scale-50 rounded bg-primary-dark
     p-1 text-white opacity-0 shadow-md transition group-hover:visible group-hover:block group-hover:scale-100 group-hover:opacity-100"
     >
       {text}
@@ -229,8 +229,8 @@ function NewLinks({ addLink }) {
       <div
         ref={buttonRef}
         className="group relative flex h-12 w-12 flex-none items-center
-      justify-center rounded-2xl bg-slate-500 shadow-md
-      transition-all hover:cursor-pointer hover:rounded-xl hover:bg-gray-700"
+      justify-center rounded-2xl bg-primary-light shadow-md
+      transition-all hover:cursor-pointer hover:rounded-xl hover:opacity-90"
         onClick={() => {
           setModalVisible(!modalVisible);
         }}

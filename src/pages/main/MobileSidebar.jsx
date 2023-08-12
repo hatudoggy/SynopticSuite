@@ -16,7 +16,7 @@ function MobileSidebar({open, setOpen}) {
     
     <>
     <div className={(open?'sm:w-80 w-72':'w-0')+' lg:hidden flex bg-slate-300 z-50 overflow-hidden flex-none transition-[width]'}>
-        <div className='flex flex-col items-center gap-3 bg-slate-300 px-3 py-5'>
+        <div className='flex flex-col items-center gap-3 bg-white px-3 py-5'>
             <LinkCont/>
         </div>
         <Nav/>
@@ -48,7 +48,7 @@ function Link(){
 function Nav(){
     
     return(
-        <div className='bg-slate-500 flex flex-col gap-3 py-6 px-4 flex-wrap content-center w-auto flex-auto'>
+        <div className='bg-primary-light flex flex-col gap-3 py-6 px-4 flex-wrap content-center w-auto flex-auto'>
             <div className='flex justify-center items-center py-5 text-white sm:text-2xl text-xl'>
                 <img src={logo} className="w-10" />
                 <span className='ml-4 min-[450px]:w-full break-words w-24'>Synoptic Suite</span>
@@ -66,7 +66,7 @@ function Nav(){
 function ResIcon({ image, text, link }){
     const navigate = useNavigate();
     return(
-        <div className='flex items-center gap-3 bg-gray-700 p-2 min-[450px]:p-3 text-white text-xl rounded-2xl'
+        <div className='flex items-center gap-3 bg-[#534444] p-2 min-[450px]:p-3 text-white text-xl rounded-2xl'
         onClick={() => {navigate(link);}}>
             <img src={image} alt="calendar" className="w-10" /> <span>{text}</span>
         </div>

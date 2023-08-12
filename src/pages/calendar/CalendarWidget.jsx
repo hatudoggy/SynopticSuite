@@ -45,6 +45,7 @@ import { BsArrowRightShort } from "react-icons/bs";
 import { useAuth } from "../../hooks/AuthContext";
 import { WindowContext } from ".";
 import {usePosRelativeScreen} from '../../hooks/usePosRelativeScreen'
+import downarrow from '../../assets/down-arrow.svg'
 
 function CalendarWidget() {
   let today = startOfToday();
@@ -166,7 +167,8 @@ function CalendarWidget() {
 
   return (
     <div
-      className="m-auto flex flex-col rounded-lg shadow-2xl py-1 h-full md:h-[96%] w-full md:w-5/6 lg:w-4/4"
+      className="m-auto flex flex-col rounded-lg py-1 h-full md:h-[96%] w-full md:w-5/6 lg:w-4/4"
+      style={{boxShadow:"0px 0px 43px 0px rgba(0,0,0,0.11),0px 0px 8px 0px rgba(0,0,0,0.05)"}}
       //style={{ height: "41rem" }}
     >
       <Navigation
@@ -243,14 +245,14 @@ function AddBtnCont (){
   return(
     <div className='flex items-center'>
       <button
-        className=" p-2 rounded-l-lg border-r-2 bg-slate-400"
+        className=" p-2 rounded-l-lg border-r-2 bg-[#534444] text-white"
       >
         New
       </button>
       <button
-        className=" p-2 rounded-r-lg bg-slate-400"
+        className=" p-1 py-[0.63rem] rounded-r-lg bg-[#534444] text-white"
       >
-        v
+        <img src={downarrow} className="w-5"/>
       </button>
     </div>
   )

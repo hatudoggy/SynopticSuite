@@ -26,6 +26,11 @@ export default {
           DEFAULT: '#362F2F',
           dark: '#404C4C'
         },
+        'secondary':{
+          light:'#534444',
+          DEFAULT:'#534444',
+          dark:'#534444'
+        },
         'primary-logo': '#447BCD',
         'hover-color' : '#909090',
       },
