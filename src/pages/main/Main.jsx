@@ -10,6 +10,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import { useState, useRef } from "react";
 import { useAuth } from "../../hooks/AuthContext";
 import useClickClose from "../../hooks/useClickClose";
+import { getAuth, updateProfile } from "firebase/auth";
 
 
 function Main({setOpen}) {
@@ -63,6 +64,8 @@ function SearchBar(){
     </div>
   )
 }
+
+
 
 function Profile(){
   const { authUser, signout } = useAuth();

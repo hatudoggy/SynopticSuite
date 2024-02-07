@@ -18,7 +18,7 @@ export function AuthProvider({children}) {
     // }
 
     function login(email, password) {
-        return signInWithEmailAndPassword(auth, 'crisostomo@ibarra.com', 'JuanRizal');
+        return signInWithEmailAndPassword(auth, email, password);
     }
 
     function signup(email, password) {
