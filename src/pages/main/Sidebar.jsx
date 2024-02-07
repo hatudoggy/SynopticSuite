@@ -7,6 +7,8 @@ import notes from "../../assets/notes.svg";
 import analytics from "../../assets/analytics.svg";
 import addButton from "../../assets/add-button.svg";
 import logo from "../../assets/SuiteLogo.png";
+import message from "../../assets/message-button.svg";
+import cloud from "../../assets/cloud.svg";
 import { useNavigate } from "react-router-dom";
 import "../../css/Sidebar.css";
 import useClickClose from "../../hooks/useClickClose";
@@ -27,12 +29,14 @@ function Sidebar() {
         </a>
 
         <div className="flex flex-col gap-4 ">
+          <Icon image={planner} text={"Workspace"} link={"planner"} />
           <Icon image={calendar} text={"Calendar"} link={"calendar"} />
+          <Icon image={cloud} text={"MyDrive"} link={"myDrive"} />
+          <Icon image={message} text={"Connect"} link={"connect"}/>
           <Icon image={resources} text={"Resources"} link={"resources"} />
           <Icon image={clock} text={"Schedule"} link={"schedule"} />
-          <Icon image={planner} text={"Planner"} link={"planner"} />
           <Icon image={notes} text={"Notes"} link={"notes"} />
-          <Icon image={analytics} text={"Analytics"} link={"analytics"} />
+          <Icon image={analytics} text={"Evaluation"} link={"analytics"} />
         </div>
       </div>
     </div>
